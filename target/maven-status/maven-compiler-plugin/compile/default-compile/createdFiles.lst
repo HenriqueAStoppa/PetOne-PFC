@@ -1,4 +1,9 @@
+com/petone/petone/tutor/TutorRepository.class
 com/petone/petone/PetoneApplication.class
+com/petone/petone/common/ApiErrorHandler.class
+com/petone/petone/tutor/TutorService.class
 com/petone/App.class
 com/petone/petone/controller/HealthController.class
 com/petone/petone/config/SecurityConfig.class
+com/petone/petone/tutor/TutorController.class
+com/petone/petone/tutor/Tutor.class

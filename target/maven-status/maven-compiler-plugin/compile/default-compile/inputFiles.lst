@@ -1,4 +1,9 @@
 /workspaces/PetOne-PFC/src/main/java/com/petone/App.java
 /workspaces/PetOne-PFC/src/main/java/com/petone/config/SecurityConfig.java
 /workspaces/PetOne-PFC/src/main/java/com/petone/petone/PetoneApplication.java
+/workspaces/PetOne-PFC/src/main/java/com/petone/petone/common/ApiErrorHandler.java
 /workspaces/PetOne-PFC/src/main/java/com/petone/petone/controller/HealthController.java
+/workspaces/PetOne-PFC/src/main/java/com/petone/petone/tutor/Tutor.java
+/workspaces/PetOne-PFC/src/main/java/com/petone/petone/tutor/TutorController.java
+/workspaces/PetOne-PFC/src/main/java/com/petone/petone/tutor/TutorRepository.java
+/workspaces/PetOne-PFC/src/main/java/com/petone/petone/tutor/TutorService.java
