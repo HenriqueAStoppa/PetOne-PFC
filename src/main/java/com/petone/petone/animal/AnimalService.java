@@ -1,49 +1,64 @@
 package com.petone.petone.animal;
 
-//arrumar erros
-import com.petone.petone.animal.Animal;
-import com.petone.petone.animal.AnimalRepository;
-import com.petone.petone.animal.AnimalDTO;
-import com.petone.petone.animal.AnimalFilterDTO;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
+import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class AnimalService {
-
-    @Autowired
-    private AnimalRepository repository;
-
-    public Animal cadastrarAnimal(AnimalDTO dto) {
-        if (dto.getNome() == null || dto.getNome().isEmpty()) {
-            throw new IllegalArgumentException("Nome do animal é obrigatório.");
-        }
-
-        Animal animal = new Animal();
-        animal.setNome(dto.getNome());
-        animal.setTipo(dto.getTipo());
-        animal.setRaca(dto.getRaca());
-        animal.setSexo(dto.getSexo());
-        animal.setCastrado(dto.isCastrado());
-        animal.setIdade(dto.getIdade());
-
-        return repository.save(animal);
-    }
-    
-    //revisar filtro com erro
-    public List<Animal> filtrarAnimais(AnimalFilterDTO filtro) {
-        List<Animal> todos = repository.findAll();
-
-        return todos.stream()
-                .filter(a -> filtro.getTipo() == null || a.getTipo().equalsIgnoreCase(filtro.getTipo()))
-                .filter(a -> filtro.getRaca() == null || a.getRaca().equalsIgnoreCase(filtro.getRaca()))
-                .filter(a -> filtro.getSexo() == null || a.getSexo().equalsIgnoreCase(filtro.getSexo()))
-                .filter(a -> filtro.getCastrado() == null || a.isCastrado() == filtro.getCastrado())
-                .filter(a -> filtro.getIdadeMinima() == null || a.getIdade() >= filtro.getIdadeMinima())
-                .collect(Collectors.toList());
-    }
+ private final AnimalRepository repository;
+ public AnimalService(AnimalRepository repository) {
+   this.repository = repository;
+ }
+ public Animal create(String tutorId, @Valid AnimalDTO dto) {
+   if (dto.getNome() == null || dto.getNome().isBlank()) {
+     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nome do animal é obrigatório");
+   }
+   if (dto.getTipo() == null || dto.getTipo().isBlank()) {
+     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tipo do animal é obrigatório");
+   }
+   Animal a = new Animal();
+   a.setTutorId(tutorId);
+   a.setNome(dto.getNome());
+   a.setTipo(dto.getTipo());
+   a.setRaca(dto.getRaca());
+   a.setSexo(dto.getSexo());
+   a.setCastrado(dto.isCastrado());
+   a.setIdade(dto.getIdade());
+   return repository.save(a);
+ }
+ public List<Animal> list(String tutorId, String tipo, String raca, String sexo, Boolean castrado, Integer idadeMinima) {
+   List<Animal> base = repository.findByTutorId(tutorId);
+   return base.stream()
+       .filter(a -> tipo == null || (a.getTipo() != null && a.getTipo().equalsIgnoreCase(tipo)))
+       .filter(a -> raca == null || (a.getRaca() != null && a.getRaca().equalsIgnoreCase(raca)))
+       .filter(a -> sexo == null || (a.getSexo() != null && a.getSexo().equalsIgnoreCase(sexo)))
+       .filter(a -> castrado == null || (a.getCastrado() != null && a.getCastrado().booleanValue() == castrado))
+       .filter(a -> idadeMinima == null || (a.getIdade() != null && a.getIdade() >= idadeMinima))
+       .toList();
+ }
+ public Animal get(String tutorId, String id) {
+   Animal a = repository.findById(id).orElseThrow(() ->
+       new ResponseStatusException(HttpStatus.NOT_FOUND, "Animal não encontrado"));
+   if (!a.getTutorId().equals(tutorId)) {
+     throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Animal não pertence ao tutor");
+   }
+   return a;
+ }
+ public Animal update(String tutorId, String id, @Valid AnimalDTO in) {
+   Animal a = get(tutorId, id);
+   if (in.getNome() != null) a.setNome(in.getNome());
+   if (in.getTipo() != null) a.setTipo(in.getTipo());
+   a.setRaca(in.getRaca());
+   a.setSexo(in.getSexo());
+   a.setCastrado(in.isCastrado());
+   a.setIdade(in.getIdade());
+   return repository.save(a);
+ }
+ public void delete(String tutorId, String id) {
+   Animal a = get(tutorId, id);
+   repository.delete(a);
+ }
 }
