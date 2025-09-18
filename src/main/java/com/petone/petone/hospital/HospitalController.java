@@ -14,9 +14,6 @@ public class HospitalController {
 
   public HospitalController(HospitalService service) { this.service = service; }
 
-  // RN-04: listar apenas ativos; se parceiro=true, apenas parceiros
-  // RN-01: filtro por tipo animal (?tipo=cao|gato|...)
-  // RN-06: ?abertoAgora=true filtra por horário de hoje
   @GetMapping
   public List<Hospital> list(
       @RequestParam(required = false) Boolean parceiro,

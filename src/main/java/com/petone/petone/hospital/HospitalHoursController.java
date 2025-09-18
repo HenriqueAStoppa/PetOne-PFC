@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/hospitals")
+@RequestMapping("/hospitals/{hospitalId}/hours")
 public class HospitalHoursController {
 
   private final HospitalHoursService service;
@@ -16,37 +16,34 @@ public class HospitalHoursController {
     this.service = service;
   }
 
-  // cria um slot de horário para um hospital
-  @PostMapping("/{hospitalId}/hours")
+  @GetMapping
+  public List<HospitalHours> list(@PathVariable String hospitalId,
+                                  @RequestParam(required = false) Integer diaSemana) {
+    return service.listByHospital(hospitalId, diaSemana);
+  }
+
+  @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
   public HospitalHours create(@PathVariable String hospitalId,
                               @Valid @RequestBody HospitalHours body) {
     return service.create(hospitalId, body);
   }
 
-  // lista todos os horários de um hospital
-  @GetMapping("/{hospitalId}/hours")
-  public List<HospitalHours> listAll(@PathVariable String hospitalId) {
-    return service.listAllByHospital(hospitalId);
+  @GetMapping("/{id}")
+  public HospitalHours get(@PathVariable String hospitalId, @PathVariable String id) {
+    return service.get(hospitalId, id);
   }
 
-  // obtém um slot específico por ID
-  @GetMapping("/hours/{id}")
-  public HospitalHours get(@PathVariable String id) {
-    return service.get(id);
-  }
-
-  // atualiza um slot específico
-  @PutMapping("/hours/{id}")
-  public HospitalHours update(@PathVariable String id,
+  @PutMapping("/{id}")
+  public HospitalHours update(@PathVariable String hospitalId,
+                              @PathVariable String id,
                               @Valid @RequestBody HospitalHours body) {
-    return service.update(id, body);
+    return service.update(hospitalId, id, body);
   }
 
-  // remove um slot específico
-  @DeleteMapping("/hours/{id}")
+  @DeleteMapping("/{id}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void delete(@PathVariable String id) {
-    service.delete(id);
+  public void delete(@PathVariable String hospitalId, @PathVariable String id) {
+    service.delete(hospitalId, id);
   }
 }
