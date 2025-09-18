@@ -1,5 +1,6 @@
 package com.petone.petone.tutor;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -10,6 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "tutors")
 public class Tutor {
+
   @Id
   private String id;
 
@@ -27,17 +29,17 @@ public class Tutor {
   @Indexed(unique = true)
   private String cpf;
 
-  // Para o MVP você pode enviar a senha já com hash ou plain por enquanto
   @NotBlank(message = "Senha/Hash é obrigatório")
+  @JsonIgnore // ✅ não vaza no JSON de resposta
   private String senhaHash;
 
-  @Size(max = 10) // exemplo: "2000-01-01"
+  @Size(max = 10)
+  @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "dataNasc deve estar no formato YYYY-MM-DD")
   private String dataNasc;
 
   private boolean ativo = true;
   private boolean emailVerificado = false;
 
-  // getters e setters (sem Lombok para evitar dependência)
   public String getId() { return id; }
   public void setId(String id) { this.id = id; }
   public String getNome() { return nome; }

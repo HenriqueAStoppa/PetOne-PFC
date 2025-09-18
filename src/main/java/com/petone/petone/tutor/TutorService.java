@@ -16,8 +16,13 @@ public class TutorService {
     this.repository = repository;
   }
 
+  private String normalizeEmail(String email) {
+    return email == null ? null : email.trim().toLowerCase();
+  }
+
   public Tutor create(@Valid Tutor tutor) {
-    // regra: e-mail/CPF únicos → 409
+    tutor.setEmail(normalizeEmail(tutor.getEmail()));
+
     if (repository.existsByEmail(tutor.getEmail()) || repository.existsByCpf(tutor.getCpf())) {
       throw new ResponseStatusException(HttpStatus.CONFLICT, "E-mail ou CPF já cadastrado");
     }
@@ -36,8 +41,10 @@ public class TutorService {
   public Tutor update(String id, @Valid Tutor incoming) {
     Tutor current = getById(id);
 
-    // se trocar email/cpf, validar unicidade
-    if (!current.getEmail().equals(incoming.getEmail()) && repository.existsByEmail(incoming.getEmail())) {
+    String newEmail = normalizeEmail(incoming.getEmail());
+    incoming.setEmail(newEmail);
+
+    if (!current.getEmail().equals(newEmail) && repository.existsByEmail(newEmail)) {
       throw new ResponseStatusException(HttpStatus.CONFLICT, "E-mail já cadastrado");
     }
     if (!current.getCpf().equals(incoming.getCpf()) && repository.existsByCpf(incoming.getCpf())) {
@@ -45,9 +52,9 @@ public class TutorService {
     }
 
     current.setNome(incoming.getNome());
-    current.setEmail(incoming.getEmail());
+    current.setEmail(newEmail);
     current.setCpf(incoming.getCpf());
-    current.setSenhaHash(incoming.getSenhaHash());
+    current.setSenhaHash(incoming.getSenhaHash()); // aplicar hash aqui
     current.setDataNasc(incoming.getDataNasc());
     current.setAtivo(incoming.isAtivo());
     current.setEmailVerificado(incoming.isEmailVerificado());

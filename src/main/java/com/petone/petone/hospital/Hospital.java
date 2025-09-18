@@ -22,16 +22,14 @@ public class Hospital {
 
   private String telefone;
   private String endereco;
-  private Double lat; // opcional no MVP
+  private Double lat; 
   private Double lng;
 
-  // ex.: ["cao","gato","ave"]
   private List<String> tiposAtendidos;
 
   private boolean parceiro = true;
   private boolean ativo = true;
 
-  // getters/setters
   public String getId() { return id; }
   public void setId(String id) { this.id = id; }
   public String getNomeFantasia() { return nomeFantasia; }

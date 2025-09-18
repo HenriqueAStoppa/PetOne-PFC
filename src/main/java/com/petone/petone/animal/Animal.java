@@ -11,20 +11,20 @@ public class Animal {
  @Id
  private String id;
  @NotBlank
- private String tutorId;     // vínculo obrigatório ao Tutor
+ private String tutorId;   
  @NotBlank
  @Size(min = 2, max = 60)
  private String nome;
  @NotBlank
  @Size(max = 20)
- private String tipo;        // "cao", "gato", etc.
+ private String tipo;  
  @Size(max = 50)
  private String raca;
  @Size(max = 10)
- private String sexo;        // "M", "F" (ou texto livre)
- private Boolean castrado;   // wrapper para permitir nulo
+ private String sexo;        
+ private Boolean castrado;  
  @Min(0)
- private Integer idade;      // wrapper para permitir nulo
+ private Integer idade;      
  public String getId() { return id; }
  public void setId(String id) { this.id = id; }
  public String getTutorId() { return tutorId; }

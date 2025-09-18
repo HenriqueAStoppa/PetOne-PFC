@@ -1,6 +1,5 @@
 package com.petone.petone.hospital;
 
-import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -10,48 +9,51 @@ import java.util.List;
 @Service
 public class HospitalHoursService {
 
-  private final HospitalHoursRepository repo;
-  private final HospitalRepository hospitalRepo;
+    private final HospitalHoursRepository repo;
+    private final HospitalRepository hospitalRepo;
 
-  public HospitalHoursService(HospitalHoursRepository repo, HospitalRepository hospitalRepo) {
-    this.repo = repo;
-    this.hospitalRepo = hospitalRepo;
-  }
-
-  public HospitalHours create(String hospitalId, @Valid HospitalHours body) {
-    if (hospitalId == null || hospitalId.isBlank()) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "hospitalId é obrigatório");
+    public HospitalHoursService(HospitalHoursRepository repo, HospitalRepository hospitalRepo) {
+        this.repo = repo;
+        this.hospitalRepo = hospitalRepo;
     }
-    // (opcional quando Mongo estiver ativo) valida se hospital existe:
-    // hospitalRepo.findById(hospitalId).orElseThrow(
-    //     () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Hospital não encontrado"));
 
-    body.setHospitalId(hospitalId);
-    return repo.save(body);
-  }
-
-  public List<HospitalHours> listAllByHospital(String hospitalId) {
-    if (hospitalId == null || hospitalId.isBlank()) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "hospitalId é obrigatório");
+    private void ensureHospitalExists(String hospitalId) {
+        if (!hospitalRepo.existsById(hospitalId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Hospital não encontrado");
+        }
     }
-    return repo.findByHospitalId(hospitalId);
-  }
 
-  public HospitalHours get(String id) {
-    return repo.findById(id).orElseThrow(() ->
-        new ResponseStatusException(HttpStatus.NOT_FOUND, "Horário não encontrado"));
-  }
+    public List<HospitalHours> listByHospital(String hospitalId, Integer diaSemana) {
+        ensureHospitalExists(hospitalId);
+        return (diaSemana == null)
+                ? repo.findByHospitalId(hospitalId)
+                : repo.findByHospitalIdAndDiaSemana(hospitalId, diaSemana);
+    }
 
-  public HospitalHours update(String id, @Valid HospitalHours in) {
-    HospitalHours h = get(id);
-    h.setDiaSemana(in.getDiaSemana());
-    h.setAbre(in.getAbre());
-    h.setFecha(in.getFecha());
-    return repo.save(h);
-  }
+    public HospitalHours create(String hospitalId, HospitalHours dto) {
+        ensureHospitalExists(hospitalId);
+        dto.setId(null);
+        dto.setHospitalId(hospitalId);
+        return repo.save(dto);
+    }
 
-  public void delete(String id) {
-    HospitalHours h = get(id);
-    repo.delete(h);
-  }
+    public HospitalHours get(String hospitalId, String id) {
+        ensureHospitalExists(hospitalId);
+        return repo.findById(id)
+                .filter(h -> h.getHospitalId().equals(hospitalId))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Horário não encontrado"));
+    }
+
+    public HospitalHours update(String hospitalId, String id, HospitalHours dto) {
+        HospitalHours existing = get(hospitalId, id);
+        if (dto.getDiaSemana() != 0) existing.setDiaSemana(dto.getDiaSemana());
+        if (dto.getAbre() != null) existing.setAbre(dto.getAbre());
+        if (dto.getFecha() != null) existing.setFecha(dto.getFecha());
+        return repo.save(existing);
+    }
+
+    public void delete(String hospitalId, String id) {
+        HospitalHours existing = get(hospitalId, id);
+        repo.delete(existing);
+    }
 }

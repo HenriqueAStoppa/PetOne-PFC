@@ -5,6 +5,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import java.util.List;
 
 public interface HospitalHoursRepository extends MongoRepository<HospitalHours, String> {
-  List<HospitalHours> findByHospitalIdAndDiaSemana(String hospitalId, int diaSemana);
-  List<HospitalHours> findByHospitalId(String hospitalId);
+    List<HospitalHours> findByHospitalId(String hospitalId);
+    List<HospitalHours> findByHospitalIdAndDiaSemana(String hospitalId, int diaSemana);
 }
