@@ -30,7 +30,7 @@ public class Tutor {
   private String cpf;
 
   @NotBlank(message = "Senha/Hash é obrigatório")
-  @JsonIgnore // ✅ não vaza no JSON de resposta
+  @JsonIgnore
   private String senhaHash;
 
   @Size(max = 10)

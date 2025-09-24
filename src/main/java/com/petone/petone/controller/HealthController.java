@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Instant;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 @RestController
 public class HealthController {
@@ -17,7 +16,7 @@ public class HealthController {
     @GetMapping("/health")
     public ResponseEntity<Map<String, Object>> health() {
         return ResponseEntity.ok()
-            .cacheControl(CacheControl.maxAge(0, TimeUnit.SECONDS).noCache().mustRevalidate())
+            .cacheControl(CacheControl.noCache().mustRevalidate())
             .body(Map.of(
                 "status", "OK",
                 "timestamp", Instant.now().toString()
