@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>Pet-One | Login e Cadastro</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet"
+        href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"
+        integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay"
+        crossorigin="anonymous">
+  <style>
+    /* complementos leves pro header e “switch” */
+    header{position:fixed;top:0;left:0;right:0;height:56px;background:#fff;border-bottom:1px solid #eee;display:flex;align-items:center;justify-content:space-between;padding:0 16px;z-index:1000}
+    header a{color:#58af9b;text-decoration:none}
+    .page-offset{margin-top:56px}
+    .msg{display:none;margin:8px 0;padding:10px 12px;border-radius:10px;font-size:.95rem}
+    .msg.ok{display:block;background:rgba(46,204,113,.12);border:1px solid rgba(46,204,113,.35);color:#116b3f}
+    .msg.err{display:block;background:rgba(231,76,60,.10);border:1px solid rgba(231,76,60,.35);color:#8a2a20}
+    .switch{position:relative;display:inline-block;width:45px;height:26px;vertical-align:middle;margin-left:8px}
+    .switch input{opacity:0;width:0;height:0}
+    .slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:#ccd5d9;transition:.2s;border-radius:999px}
+    .slider:before{position:absolute;content:"";height:20px;width:20px;left:3px;top:3px;background:#fff;transition:.2s;border-radius:50%}
+    .switch input:checked + .slider{background:#58af9b}
+    .switch input:checked + .slider:before{transform:translateX(19px)}
+    .inline-row{display:flex;align-items:center;gap:8px}
+    .inline-group{display:flex;gap:16px;flex-wrap:wrap;margin:6px 0}
+    .thin-hint{font-size:.8rem;color:#7f8c8d;margin-top:4px}
+  </style>
+</head>
+<body>
+  <!-- Header fixo -->
+  <header>
+    <strong style="color:#58af9b">Pet-One</strong>
+    <nav style="display:flex;gap:12px">
+      <a href="index.html">Usuário</a>
+      <a href="hospital.html">Hospital</a>
+    </nav>
+  </header>
+
+  <!-- OFFSET para não cobrir o conteúdo -->
+  <div class="container page-offset">
+    <div class="container">
+
+      <!-- CARD 1: CADASTRAR -->
+      <div class="content first-content">
+        <div class="first-column">
+          <h2 class="title title-primary">Bem-vindo de volta!</h2>
+          <p class="description description-primary">Para manter-se conectado</p>
+          <p class="description description-primary">entre com suas credenciais</p>
+          <button id="signin" class="btn btn-primary" aria-label="Ir para Entrar">Entrar</button>
+        </div>
+
+        <div class="second-column">
+          <h2 class="title title-second">Cadastrar Tutor (e seu Pet)</h2>
+
+          <div class="social-media" aria-hidden="true">
+            <ul class="list-social-media">
+              <a class="link-social-media" href="#" aria-label="Facebook">
+                <li class="item-social-media"><i class="fab fa-facebook-f"></i></li>
+              </a>
+              <a class="link-social-media" href="#" aria-label="Google">
+                <li class="item-social-media"><i class="fab fa-google-plus-g"></i></li>
+              </a>
+            
+              </a>
+            </ul>
+          </div>
+
+          <p class="description description-second">
+            Preencha os dados do tutor conforme as regras do sistema.
+          </p>
+
+          <!-- Mensagens -->
+          <div id="msg-cadastro" class="msg" role="alert"></div>
+
+          <!-- FORM CADASTRO -->
+          <form id="form-cadastro" class="form" autocomplete="on" novalidate>
+            <!-- TUTOR -->
+            <label class="label-input" for="tutor-nome">
+              <i class="far fa-user icon-modify"></i>
+              <input id="tutor-nome" type="text" placeholder="Nome do tutor (2–100 chars)" minlength="2" maxlength="100" required />
+            </label>
+
+            <label class="label-input" for="tutor-email">
+              <i class="far fa-envelope icon-modify"></i>
+              <input id="tutor-email" type="email" placeholder="E-mail do tutor" required />
+            </label>
+
+            <label class="label-input" for="tutor-cpf">
+              <i class="far fa-id-card icon-modify"></i>
+              <input id="tutor-cpf" type="text" inputmode="numeric" placeholder="CPF (11 dígitos)" maxlength="11" pattern="\\d{11}" required />
+            </label>
+
+            <label class="label-input" for="tutor-senha">
+              <i class="fas fa-lock icon-modify"></i>
+              <input id="tutor-senha" type="password" placeholder="Criar senha (min. 6)" minlength="6" required />
+            </label>
+
+            <label class="label-input" for="tutor-data">
+              <i class="fas fa-calendar-alt icon-modify"></i>
+              <input id="tutor-data" type="date" />
+            </label>
+
+            <div class="inline-group">
+              <div class="inline-row">
+                <label for="tutor-ativo" class="thin-hint">Ativo?</label>
+                <label class="switch">
+                  <input id="tutor-ativo" type="checkbox" checked />
+                  <span class="slider"></span>
+                </label>
+              </div>
+
+              <div class="inline-row">
+                <label for="tutor-emailver" class="thin-hint">E-mail verificado?</label>
+                <label class="switch">
+                  <input id="tutor-emailver" type="checkbox" />
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <p class="thin-hint">A senha será convertida para <code>senhaHash</code> (SHA-256) antes do envio.</p>
+
+            <!-- (Opcional) PET – mantive seus campos, mas o envio do PET pode ser feito em outra rota depois -->
+            <label class="label-input" for="pet-nome">
+              <i class="fas fa-paw icon-modify"></i>
+              <input id="pet-nome" type="text" placeholder="Nome do pet (opcional)" />
+            </label>
+
+            <label class="label-input" for="pet-especie">
+              <i class="fas fa-dog icon-modify"></i>
+              <select id="pet-especie">
+                <option value="" selected disabled>Espécie (opcional)</option>
+                <option>Cão</option>
+                <option>Gato</option>
+                <option>Ave</option>
+                <option>Coelho</option>
+                <option>Outros</option>
+              </select>
+            </label>
+
+            <label class="label-input" for="pet-raca">
+              <i class="fas fa-id-badge icon-modify"></i>
+              <input id="pet-raca" type="text" placeholder="Raça (opcional)" />
+            </label>
+
+            <label class="label-input" for="pet-sexo">
+              <i class="fas fa-venus-mars icon-modify"></i>
+              <select id="pet-sexo">
+                <option value="" selected disabled>Sexo (opcional)</option>
+                <option>Macho</option>
+                <option>Fêmea</option>
+              </select>
+            </label>
+
+            <label class="label-input" for="pet-porte">
+              <i class="fas fa-weight icon-modify"></i>
+              <select id="pet-porte">
+                <option value="" selected disabled>Porte (opcional)</option>
+                <option>Pequeno</option>
+                <option>Médio</option>
+                <option>Grande</option>
+              </select>
+            </label>
+
+            <label class="label-input" for="pet-peso">
+<label class="label-input" for="pet-peso">
+  <i class="fas fa-balance-scale icon-modify"></i>
+  <input id="pet-peso" type="text" placeholder="Peso (kg, opcional)" />
+</label>            </label>
+
+            <label class="label-input" for="pet-nascimento">
+              <i class="fas fa-calendar-alt icon-modify"></i>
+              <input id="pet-nascimento" type="date" />
+            </label>
+
+            <label class="label-input" for="pet-vacinas">
+              <i class="fas fa-syringe icon-modify"></i>
+              <textarea id="pet-vacinas" placeholder="Vacinas / Observações (opcional)"></textarea>
+            </label>
+
+            <button class="btn btn-second" type="submit">Cadastrar</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- CARD 2: LOGIN -->
+      <div class="content second-content">
+        <div class="first-column">
+          <h2 class="title title-primary">Olá, amigo!</h2>
+          <p class="description description-primary">Informe seus dados</p>
+          <p class="description description-primary">e comece sua jornada com o Pet-One</p>
+          <button id="signup" class="btn btn-primary" aria-label="Ir para Cadastro">Cadastrar</button>
+        </div>
+
+        <div class="second-column">
+          <h2 class="title title-second">Entrar no Pet-One</h2>
+
+          <div class="social-media" aria-hidden="true">
+            <ul class="list-social-media">
+              </a>
+              <a class="link-social-media" href="#" aria-label="Google">
+                <li class="item-social-media"><i class="fab fa-google-plus-g"></i></li>
+              </a>
+                 <a class="link-social-media" href="#" aria-label="Facebook">
+                <li class="item-social-media"><i class="fab fa-facebook-f"></i></li>
+              </a>
+            </ul>
+          </div>
+
+          <p class="description description-second">Use seu e-mail e senha:</p>
+
+          <div id="msg-login" class="msg" role="alert"></div>
+
+          <form id="form-login" class="form" autocomplete="on">
+            <label class="label-input" for="login-email">
+              <i class="far fa-envelope icon-modify"></i>
+              <input id="login-email" type="email" placeholder="E-mail" required />
+            </label>
+
+            <label class="label-input" for="login-senha">
+              <i class="fas fa-lock icon-modify"></i>
+              <input id="login-senha" type="password" placeholder="Senha" required />
+            </label>
+
+            <a class="password" href="#">Esqueceu sua senha?</a>
+            <button class="btn btn-second" type="submit">Entrar</button>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
