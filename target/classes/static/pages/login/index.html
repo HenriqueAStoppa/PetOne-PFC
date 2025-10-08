@@ -78,60 +78,40 @@
           <!-- FORM CADASTRO -->
           <form id="form-cadastro" class="form" autocomplete="on" novalidate>
             <!-- TUTOR -->
-            <label class="label-input" for="tutor-nome">
+            <label class="label-input" for="nometutor">
               <i class="far fa-user icon-modify"></i>
-              <input id="tutor-nome" type="text" placeholder="Nome do tutor (2–100 chars)" minlength="2" maxlength="100" required />
+              <input id="nometutor" type="text" placeholder="Nome do tutor (2–100 chars)" minlength="2" maxlength="100" required />
             </label>
 
-            <label class="label-input" for="tutor-email">
+            <label class="label-input" for="emailtutor">
               <i class="far fa-envelope icon-modify"></i>
-              <input id="tutor-email" type="email" placeholder="E-mail do tutor" required />
+              <input id="emailtutor" type="email" placeholder="E-mail do tutor" required />
             </label>
 
             <label class="label-input" for="tutor-cpf">
               <i class="far fa-id-card icon-modify"></i>
-              <input id="tutor-cpf" type="text" inputmode="numeric" placeholder="CPF (11 dígitos)" maxlength="11" pattern="\\d{11}" required />
+              <input id="cpf" type="text" inputmode="numeric" placeholder="CPF (11 dígitos)" maxlength="11" pattern="\\d{11}" required />
             </label>
 
-            <label class="label-input" for="tutor-senha">
+            <label class="label-input" for="senhaHash">
               <i class="fas fa-lock icon-modify"></i>
-              <input id="tutor-senha" type="password" placeholder="Criar senha (min. 6)" minlength="6" required />
+              <input id="senhaHash" type="password" placeholder="Criar senha (min. 8)" minlength="8" required />
             </label>
 
-            <label class="label-input" for="tutor-data">
+            <label class="label-input" for="dataNasc">
               <i class="fas fa-calendar-alt icon-modify"></i>
-              <input id="tutor-data" type="date" />
+              <input id="dataNasc" type="date" />
             </label>
-
-            <div class="inline-group">
-              <div class="inline-row">
-                <label for="tutor-ativo" class="thin-hint">Ativo?</label>
-                <label class="switch">
-                  <input id="tutor-ativo" type="checkbox" checked />
-                  <span class="slider"></span>
-                </label>
-              </div>
-
-              <div class="inline-row">
-                <label for="tutor-emailver" class="thin-hint">E-mail verificado?</label>
-                <label class="switch">
-                  <input id="tutor-emailver" type="checkbox" />
-                  <span class="slider"></span>
-                </label>
-              </div>
-            </div>
-
-            <p class="thin-hint">A senha será convertida para <code>senhaHash</code> (SHA-256) antes do envio.</p>
 
             <!-- (Opcional) PET – mantive seus campos, mas o envio do PET pode ser feito em outra rota depois -->
-            <label class="label-input" for="pet-nome">
+            <label class="label-input" for="nomeanimal">
               <i class="fas fa-paw icon-modify"></i>
-              <input id="pet-nome" type="text" placeholder="Nome do pet (opcional)" />
+              <input id="nomeanimal" type="text" placeholder="Nome do pet (opcional)" />
             </label>
 
-            <label class="label-input" for="pet-especie">
+            <label class="label-input" for="tipoanimal">
               <i class="fas fa-dog icon-modify"></i>
-              <select id="pet-especie">
+              <select id="tipoanimal">
                 <option value="" selected disabled>Espécie (opcional)</option>
                 <option>Cão</option>
                 <option>Gato</option>
@@ -141,23 +121,23 @@
               </select>
             </label>
 
-            <label class="label-input" for="pet-raca">
+            <label class="label-input" for="raca">
               <i class="fas fa-id-badge icon-modify"></i>
-              <input id="pet-raca" type="text" placeholder="Raça (opcional)" />
+              <input id="raca" type="text" placeholder="Raça (opcional)" />
             </label>
 
-            <label class="label-input" for="pet-sexo">
+            <label class="label-input" for="sexoanimal">
               <i class="fas fa-venus-mars icon-modify"></i>
-              <select id="pet-sexo">
+              <select id="sexoanimal">
                 <option value="" selected disabled>Sexo (opcional)</option>
                 <option>Macho</option>
                 <option>Fêmea</option>
               </select>
             </label>
 
-            <label class="label-input" for="pet-porte">
+            <label class="label-input" for="porteanimal">
               <i class="fas fa-weight icon-modify"></i>
-              <select id="pet-porte">
+              <select id="porteanimal">
                 <option value="" selected disabled>Porte (opcional)</option>
                 <option>Pequeno</option>
                 <option>Médio</option>
@@ -165,20 +145,20 @@
               </select>
             </label>
 
-            <label class="label-input" for="pet-peso">
+            <label class="label-input" for="pesoanimal">
 <label class="label-input" for="pet-peso">
   <i class="fas fa-balance-scale icon-modify"></i>
-  <input id="pet-peso" type="text" placeholder="Peso (kg, opcional)" />
+  <input id="pesoanimal" type="text" placeholder="Peso (kg, opcional)" />
 </label>            </label>
 
-            <label class="label-input" for="pet-nascimento">
+            <label class="label-input" for="idadeanimal">
               <i class="fas fa-calendar-alt icon-modify"></i>
-              <input id="pet-nascimento" type="date" />
+              <input id="idadeanimal" type="date" />
             </label>
 
-            <label class="label-input" for="pet-vacinas">
+            <label class="label-input" for="vacinas">
               <i class="fas fa-syringe icon-modify"></i>
-              <textarea id="pet-vacinas" placeholder="Vacinas / Observações (opcional)"></textarea>
+              <textarea id="vacinas" placeholder="Vacinas / Observações (opcional)"></textarea>
             </label>
 
             <button class="btn btn-second" type="submit">Cadastrar</button>

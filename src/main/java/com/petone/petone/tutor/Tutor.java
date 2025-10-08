@@ -17,12 +17,12 @@ public class Tutor {
 
   @NotBlank(message = "Nome é obrigatório")
   @Size(min = 2, max = 100)
-  private String nome;
+  private String nometutor;
 
   @NotBlank(message = "E-mail é obrigatório")
   @Email(message = "E-mail inválido")
   @Indexed(unique = true)
-  private String email;
+  private String emailtutor;
 
   @NotBlank(message = "CPF é obrigatório")
   @Pattern(regexp = "\\d{11}", message = "CPF deve ter 11 dígitos numéricos")
@@ -42,10 +42,10 @@ public class Tutor {
 
   public String getId() { return id; }
   public void setId(String id) { this.id = id; }
-  public String getNome() { return nome; }
-  public void setNome(String nome) { this.nome = nome; }
-  public String getEmail() { return email; }
-  public void setEmail(String email) { this.email = email; }
+  public String getNome() { return nometutor; }
+  public void setNome(String nome) { this.nometutor = nome; }
+  public String getEmail() { return emailtutor; }
+  public void setEmail(String email) { this.emailtutor = email; }
   public String getCpf() { return cpf; }
   public void setCpf(String cpf) { this.cpf = cpf; }
   public String getSenhaHash() { return senhaHash; }
