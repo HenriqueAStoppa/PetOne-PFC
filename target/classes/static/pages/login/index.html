@@ -1,239 +1,672 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-  <title>Pet-One | Login e Cadastro</title>
-  <link rel="stylesheet" href="css/style.css" />
-  <link rel="stylesheet"
-        href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"
-        integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay"
-        crossorigin="anonymous">
-  <style>
-    /* complementos leves pro header e “switch” */
-    header{position:fixed;top:0;left:0;right:0;height:56px;background:#fff;border-bottom:1px solid #eee;display:flex;align-items:center;justify-content:space-between;padding:0 16px;z-index:1000}
-    header a{color:#58af9b;text-decoration:none}
-    .page-offset{margin-top:56px}
-    .msg{display:none;margin:8px 0;padding:10px 12px;border-radius:10px;font-size:.95rem}
-    .msg.ok{display:block;background:rgba(46,204,113,.12);border:1px solid rgba(46,204,113,.35);color:#116b3f}
-    .msg.err{display:block;background:rgba(231,76,60,.10);border:1px solid rgba(231,76,60,.35);color:#8a2a20}
-    .switch{position:relative;display:inline-block;width:45px;height:26px;vertical-align:middle;margin-left:8px}
-    .switch input{opacity:0;width:0;height:0}
-    .slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:#ccd5d9;transition:.2s;border-radius:999px}
-    .slider:before{position:absolute;content:"";height:20px;width:20px;left:3px;top:3px;background:#fff;transition:.2s;border-radius:50%}
-    .switch input:checked + .slider{background:#58af9b}
-    .switch input:checked + .slider:before{transform:translateX(19px)}
-    .inline-row{display:flex;align-items:center;gap:8px}
-    .inline-group{display:flex;gap:16px;flex-wrap:wrap;margin:6px 0}
-    .thin-hint{font-size:.8rem;color:#7f8c8d;margin-top:4px}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetOne - Emergência Veterinária</title>
+    <!-- Inclui o Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inclui a biblioteca Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* bg-gray-100 */
+        }
+        /* Animação de "pulso" para o botão de emergência */
+        @keyframes pulse-red {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { box-shadow: 0 0 0 1.5rem rgba(239, 68, 68, 0); }
+        }
+        .btn-pulse {
+            animation: pulse-red 2s infinite;
+        }
+        /* Estilos para transição suave dos modais */
+        .modal {
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .modal-content {
+            transition: transform 0.3s ease;
+        }
+    </style>
 </head>
-<body>
-  <!-- Header fixo -->
-  <header>
-    <strong style="color:#58af9b">Pet-One</strong>
-    <nav style="display:flex;gap:12px">
-      <a href="index.html">Usuário</a>
-      <a href="hospital.html">Hospital</a>
-    </nav>
-  </header>
+<body class="min-h-screen">
 
-  <!-- OFFSET para não cobrir o conteúdo -->
-  <div class="container page-offset">
-    <div class="container">
-
-      <!-- CARD 1: CADASTRAR -->
-      <div class="content first-content">
-        <div class="first-column">
-          <h2 class="title title-primary">Bem-vindo de volta!</h2>
-          <p class="description description-primary">Para manter-se conectado</p>
-          <p class="description description-primary">entre com suas credenciais</p>
-          <button id="signin" class="btn btn-primary" aria-label="Ir para Entrar">Entrar</button>
-        </div>
-
-        <div class="second-column">
-          <h2 class="title title-second">Cadastrar Tutor (e seu Pet)</h2>
-
-          <div class="social-media" aria-hidden="true">
-            <ul class="list-social-media">
-              <a class="link-social-media" href="#" aria-label="Facebook">
-                <li class="item-social-media"><i class="fab fa-facebook-f"></i></li>
-              </a>
-              <a class="link-social-media" href="#" aria-label="Google">
-                <li class="item-social-media"><i class="fab fa-google-plus-g"></i></li>
-              </a>
-            
-              </a>
-            </ul>
-          </div>
-
-          <p class="description description-second">
-            Preencha os dados do tutor conforme as regras do sistema.
-          </p>
-
-          <!-- Mensagens -->
-          <div id="msg-cadastro" class="msg" role="alert"></div>
-
-          <!-- FORM CADASTRO -->
-          <form id="form-cadastro" class="form" autocomplete="on" novalidate>
-            <!-- TUTOR -->
-            <label class="label-input" for="tutor-nome">
-              <i class="far fa-user icon-modify"></i>
-              <input id="tutor-nome" type="text" placeholder="Nome do tutor (2–100 chars)" minlength="2" maxlength="100" required />
-            </label>
-
-            <label class="label-input" for="tutor-email">
-              <i class="far fa-envelope icon-modify"></i>
-              <input id="tutor-email" type="email" placeholder="E-mail do tutor" required />
-            </label>
-
-            <label class="label-input" for="tutor-cpf">
-              <i class="far fa-id-card icon-modify"></i>
-              <input id="tutor-cpf" type="text" inputmode="numeric" placeholder="CPF (11 dígitos)" maxlength="11" pattern="\\d{11}" required />
-            </label>
-
-            <label class="label-input" for="tutor-senha">
-              <i class="fas fa-lock icon-modify"></i>
-              <input id="tutor-senha" type="password" placeholder="Criar senha (min. 6)" minlength="6" required />
-            </label>
-
-            <label class="label-input" for="tutor-data">
-              <i class="fas fa-calendar-alt icon-modify"></i>
-              <input id="tutor-data" type="date" />
-            </label>
-
-            <div class="inline-group">
-              <div class="inline-row">
-                <label for="tutor-ativo" class="thin-hint">Ativo?</label>
-                <label class="switch">
-                  <input id="tutor-ativo" type="checkbox" checked />
-                  <span class="slider"></span>
-                </label>
-              </div>
-
-              <div class="inline-row">
-                <label for="tutor-emailver" class="thin-hint">E-mail verificado?</label>
-                <label class="switch">
-                  <input id="tutor-emailver" type="checkbox" />
-                  <span class="slider"></span>
-                </label>
-              </div>
+    <!-- Navegação Principal -->
+    <header class="bg-white shadow-md sticky top-0 z-40">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center">
+                    <i data-lucide="shield-plus" class="h-8 w-8 text-blue-600"></i>
+                    <span class="font-bold text-xl ml-2 text-gray-800">PetOne</span>
+                </div>
+                <!-- Botões de Ação -->
+                <div class="flex items-center space-x-2">
+                    <button id="btn-open-login-tutor" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition duration-150">
+                        Login Tutor
+                    </button>
+                    <button id="btn-open-login-hospital" class="bg-gray-700 hover:bg-gray-800 text-white font-medium py-2 px-4 rounded-lg transition duration-150">
+                        Login Hospital
+                    </button>
+                    <button id="btn-open-cadastro-tutor" class="text-blue-600 hover:text-blue-800 font-medium py-2 px-4">
+                        Cadastrar Tutor
+                    </button>
+                </div>
             </div>
+        </nav>
+    </header>
 
-            <p class="thin-hint">A senha será convertida para <code>senhaHash</code> (SHA-256) antes do envio.</p>
+    <!-- Conteúdo Principal -->
+    <main class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
 
-            <!-- (Opcional) PET – mantive seus campos, mas o envio do PET pode ser feito em outra rota depois -->
-            <label class="label-input" for="pet-nome">
-              <i class="fas fa-paw icon-modify"></i>
-              <input id="pet-nome" type="text" placeholder="Nome do pet (opcional)" />
-            </label>
+        <!-- Seção Hero -->
+        <section class="text-center py-16">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4">Emergência Veterinária Rápida</h1>
+            <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">Conectamos você ao hospital veterinário mais próximo quando cada segundo conta.</p>
+            <button id="btn-open-emergencia" class="btn-pulse bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-10 rounded-full text-lg shadow-xl transition duration-300 transform hover:scale-105">
+                INICIAR CHAMADO DE EMERGÊNCIA
+            </button>
+            <p class="text-sm text-gray-500 mt-4">(Você precisa estar logado como Tutor)</p>
+        </section>
 
-            <label class="label-input" for="pet-especie">
-              <i class="fas fa-dog icon-modify"></i>
-              <select id="pet-especie">
-                <option value="" selected disabled>Espécie (opcional)</option>
-                <option>Cão</option>
-                <option>Gato</option>
-                <option>Ave</option>
-                <option>Coelho</option>
-                <option>Outros</option>
-              </select>
-            </label>
+        <!-- Seção de Cadastro de Hospital (Chamada para Ação) -->
+        <section class="bg-white p-8 rounded-xl shadow-lg mt-12 text-center">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Você é um Hospital Veterinário?</h2>
+            <p class="text-gray-600 mb-6 max-w-xl mx-auto">Cadastre sua unidade em nossa plataforma e faça parte da rede de emergência que salva vidas.</p>
+            <button id="btn-open-cadastro-hospital" class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-6 rounded-lg transition duration-150">
+                Cadastrar Meu Hospital
+            </button>
+        </section>
 
-            <label class="label-input" for="pet-raca">
-              <i class="fas fa-id-badge icon-modify"></i>
-              <input id="pet-raca" type="text" placeholder="Raça (opcional)" />
-            </label>
+    </main>
 
-            <label class="label-input" for="pet-sexo">
-              <i class="fas fa-venus-mars icon-modify"></i>
-              <select id="pet-sexo">
-                <option value="" selected disabled>Sexo (opcional)</option>
-                <option>Macho</option>
-                <option>Fêmea</option>
-              </select>
-            </label>
-
-            <label class="label-input" for="pet-porte">
-              <i class="fas fa-weight icon-modify"></i>
-              <select id="pet-porte">
-                <option value="" selected disabled>Porte (opcional)</option>
-                <option>Pequeno</option>
-                <option>Médio</option>
-                <option>Grande</option>
-              </select>
-            </label>
-
-            <label class="label-input" for="pet-peso">
-<label class="label-input" for="pet-peso">
-  <i class="fas fa-balance-scale icon-modify"></i>
-  <input id="pet-peso" type="text" placeholder="Peso (kg, opcional)" />
-</label>            </label>
-
-            <label class="label-input" for="pet-nascimento">
-              <i class="fas fa-calendar-alt icon-modify"></i>
-              <input id="pet-nascimento" type="date" />
-            </label>
-
-            <label class="label-input" for="pet-vacinas">
-              <i class="fas fa-syringe icon-modify"></i>
-              <textarea id="pet-vacinas" placeholder="Vacinas / Observações (opcional)"></textarea>
-            </label>
-
-            <button class="btn btn-second" type="submit">Cadastrar</button>
-          </form>
+    <!-- Rodapé -->
+    <footer class="bg-gray-800 p-6 mt-12">
+        <div class="max-w-7xl mx-auto text-center text-gray-400 text-sm">
+            &copy; 2025 PetOne - Projeto TCC. Todos os direitos reservados.
         </div>
-      </div>
+    </footer>
 
-      <!-- CARD 2: LOGIN -->
-      <div class="content second-content">
-        <div class="first-column">
-          <h2 class="title title-primary">Olá, amigo!</h2>
-          <p class="description description-primary">Informe seus dados</p>
-          <p class="description description-primary">e comece sua jornada com o Pet-One</p>
-          <button id="signup" class="btn btn-primary" aria-label="Ir para Cadastro">Cadastrar</button>
+
+    <!-- MODAIS DE AUTENTICAÇÃO (Ocultos por padrão) -->
+
+    <!-- Modal: Login (Tutor e Hospital) -->
+    <div id="modal-login" class="modal fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 hidden z-50 opacity-0 invisible">
+        <div class="modal-content bg-white rounded-xl shadow-2xl p-6 w-full max-w-md transform -translate-y-10">
+            <div class="flex justify-between items-center mb-4">
+                <h3 id="login-title" class="text-2xl font-semibold">Login do Tutor</h3>
+                <button id="btn-close-login" class="text-gray-500 hover:text-gray-800">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            <form id="form-login">
+                <input type="hidden" id="login-type" value="tutor"> <!-- 'tutor' ou 'hospital' -->
+                <div class="space-y-4">
+                    <input type="email" id="login-email" placeholder="Email" required class="w-full p-3 border rounded-md">
+                    <input type="password" id="login-senha" placeholder="Senha" required class="w-full p-3 border rounded-md">
+                    <button type="submit" id="login-submit-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg">
+                        Entrar
+                    </button>
+                </div>
+            </form>
+            <div id="login-message" class="mt-4 text-center"></div>
+            <div class="text-center mt-4">
+                <button id="btn-open-recuperar" class="text-sm text-blue-600 hover:underline">
+                    Esqueceu sua senha?
+                </button>
+            </div>
         </div>
-
-        <div class="second-column">
-          <h2 class="title title-second">Entrar no Pet-One</h2>
-
-          <div class="social-media" aria-hidden="true">
-            <ul class="list-social-media">
-              </a>
-              <a class="link-social-media" href="#" aria-label="Google">
-                <li class="item-social-media"><i class="fab fa-google-plus-g"></i></li>
-              </a>
-                 <a class="link-social-media" href="#" aria-label="Facebook">
-                <li class="item-social-media"><i class="fab fa-facebook-f"></i></li>
-              </a>
-            </ul>
-          </div>
-
-          <p class="description description-second">Use seu e-mail e senha:</p>
-
-          <div id="msg-login" class="msg" role="alert"></div>
-
-          <form id="form-login" class="form" autocomplete="on">
-            <label class="label-input" for="login-email">
-              <i class="far fa-envelope icon-modify"></i>
-              <input id="login-email" type="email" placeholder="E-mail" required />
-            </label>
-
-            <label class="label-input" for="login-senha">
-              <i class="fas fa-lock icon-modify"></i>
-              <input id="login-senha" type="password" placeholder="Senha" required />
-            </label>
-
-            <a class="password" href="#">Esqueceu sua senha?</a>
-            <button class="btn btn-second" type="submit">Entrar</button>
-          </form>
-        </div>
-      </div>
-
     </div>
-  </div>
 
-  <script src="js/app.js"></script>
+    <!-- Modal: Formulário de Emergência -->
+    <div id="modal-emergencia" class="modal fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 hidden z-50 opacity-0 invisible">
+        <div class="modal-content bg-white rounded-xl shadow-2xl p-6 w-full max-w-lg transform -translate-y-10">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-2xl font-semibold text-red-600">Formulário de Emergência</h3>
+                <button id="btn-close-emergencia" class="text-gray-500 hover:text-gray-800">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            <form id="form-emergencia">
+                <div class="space-y-4">
+                    <div>
+                        <label for="animal-select" class="block text-sm font-medium text-gray-700 mb-1">Selecione o Animal *</label>
+                        <select id="animal-select" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                            <option value="" disabled selected>Carregando animais...</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="sintoma-select" class="block text-sm font-medium text-gray-700 mb-1">Sintoma/Causa Principal *</label>
+                        <select id="sintoma-select" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                            <option value="" disabled selected>-- Selecione a opção --</option>
+                            <option value="Hemorragia externa">Hemorragia externa</option>
+                            <option value="Convulsão">Convulsão</option>
+                            <option value="Engasgo/Obstrução por objeto">Engasgo/Obstrução por objeto</option>
+                            <option value="Reações alergicas">Reações alérgicas (inchaço, salivação intensa, etc...)</option>
+                            <option value="Trauma/Atropelamento/Briga">Trauma/Atropelamento/Briga de animal</option>
+                            <option value="Desmaio">Desmaio</option>
+                            <option value="Picada de animais peçonhentos">Picada de animais peçonhentos (cobra, aranha, etc...)</option>
+                            <option value="Envenenamento">Envenenamento</option>
+                            <option value="Queda">Queda</option>
+                            <option value="Perfuração no animal">Perfuração no animal</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg shadow-md">
+                        Buscar Hospital e Encaminhar
+                    </button>
+                </div>
+            </form>
+            <div id="emergencia-message" class="mt-4 text-center"></div>
+        </div>
+    </div>
+
+    <!-- Modal: Sucesso da Emergência -->
+    <div id="modal-sucesso-emergencia" class="modal fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 hidden z-50 opacity-0 invisible">
+        <div class="modal-content bg-white rounded-xl shadow-2xl p-8 w-full max-w-lg text-center transform -translate-y-10">
+            <i data-lucide="check-circle" class="w-16 h-16 text-green-600 mx-auto mb-4"></i>
+            <h3 class="text-2xl font-semibold mb-2">Emergência Encaminhada!</h3>
+            <p class="text-gray-600 mb-4">Seu chamado foi registrado e o hospital notificado.</p>
+            <div class="text-left bg-gray-50 p-4 rounded-lg border">
+                <p><strong>Seu Token:</strong> <span id="sucesso-token" class="font-bold text-lg text-red-600">VET-1234</span></p>
+                <p><strong>Hospital:</strong> <span id="sucesso-hospital">Carregando...</span></p>
+                <p><strong>Endereço:</strong> <span id="sucesso-endereco">Carregando...</span></p>
+            </div>
+            <p class="text-sm text-gray-500 mt-4">Verifique seu email para o token e detalhes da rota. Siga para o hospital imediatamente.</p>
+            <button id="btn-close-sucesso-emergencia" class="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg">
+                Entendido
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal: Cadastro de Tutor -->
+    <div id="modal-cadastro-tutor" class="modal fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 hidden z-50 opacity-0 invisible">
+        <div class="modal-content bg-white rounded-xl shadow-2xl p-6 w-full max-w-lg transform -translate-y-10">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-2xl font-semibold">Cadastro de Tutor</h3>
+                <button id="btn-close-cadastro-tutor" class="text-gray-500 hover:text-gray-800">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            <form id="form-cadastro-tutor" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input type="text" id="cadastro-tutor-nome" placeholder="Nome Completo *" required class="p-3 border rounded-md md:col-span-2">
+                <input type="email" id="cadastro-tutor-email" placeholder="Email *" required class="p-3 border rounded-md">
+                <input type="tel" id="cadastro-tutor-telefone" placeholder="Telefone (11999998888) *" required class="p-3 border rounded-md">
+                <input type="text" id="cadastro-tutor-cpf" placeholder="CPF (xxx.xxx.xxx-xx) *" required class="p-3 border rounded-md">
+                <input type="date" id="cadastro-tutor-nascimento" placeholder="Data de Nascimento *" required class="p-3 border rounded-md text-gray-500">
+                <input type="password" id="cadastro-tutor-senha" placeholder="Senha (mín. 6 caracteres) *" required class="p-3 border rounded-md">
+                <input type="password" id="cadastro-tutor-senha-confirma" placeholder="Confirme a Senha *" required class="p-3 border rounded-md">
+                
+                <button type="submit" class="md:col-span-2 w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg">
+                    Cadastrar
+                </button>
+            </form>
+            <div id="cadastro-tutor-message" class="mt-4 text-center"></div>
+        </div>
+    </div>
+
+    <!-- Modal: Cadastro de Hospital -->
+    <div id="modal-cadastro-hospital" class="modal fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 hidden z-50 opacity-0 invisible">
+        <div class="modal-content bg-white rounded-xl shadow-2xl p-6 w-full max-w-2xl transform -translate-y-10">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-2xl font-semibold">Cadastro de Hospital</h3>
+                <button id="btn-close-cadastro-hospital" class="text-gray-500 hover:text-gray-800">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            <form id="form-cadastro-hospital" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input type="text" id="cadastro-hospital-nome" placeholder="Nome Fantasia *" required class="p-3 border rounded-md md:col-span-2">
+                <input type="email" id="cadastro-hospital-email" placeholder="Email Comercial *" required class="p-3 border rounded-md">
+                <input type="tel" id="cadastro-hospital-telefone" placeholder="Telefone Comercial *" required class="p-3 border rounded-md">
+                <input type="text" id="cadastro-hospital-endereco" placeholder="Endereço Completo *" required class="p-3 border rounded-md md:col-span-2">
+                <input type="text" id="cadastro-hospital-cnpj" placeholder="CNPJ (xx.xxx.xxx/xxxx-xx) *" required class="p-3 border rounded-md">
+                <input type="number" id="cadastro-hospital-classificacao" placeholder="Classificação (1-4) *" required class="p-3 border rounded-md" min="1" max="4">
+                <input type="text" id="cadastro-hospital-vet" placeholder="Veterinário Responsável *" required class="p-3 border rounded-md">
+                <input type="text" id="cadastro-hospital-crmv" placeholder="CRMV do Responsável *" required class="p-3 border rounded-md">
+                <input type="password" id="cadastro-hospital-senha" placeholder="Senha (mín. 6 caracteres) *" required class="p-3 border rounded-md">
+                <input type="password" id="cadastro-hospital-senha-confirma" placeholder="Confirme a Senha *" required class="p-3 border rounded-md">
+                
+                <button type="submit" class="md:col-span-2 w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 rounded-lg">
+                    Cadastrar Hospital
+                </button>
+            </form>
+            <div id="cadastro-hospital-message" class="mt-4 text-center"></div>
+        </div>
+    </div>
+
+    <!-- Modal: Recuperar Senha -->
+    <div id="modal-recuperar" class="modal fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 hidden z-50 opacity-0 invisible">
+        <div class="modal-content bg-white rounded-xl shadow-2xl p-6 w-full max-w-md transform -translate-y-10">
+            <!-- Etapa 1: Solicitar Token -->
+            <div id="recuperar-etapa-1">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-2xl font-semibold">Recuperar Senha</h3>
+                    <button id="btn-close-recuperar" class="text-gray-500 hover:text-gray-800">
+                        <i data-lucide="x" class="w-6 h-6"></i>
+                    </button>
+                </div>
+                <p class="text-gray-600 mb-4">Digite seu email e enviaremos um token de recuperação.</p>
+                <form id="form-recuperar-solicitar">
+                    <div class="space-y-4">
+                        <input type="email" id="recuperar-email" placeholder="Seu email de cadastro" required class="w-full p-3 border rounded-md">
+                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg">
+                            Enviar Token
+                        </button>
+                    </div>
+                </form>
+                <div id="recuperar-message-1" class="mt-4 text-center"></div>
+            </div>
+            
+            <!-- Etapa 2: Resetar Senha -->
+            <div id="recuperar-etapa-2" class="hidden">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-2xl font-semibold">Resetar Senha</h3>
+                    <button id="btn-close-recuperar-2" class="text-gray-500 hover:text-gray-800">
+                        <i data-lucide="x" class="w-6 h-6"></i>
+                    </button>
+                </div>
+                <p class="text-gray-600 mb-4">Verifique seu email, cole o token aqui e defina uma nova senha.</p>
+                <form id="form-recuperar-resetar">
+                    <div class="space-y-4">
+                        <input type="text" id="recuperar-token" placeholder="Token recebido por email" required class="w-full p-3 border rounded-md">
+                        <input type="password" id="recuperar-nova-senha" placeholder="Nova Senha (mín. 6 caracteres)" required class="w-full p-3 border rounded-md">
+                        <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 rounded-lg">
+                            Salvar Nova Senha
+                        </button>
+                    </div>
+                </form>
+                <div id="recuperar-message-2" class="mt-4 text-center"></div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // Inicializa ícones
+        lucide.createIcons();
+
+        // --- CONTROLE DE MODAIS ---
+        const modalLogin = document.getElementById('modal-login');
+        const modalEmergencia = document.getElementById('modal-emergencia');
+        const modalSucessoEmergencia = document.getElementById('modal-sucesso-emergencia');
+        const modalCadastroTutor = document.getElementById('modal-cadastro-tutor');
+        const modalCadastroHospital = document.getElementById('modal-cadastro-hospital');
+        const modalRecuperar = document.getElementById('modal-recuperar');
+        const loginTitle = document.getElementById('login-title');
+        const loginSubmitBtn = document.getElementById('login-submit-btn');
+        const loginTypeInput = document.getElementById('login-type');
+        const loginMessage = document.getElementById('login-message');
+        const emergenciaMessage = document.getElementById('emergencia-message');
+        const cadastroTutorMessage = document.getElementById('cadastro-tutor-message');
+        const cadastroHospitalMessage = document.getElementById('cadastro-hospital-message');
+        const recuperarMessage1 = document.getElementById('recuperar-message-1');
+        const recuperarMessage2 = document.getElementById('recuperar-message-2');
+        const recuperarEtapa1 = document.getElementById('recuperar-etapa-1');
+        const recuperarEtapa2 = document.getElementById('recuperar-etapa-2');
+
+        // Função genérica para abrir modal
+        function openModal(modal) {
+            modal.classList.remove('hidden', 'opacity-0', 'invisible');
+            modal.classList.add('opacity-100', 'visible');
+            modal.querySelector('.modal-content').classList.remove('-translate-y-10');
+            modal.querySelector('.modal-content').classList.add('translate-y-0');
+        }
+
+        // Função genérica para fechar modal
+        function closeModal(modal) {
+            modal.classList.add('opacity-0', 'invisible');
+            modal.classList.remove('opacity-100', 'visible');
+            modal.querySelector('.modal-content').classList.add('-translate-y-10');
+            modal.querySelector('.modal-content').classList.remove('translate-y-0');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+
+        // --- ABRIR MODAIS (BOTÕES) ---
+        document.getElementById('btn-open-login-tutor').addEventListener('click', () => {
+            loginTitle.textContent = 'Login do Tutor';
+            loginSubmitBtn.className = "w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg";
+            loginTypeInput.value = 'tutor';
+            loginMessage.textContent = '';
+            document.getElementById('form-login').reset();
+            openModal(modalLogin);
+        });
+        document.getElementById('btn-open-login-hospital').addEventListener('click', () => {
+            loginTitle.textContent = 'Login do Hospital';
+            loginSubmitBtn.className = "w-full bg-gray-700 hover:bg-gray-800 text-white font-medium py-3 rounded-lg";
+            loginTypeInput.value = 'hospital';
+            loginMessage.textContent = '';
+            document.getElementById('form-login').reset();
+            openModal(modalLogin);
+        });
+        document.getElementById('btn-open-emergencia').addEventListener('click', () => {
+            // Verifica se o tutor está logado
+            const token = localStorage.getItem('petone_token');
+            const userNome = localStorage.getItem('petone_user_nome');
+            if (!token || !userNome) {
+                alert('Você precisa fazer o login de Tutor para iniciar uma emergência.');
+                // Simula o clique no botão de login do tutor
+                document.getElementById('btn-open-login-tutor').click();
+                return;
+            }
+            // Se logado, busca os animais e abre o modal
+            emergenciaMessage.textContent = '';
+            document.getElementById('form-emergencia').reset();
+            fetchAnimaisDoTutor();
+            openModal(modalEmergencia);
+        });
+        document.getElementById('btn-open-cadastro-tutor').addEventListener('click', () => {
+            cadastroTutorMessage.textContent = '';
+            document.getElementById('form-cadastro-tutor').reset();
+            openModal(modalCadastroTutor);
+        });
+        document.getElementById('btn-open-cadastro-hospital').addEventListener('click', () => {
+            cadastroHospitalMessage.textContent = '';
+            document.getElementById('form-cadastro-hospital').reset();
+            openModal(modalCadastroHospital);
+        });
+        document.getElementById('btn-open-recuperar').addEventListener('click', () => {
+            recuperarMessage1.textContent = '';
+            recuperarMessage2.textContent = '';
+            recuperarEtapa1.classList.remove('hidden');
+            recuperarEtapa2.classList.add('hidden');
+            document.getElementById('form-recuperar-solicitar').reset();
+            document.getElementById('form-recuperar-resetar').reset();
+            closeModal(modalLogin);
+            openModal(modalRecuperar);
+        });
+
+        // --- FECHAR MODAIS (BOTÕES 'X' e 'Entendido') ---
+        document.getElementById('btn-close-login').addEventListener('click', () => closeModal(modalLogin));
+        document.getElementById('btn-close-emergencia').addEventListener('click', () => closeModal(modalEmergencia));
+        document.getElementById('btn-close-sucesso-emergencia').addEventListener('click', () => closeModal(modalSucessoEmergencia));
+        document.getElementById('btn-close-cadastro-tutor').addEventListener('click', () => closeModal(modalCadastroTutor));
+        document.getElementById('btn-close-cadastro-hospital').addEventListener('click', () => closeModal(modalCadastroHospital));
+        document.getElementById('btn-close-recuperar').addEventListener('click', () => closeModal(modalRecuperar));
+        document.getElementById('btn-close-recuperar-2').addEventListener('click', () => closeModal(modalRecuperar));
+
+
+        // --- LÓGICA DE API ---
+
+        // Função genérica de feedback (mensagem de erro/sucesso)
+        function showMessage(element, message, isError = true) {
+            element.textContent = message;
+            element.className = isError ? 'text-red-600' : 'text-green-600';
+        }
+
+        // 1. LOGIN
+        document.getElementById('form-login').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const type = loginTypeInput.value; // 'tutor' ou 'hospital'
+            const email = document.getElementById('login-email').value;
+            const senha = document.getElementById('login-senha').value;
+            const url = `/api/auth/login/${type}`;
+            
+            showMessage(loginMessage, 'Autenticando...', false);
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, senha })
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(errorText || 'Credenciais inválidas.');
+                }
+
+                const data = await response.json(); // { token, nomeCompleto, ... }
+
+                // Salva o token e o nome no localStorage
+                localStorage.setItem('petone_token', data.token);
+                localStorage.setItem('petone_user_nome', data.nomeCompleto);
+
+                // Redireciona para o dashboard correto
+                if (type === 'tutor') {
+                    window.location.href = './dashboard_tutor.html';
+                } else {
+                    window.location.href = './dashboard_hospital.html';
+                }
+
+            } catch (error) {
+                showMessage(loginMessage, error.message);
+            }
+        });
+
+        // 2. CADASTRO DE TUTOR
+        document.getElementById('form-cadastro-tutor').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const senha = document.getElementById('cadastro-tutor-senha').value;
+            const senhaConfirma = document.getElementById('cadastro-tutor-senha-confirma').value;
+
+            if (senha !== senhaConfirma) {
+                showMessage(cadastroTutorMessage, 'As senhas não coincidem.');
+                return;
+            }
+
+            const tutorData = {
+                nomeCompleto: document.getElementById('cadastro-tutor-nome').value,
+                emailTutor: document.getElementById('cadastro-tutor-email').value,
+                telefoneTutor: document.getElementById('cadastro-tutor-telefone').value,
+                cpf: document.getElementById('cadastro-tutor-cpf').value,
+                dataNascimento: document.getElementById('cadastro-tutor-nascimento').value,
+                senha: senha
+            };
+
+            showMessage(cadastroTutorMessage, 'Cadastrando...', false);
+
+            try {
+                const response = await fetch('/api/auth/cadastro/tutor', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(tutorData)
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(errorText || 'Falha ao cadastrar.');
+                }
+
+                const data = await response.json(); // { token, nomeCompleto, ... }
+                
+                // Sucesso! Salva o token e redireciona
+                localStorage.setItem('petone_token', data.token);
+                localStorage.setItem('petone_user_nome', data.nomeCompleto);
+                window.location.href = './dashboard_tutor.html';
+
+            } catch (error) {
+                showMessage(cadastroTutorMessage, error.message);
+            }
+        });
+        
+        // 3. CADASTRO DE HOSPITAL
+        document.getElementById('form-cadastro-hospital').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const senha = document.getElementById('cadastro-hospital-senha').value;
+            const senhaConfirma = document.getElementById('cadastro-hospital-senha-confirma').value;
+
+            if (senha !== senhaConfirma) {
+                showMessage(cadastroHospitalMessage, 'As senhas não coincidem.');
+                return;
+            }
+
+            const hospitalData = {
+                nomeFantasia: document.getElementById('cadastro-hospital-nome').value,
+                emailHospital: document.getElementById('cadastro-hospital-email').value,
+                telefoneHospital: document.getElementById('cadastro-hospital-telefone').value,
+                endereco: document.getElementById('cadastro-hospital-endereco').value,
+                cnpj: document.getElementById('cadastro-hospital-cnpj').value,
+                classificacaoServico: parseInt(document.getElementById('cadastro-hospital-classificacao').value),
+                veterinarioResponsavel: document.getElementById('cadastro-hospital-vet').value,
+                crmvVeterinario: document.getElementById('cadastro-hospital-crmv').value,
+                senha: senha
+            };
+
+            showMessage(cadastroHospitalMessage, 'Cadastrando...', false);
+
+            try {
+                const response = await fetch('/api/auth/cadastro/hospital', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(hospitalData)
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(errorText || 'Falha ao cadastrar.');
+                }
+
+                // Sucesso!
+                showMessage(cadastroHospitalMessage, 'Hospital cadastrado com sucesso! Você já pode fazer o login.', false);
+                setTimeout(() => {
+                    closeModal(modalCadastroHospital);
+                    document.getElementById('btn-open-login-hospital').click(); // Abre o login do hospital
+                }, 2500);
+
+            } catch (error) {
+                showMessage(cadastroHospitalMessage, error.message);
+            }
+        });
+
+        // 4. RECUPERAÇÃO DE SENHA (ETAPA 1: SOLICITAR)
+        document.getElementById('form-recuperar-solicitar').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('recuperar-email').value;
+            
+            showMessage(recuperarMessage1, 'Enviando...', false);
+
+            try {
+                const response = await fetch('/api/auth/recuperar-senha/solicitar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                
+                // O backend sempre retorna 200 (OK) por segurança, mesmo se o email não existir.
+                const successMessage = await response.text();
+                showMessage(recuperarMessage1, successMessage, false);
+
+                // Avança para a Etapa 2
+                recuperarEtapa1.classList.add('hidden');
+                recuperarEtapa2.classList.remove('hidden');
+
+            } catch (error) {
+                // Erro de rede/servidor
+                showMessage(recuperarMessage1, 'Erro ao conectar. Tente novamente.');
+            }
+        });
+
+        // 5. RECUPERAÇÃO DE SENHA (ETAPA 2: RESETAR)
+        document.getElementById('form-recuperar-resetar').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const token = document.getElementById('recuperar-token').value;
+            const novaSenha = document.getElementById('recuperar-nova-senha').value;
+            
+            showMessage(recuperarMessage2, 'Salvando...', false);
+
+            try {
+                const response = await fetch('/api/auth/recuperar-senha/resetar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token, novaSenha })
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(errorText || 'Token inválido ou expirado.');
+                }
+
+                showMessage(recuperarMessage2, 'Senha atualizada com sucesso! Você já pode fazer o login.', false);
+                setTimeout(() => {
+                    closeModal(modalRecuperar);
+                }, 2500);
+
+            } catch (error) {
+                showMessage(recuperarMessage2, error.message);
+            }
+        });
+
+
+        // 6. LÓGICA DE EMERGÊNCIA
+        
+        // Busca os animais do tutor (para o <select>)
+        async function fetchAnimaisDoTutor() {
+            const token = localStorage.getItem('petone_token');
+            const select = document.getElementById('animal-select');
+            select.innerHTML = '<option>Carregando...</option>';
+
+            try {
+                const response = await fetch('/api/animais', { // O endpoint correto é /api/animais
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (!response.ok) throw new Error('Falha ao buscar animais.');
+
+                const animais = await response.json();
+                
+                if (animais.length === 0) {
+                    select.innerHTML = '<option value="" disabled>Você não tem animais cadastrados.</option>';
+                    return;
+                }
+
+                select.innerHTML = '<option value="" disabled selected>-- Selecione seu animal --</option>';
+                animais.forEach(animal => {
+                    const option = document.createElement('option');
+                    option.value = animal.idAnimal;
+                    option.textContent = `${animal.nomeAnimal} (${animal.especie} - ${animal.raca})`;
+                    select.appendChild(option);
+                });
+
+            } catch (error) {
+                select.innerHTML = `<option value="" disabled>Erro: ${error.message}</option>`;
+            }
+        }
+
+        // Envia o formulário de emergência
+        document.getElementById('form-emergencia').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const token = localStorage.getItem('petone_token');
+            const idAnimal = document.getElementById('animal-select').value;
+            const tipoEmergencia = document.getElementById('sintoma-select').value;
+
+            if (!idAnimal || !tipoEmergencia) {
+                showMessage(emergenciaMessage, 'Por favor, selecione o animal e o sintoma.');
+                return;
+            }
+
+            showMessage(emergenciaMessage, 'Registrando e buscando hospital...', false);
+
+            try {
+                const response = await fetch('/api/emergencia/iniciar', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ idAnimal, tipoEmergencia })
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(errorText || 'Falha ao registrar emergência.');
+                }
+
+                const data = await response.json(); // { tokenEmergencia, hospitalEncontrado, ... }
+                
+                // Preenche o modal de sucesso
+                document.getElementById('sucesso-token').textContent = data.tokenEmergencia;
+                document.getElementById('sucesso-hospital').textContent = data.hospitalEncontrado.nomeFantasia;
+                document.getElementById('sucesso-endereco').textContent = data.hospitalEncontrado.endereco;
+
+                closeModal(modalEmergencia);
+                openModal(modalSucessoEmergencia);
+
+            } catch (error) {
+                showMessage(emergenciaMessage, error.message);
+            }
+        });
+
+    </script>
 </body>
 </html>

@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Perfil - PetOne</title>
+    <!-- Inclui o Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inclui a biblioteca Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* bg-gray-100 */
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <!-- Navegação Principal (Dashboard) -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex-shrink-0 flex items-center">
+                    <i data-lucide="shield-plus" class="h-8 w-8 text-blue-600"></i>
+                    <span class="font-bold text-xl ml-2 text-gray-800">PetOne</span>
+                </div>
+                <div class="flex items-center">
+                    <span class="text-gray-600 mr-4">Olá, <span id="user-nome" class="font-medium">Tutor</span>!</span>
+                    <button id="btn-logout" class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg flex items-center space-x-1 transition duration-150">
+                        <i data-lucide="log-out" class="w-4 h-4"></i>
+                        <span>Sair</span>
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <main class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+        
+        <h1 class="text-3xl font-bold text-gray-900 mb-6">Meu Painel</h1>
+
+        <!-- Layout de Grade -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            <!-- Coluna da Esquerda (Perfil e Logs) -->
+            <div class="lg:col-span-1 space-y-6">
+
+                <!-- Card: Meu Perfil -->
+                <section class="bg-white p-6 rounded-xl shadow-lg">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                        <i data-lucide="user" class="w-5 h-5 mr-2 text-blue-600"></i>
+                        Meu Perfil
+                    </h2>
+                    <div id="perfil-info" class="space-y-2 text-gray-700">
+                        <p><strong>Nome:</strong> <span id="tutor-nome">Carregando...</span></p>
+                        <p><strong>Email:</strong> <span id="tutor-email">Carregando...</span></p>
+                        <p><strong>Telefone:</strong> <span id="tutor-telefone">Carregando...</span></p>
+                        <p><strong>Nascimento:</strong> <span id="tutor-nascimento">Carregando...</span></p>
+                    </div>
+                    <!-- (O formulário de edição do perfil do tutor pode ser adicionado aqui) -->
+                </section>
+
+                <!-- Card: Histórico de Emergências -->
+                <section class="bg-white p-6 rounded-xl shadow-lg">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                        <i data-lucide="history" class="w-5 h-5 mr-2 text-blue-600"></i>
+                        Histórico de Emergências
+                    </h2>
+                    <div id="logs-list" class="space-y-3 max-h-96 overflow-y-auto">
+                        <!-- Logs serão inseridos aqui pelo JS -->
+                        <p class="text-gray-500">Carregando histórico...</p>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Coluna da Direita (Meus Animais) -->
+            <div class="lg:col-span-2 space-y-6">
+
+                <!-- Card: Adicionar Novo Animal -->
+                <section class="bg-white p-6 rounded-xl shadow-lg">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Adicionar Novo Animal</h2>
+                    <form id="form-add-animal" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input type="text" id="add-nome" placeholder="Nome do Animal" required class="p-2 border rounded-md">
+                        <input type="number" id="add-idade" placeholder="Idade" required class="p-2 border rounded-md">
+                        <input type="text" id="add-especie" placeholder="Espécie (Ex: Cão, Gato)" required class="p-2 border rounded-md">
+                        <input type="text" id="add-raca" placeholder="Raça" required class="p-2 border rounded-md">
+                        <input type="text" id="add-sexo" placeholder="Sexo (Ex: Macho, Fêmea)" required class="p-2 border rounded-md">
+                        <input type="text" id="add-medicacao" placeholder="Qual medicação? (se usa)" class="p-2 border rounded-md md:col-span-2">
+                        <div class="flex items-center space-x-4 md:col-span-2">
+                            <label class="flex items-center"><input type="checkbox" id="add-castrado" class="mr-2"> É castrado?</label>
+                            <label class="flex items-center"><input type="checkbox" id="add-usaMedicacao" class="mr-2"> Usa medicação contínua?</label>
+                        </div>
+                        <button type="submit" class="md:col-span-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg flex items-center justify-center space-x-2">
+                            <i data-lucide="plus" class="w-5 h-5"></i>
+                            <span>Salvar Animal</span>
+                        </button>
+                    </form>
+                    <div id="add-animal-message" class="mt-4 text-center"></div>
+                </section>
+
+                <!-- Card: Lista de Animais -->
+                <section class="bg-white p-6 rounded-xl shadow-lg">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Meus Animais</h2>
+                    <div id="animais-list" class="space-y-4">
+                        <!-- Animais serão inseridos aqui pelo JS -->
+                        <p class="text-gray-500">Carregando animais...</p>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal: Editar Animal (Oculto por padrão) -->
+    <div id="modal-edit-animal" class="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 hidden z-50">
+        <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-lg">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold">Editar Animal</h3>
+                <button id="btn-close-modal" class="text-gray-500 hover:text-gray-800">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            <form id="form-edit-animal">
+                <input type="hidden" id="edit-id">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input type="text" id="edit-nome" placeholder="Nome" required class="p-2 border rounded-md">
+                    <input type="number" id="edit-idade" placeholder="Idade" required class="p-2 border rounded-md">
+                    <input type="text" id="edit-especie" placeholder="Espécie" required class="p-2 border rounded-md">
+                    <input type="text" id="edit-raca" placeholder="Raça" required class="p-2 border rounded-md">
+                    <input type="text" id="edit-sexo" placeholder="Sexo" required class="p-2 border rounded-md">
+                    <input type="text" id="edit-medicacao" placeholder="Qual medicação?" class="p-2 border rounded-md md:col-span-2">
+                    <div class="flex items-center space-x-4 md:col-span-2">
+                        <label class="flex items-center"><input type="checkbox" id="edit-castrado" class="mr-2"> É castrado?</label>
+                        <label class="flex items-center"><input type="checkbox" id="edit-usaMedicacao" class="mr-2"> Usa medicação?</label>
+                    </div>
+                    <button type="submit" class="md:col-span-2 bg-yellow-500 hover:bg-yellow-600 text-white font-medium py-2 px-4 rounded-lg">
+                        Salvar Alterações
+                    </button>
+                </div>
+            </form>
+            <div id="edit-animal-message" class="mt-4 text-center"></div>
+        </div>
+    </div>
+
+
+    <script>
+        // Inicializa ícones
+        lucide.createIcons();
+
+        // Elementos Globais
+        const token = localStorage.getItem('petone_token');
+        const API_HEADERS = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        };
+        
+        const btnLogout = document.getElementById('btn-logout');
+        
+        // Elementos do Perfil
+        const userNomeNav = document.getElementById('user-nome');
+        const tutorNome = document.getElementById('tutor-nome');
+        const tutorEmail = document.getElementById('tutor-email');
+        const tutorTelefone = document.getElementById('tutor-telefone');
+        const tutorNascimento = document.getElementById('tutor-nascimento');
+
+        // Elementos dos Animais
+        const animaisList = document.getElementById('animais-list');
+        const formAddAnimal = document.getElementById('form-add-animal');
+        const addAnimalMessage = document.getElementById('add-animal-message');
+        
+        // Elementos do Modal de Edição
+        const modalEdit = document.getElementById('modal-edit-animal');
+        const btnCloseModal = document.getElementById('btn-close-modal');
+        const formEditAnimal = document.getElementById('form-edit-animal');
+        const editAnimalMessage = document.getElementById('edit-animal-message');
+
+        // Elementos dos Logs
+        const logsList = document.getElementById('logs-list');
+
+        // --- 1. VERIFICAÇÃO DE AUTENTICAÇÃO E INICIALIZAÇÃO ---
+        window.onload = () => {
+            if (!token) {
+                // Se não há token, redireciona para o login (index.html)
+                alert("Você precisa estar logado para acessar esta página.");
+                // CORREÇÃO: Usar caminho relativo './index.html'
+                window.location.href = './index.html';
+                return;
+            }
+
+            // Define o nome do usuário na navegação
+            const nomeTutor = localStorage.getItem('petone_user_nome');
+            if (nomeTutor) {
+                userNomeNav.textContent = nomeTutor.split(' ')[0]; // Pega só o primeiro nome
+            }
+
+            // Carrega os dados da página
+            fetchTutorData();
+            fetchAnimais();
+            fetchLogs();
+        };
+
+        // --- 2. LÓGICA DE LOGOUT ---
+        btnLogout.addEventListener('click', () => {
+            localStorage.removeItem('petone_token');
+            localStorage.removeItem('petone_user_nome');
+            // CORREÇÃO: Usar caminho relativo './index.html'
+            window.location.href = './index.html';
+        });
+
+        // --- 3. BUSCAR DADOS (PERFIL, ANIMAIS, LOGS) ---
+
+        // Busca dados do Tutor logado
+        async function fetchTutorData() {
+            try {
+                const response = await fetch('/api/tutor/me', { headers: API_HEADERS });
+                if (!response.ok) throw new Error('Falha ao buscar dados do perfil.');
+                
+                const tutor = await response.json();
+                
+                tutorNome.textContent = tutor.nomeCompleto;
+                tutorEmail.textContent = tutor.emailTutor;
+                tutorTelefone.textContent = tutor.telefoneTutor;
+                tutorNascimento.textContent = new Date(tutor.dataNascimento).toLocaleDateString('pt-BR', { timeZone: 'UTC' });
+            
+            } catch (error) {
+                tutorNome.textContent = `Erro: ${error.message}`;
+            }
+        }
+
+        // Busca a lista de Animais do Tutor
+        async function fetchAnimais() {
+            try {
+                // O endpoint correto no AnimalController é '/api/animais'
+                const response = await fetch('/api/animais', { headers: API_HEADERS });
+                if (!response.ok) throw new Error('Falha ao buscar animais.');
+
+                const animais = await response.json();
+                renderAnimais(animais);
+            
+            } catch (error) {
+                animaisList.innerHTML = `<p class="text-red-600">Erro: ${error.message}</p>`;
+            }
+        }
+
+        // Busca o histórico de Logs do Tutor
+        async function fetchLogs() {
+            try {
+                const response = await fetch('/api/tutor/logs', { headers: API_HEADERS });
+                if (!response.ok) throw new Error('Falha ao buscar histórico.');
+
+                const logs = await response.json();
+                renderLogs(logs);
+
+            } catch (error) {
+                logsList.innerHTML = `<p class="text-red-600">Erro: ${error.message}</p>`;
+            }
+        }
+
+
+        // --- 4. RENDERIZAÇÃO (HTML DINÂMICO) ---
+
+        // Renderiza a lista de animais
+        function renderAnimais(animais) {
+            if (animais.length === 0) {
+                animaisList.innerHTML = `<p class="text-gray-500">Nenhum animal cadastrado ainda.</p>`;
+                return;
+            }
+
+            animaisList.innerHTML = ''; // Limpa a lista
+            animais.forEach(animal => {
+                const animalCard = document.createElement('div');
+                animalCard.className = 'p-4 border rounded-lg bg-gray-50 flex justify-between items-center';
+                animalCard.innerHTML = `
+                    <div>
+                        <p class="font-bold text-lg text-blue-700">${animal.nomeAnimal}</p>
+                        <p class="text-sm text-gray-600">${animal.especie} | ${animal.raca} | ${animal.idade} anos</p>
+                    </div>
+                    <div class="space-x-2">
+                        <button class="btn-edit p-2 text-yellow-600 hover:text-yellow-800" title="Editar">
+                            <i data-lucide="edit" class="w-5 h-5"></i>
+                        </button>
+                        <button class="btn-delete p-2 text-red-600 hover:text-red-800" title="Deletar">
+                            <i data-lucide="trash-2" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                `;
+
+                // Adiciona eventos aos botões
+                animalCard.querySelector('.btn-edit').addEventListener('click', () => openEditModal(animal));
+                animalCard.querySelector('.btn-delete').addEventListener('click', () => handleDeleteAnimal(animal.idAnimal));
+                
+                animaisList.appendChild(animalCard);
+            });
+            lucide.createIcons(); // Recria ícones dinâmicos
+        }
+
+        // Renderiza o histórico de logs
+        function renderLogs(logs) {
+            if (logs.length === 0) {
+                logsList.innerHTML = `<p class="text-gray-500">Nenhuma emergência registrada.</p>`;
+                return;
+            }
+
+            logsList.innerHTML = ''; // Limpa a lista
+            logs.forEach(log => {
+                const logItem = document.createElement('div');
+                logItem.className = 'p-3 border-b';
+                logItem.innerHTML = `
+                    <p class="font-semibold text-gray-700">${log.tipoEmergencia || log.sintomaCausa} - <span class="text-blue-600">${log.nomeAnimal || ''}</span></p>
+                    <p class="text-sm text-gray-500">Data: ${new Date(log.dataHoraInicio).toLocaleString('pt-BR')}</p>
+                    <p class="text-sm text-gray-500">Hospital: ${log.nomeFantasiaHospital}</p>
+                    <p class="text-sm text-gray-500">Status: ${log.relatorio ? 'Finalizado' : 'Encaminhado'}</p>
+                `;
+                logsList.appendChild(logItem);
+            });
+        }
+
+
+        // --- 5. LÓGICA DOS FORMULÁRIOS (CRUD ANIMAL) ---
+
+        // Adicionar Animal
+        formAddAnimal.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            addAnimalMessage.textContent = 'Salvando...';
+
+            const animalData = {
+                nomeAnimal: document.getElementById('add-nome').value,
+                idade: parseInt(document.getElementById('add-idade').value),
+                especie: document.getElementById('add-especie').value,
+                raca: document.getElementById('add-raca').value,
+                sexo: document.getElementById('add-sexo').value,
+                qualMedicacao: document.getElementById('add-medicacao').value,
+                castrado: document.getElementById('add-castrado').checked,
+                usaMedicacao: document.getElementById('add-usaMedicacao').checked
+            };
+
+            try {
+                const response = await fetch('/api/animais', {
+                    method: 'POST',
+                    headers: API_HEADERS,
+                    body: JSON.stringify(animalData)
+                });
+
+                if (!response.ok) {
+                    const error = await response.text();
+                    throw new Error(error || 'Falha ao salvar animal.');
+                }
+
+                addAnimalMessage.textContent = 'Animal salvo com sucesso!';
+                addAnimalMessage.className = 'text-green-600';
+                formAddAnimal.reset();
+                fetchAnimais(); // Atualiza a lista
+
+            } catch (error) {
+                addAnimalMessage.textContent = `Erro: ${error.message}`;
+                addAnimalMessage.className = 'text-red-6NET';
+            }
+        });
+        
+        // Abrir Modal de Edição
+        function openEditModal(animal) {
+            modalEdit.classList.remove('hidden');
+            // Preenche o formulário
+            document.getElementById('edit-id').value = animal.idAnimal;
+            document.getElementById('edit-nome').value = animal.nomeAnimal;
+            document.getElementById('edit-idade').value = animal.idade;
+            document.getElementById('edit-especie').value = animal.especie;
+            document.getElementById('edit-raca').value = animal.raca;
+            document.getElementById('edit-sexo').value = animal.sexo;
+            document.getElementById('edit-medicacao').value = animal.qualMedicacao;
+            document.getElementById('edit-castrado').checked = animal.castrado;
+            document.getElementById('edit-usaMedicacao').checked = animal.usaMedicacao;
+        }
+
+        // Fechar Modal
+        btnCloseModal.addEventListener('click', () => modalEdit.classList.add('hidden'));
+
+        // Editar Animal (Submit do Modal)
+        formEditAnimal.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            editAnimalMessage.textContent = 'Atualizando...';
+
+            const animalId = document.getElementById('edit-id').value;
+            const animalData = {
+                nomeAnimal: document.getElementById('edit-nome').value,
+                idade: parseInt(document.getElementById('edit-idade').value),
+                especie: document.getElementById('edit-especie').value,
+                raca: document.getElementById('edit-raca').value,
+                sexo: document.getElementById('edit-sexo').value,
+                qualMedicacao: document.getElementById('edit-medicacao').value,
+                castrado: document.getElementById('edit-castrado').checked,
+                usaMedicacao: document.getElementById('edit-usaMedicacao').checked
+            };
+
+            try {
+                const response = await fetch(`/api/animais/${animalId}`, {
+                    method: 'PUT',
+                    headers: API_HEADERS,
+                    body: JSON.stringify(animalData)
+                });
+
+                if (!response.ok) {
+                    const error = await response.text();
+                    throw new Error(error || 'Falha ao atualizar animal.');
+                }
+
+                editAnimalMessage.textContent = 'Atualizado com sucesso!';
+                editAnimalMessage.className = 'text-green-600';
+                fetchAnimais(); // Atualiza a lista
+                setTimeout(() => {
+                    modalEdit.classList.add('hidden');
+                    editAnimalMessage.textContent = '';
+                }, 1500);
+
+            } catch (error) {
+                editAnimalMessage.textContent = `Erro: ${error.message}`;
+                editAnimalMessage.className = 'text-red-600';
+            }
+        });
+
+        // Deletar Animal
+        async function handleDeleteAnimal(animalId) {
+            // (Substituindo o window.confirm por uma ação direta para simplicidade)
+            // if (!confirm('Tem certeza que deseja deletar este animal? Esta ação é irreversível.')) {
+            //     return;
+            // }
+
+            try {
+                const response = await fetch(`/api/animais/${animalId}`, {
+                    method: 'DELETE',
+                    headers: API_HEADERS
+                });
+
+                if (!response.ok) {
+                    const error = await response.text();
+                    throw new Error(error || 'Falha ao deletar animal.');
+                }
+
+                fetchAnimais(); // Atualiza a lista
+
+            } catch (error) {
+                alert(`Erro ao deletar: ${error.message}`);
+            }
+        }
+
+    </script>
+</body>
+</html>

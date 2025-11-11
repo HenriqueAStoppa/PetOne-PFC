@@ -1,69 +1,152 @@
+<<<<<<< Updated upstream:src/main/java/com/petone/petone/tutor/TutorService.java
 package com.petone.petone.tutor;
+=======
+package com.petone.petone.service;
+>>>>>>> Stashed changes:src/main/java/com/petone/petone/Service/TutorService.java
 
-import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
+import com.petone.petone.dto.AuthRequestDTO;
+import com.petone.petone.dto.AuthResponseDTO;
+import com.petone.petone.dto.TutorCadastroDTO;
+import com.petone.petone.dto.TutorPerfilDTO;
+import com.petone.petone.model.Tutor;
+import com.petone.petone.repository.AnimalRepository;
+import com.petone.petone.repository.TutorRepository;
+import com.petone.petone.util.JwtUtil;
+import com.petone.petone.util.PasswordUtil;
+import jakarta.validation.ValidationException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+<<<<<<< Updated upstream:src/main/java/com/petone/petone/tutor/TutorService.java
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+=======
+import org.springframework.transaction.annotation.Transactional;
+>>>>>>> Stashed changes:src/main/java/com/petone/petone/Service/TutorService.java
 
+/**
+ * Serviço para a lógica de negócio do Tutor (Autenticação e Perfil).
+ * (Versão completa e corrigida)
+ */
 @Service
 public class TutorService {
 
-  private final TutorRepository repository;
+    private final TutorRepository tutorRepository;
+    private final AuthenticationManager authenticationManager;
+    private final UserDetailsService userDetailsService;
+    private final JwtUtil jwtUtil;
+    private final AnimalRepository animalRepository;
 
-  public TutorService(TutorRepository repository) {
-    this.repository = repository;
-  }
-
-  private String normalizeEmail(String email) {
-    return email == null ? null : email.trim().toLowerCase();
-  }
-
-  public Tutor create(@Valid Tutor tutor) {
-    tutor.setEmail(normalizeEmail(tutor.getEmail()));
-
-    if (repository.existsByEmail(tutor.getEmail()) || repository.existsByCpf(tutor.getCpf())) {
-      throw new ResponseStatusException(HttpStatus.CONFLICT, "E-mail ou CPF já cadastrado");
-    }
-    return repository.save(tutor);
-  }
-
-  public Tutor getById(String id) {
-    return repository.findById(id)
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tutor não encontrado"));
-  }
-
-  public List<Tutor> listAll() {
-    return repository.findAll();
-  }
-
-  public Tutor update(String id, @Valid Tutor incoming) {
-    Tutor current = getById(id);
-
-    String newEmail = normalizeEmail(incoming.getEmail());
-    incoming.setEmail(newEmail);
-
-    if (!current.getEmail().equals(newEmail) && repository.existsByEmail(newEmail)) {
-      throw new ResponseStatusException(HttpStatus.CONFLICT, "E-mail já cadastrado");
-    }
-    if (!current.getCpf().equals(incoming.getCpf()) && repository.existsByCpf(incoming.getCpf())) {
-      throw new ResponseStatusException(HttpStatus.CONFLICT, "CPF já cadastrado");
+    @Autowired
+    public TutorService(TutorRepository tutorRepository, 
+                        AuthenticationManager authenticationManager, 
+                        UserDetailsService userDetailsService, 
+                        JwtUtil jwtUtil, 
+                        AnimalRepository animalRepository) {
+        this.tutorRepository = tutorRepository;
+        this.authenticationManager = authenticationManager;
+        this.userDetailsService = userDetailsService;
+        this.jwtUtil = jwtUtil;
+        this.animalRepository = animalRepository;
     }
 
-    current.setNome(incoming.getNome());
-    current.setEmail(newEmail);
-    current.setCpf(incoming.getCpf());
-    current.setSenhaHash(incoming.getSenhaHash()); // aplicar hash aqui
-    current.setDataNasc(incoming.getDataNasc());
-    current.setAtivo(incoming.isAtivo());
-    current.setEmailVerificado(incoming.isEmailVerificado());
+    /**
+     * Cadastra um novo tutor.
+     */
+    public AuthResponseDTO cadastrarTutor(TutorCadastroDTO dto) {
+        if (tutorRepository.findByEmailTutor(dto.getEmailTutor()).isPresent()) {
+            throw new ValidationException("Email já cadastrado.");
+        }
+        
+        Tutor tutor = new Tutor();
+        tutor.setNomeCompleto(dto.getNomeCompleto());
+        tutor.setCpf(dto.getCpf());
+        tutor.setEmailTutor(dto.getEmailTutor());
+        tutor.setTelefoneTutor(dto.getTelefoneTutor());
+        tutor.setDataNascimento(dto.getDataNascimento());
+        tutor.setSenhaHash(PasswordUtil.encode(dto.getSenha()));
+        tutor.setEmailVerificado(true); // Simulação TCC
 
-    return repository.save(current);
-  }
+        Tutor tutorSalvo = tutorRepository.save(tutor);
 
-  public void delete(String id) {
-    Tutor t = getById(id);
-    repository.delete(t);
-  }
+        // Gera token de login
+        final UserDetails userDetails = userDetailsService.loadUserByUsername(dto.getEmailTutor());
+        final String token = jwtUtil.generateToken(userDetails);
+        
+        // Retorna o DTO de resposta
+        return AuthResponseDTO.builder()
+                .token(token)
+                .idTutor(tutorSalvo.getIdTutor())
+                .email(tutorSalvo.getEmailTutor())
+                .nomeCompleto(tutorSalvo.getNomeCompleto())
+                .build();
+    }
+
+    /**
+     * Autentica um tutor.
+     */
+    public AuthResponseDTO authenticate(AuthRequestDTO dto) throws Exception {
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getSenha())
+            );
+        } catch (BadCredentialsException e) {
+            throw new Exception("Credenciais inválidas", e);
+        }
+
+        final UserDetails userDetails = userDetailsService.loadUserByUsername(dto.getEmail());
+        final String token = jwtUtil.generateToken(userDetails);
+        
+        Tutor tutor = tutorRepository.findByEmailTutor(dto.getEmail())
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado."));
+
+        return AuthResponseDTO.builder()
+                .token(token)
+                .idTutor(tutor.getIdTutor())
+                .email(tutor.getEmailTutor())
+                .nomeCompleto(tutor.getNomeCompleto())
+                .build();
+    }
+
+    // --- MÉTODOS (GERENCIAMENTO DE PERFIL) ---
+
+    /**
+     * Busca os dados do perfil do tutor logado.
+     */
+    public Tutor getMeuPerfil(String tutorEmail) {
+        return tutorRepository.findByEmailTutor(tutorEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado: " + tutorEmail));
+    }
+
+    /**
+     * Atualiza os dados do perfil do tutor logado.
+     */
+    public Tutor updateMeuPerfil(String tutorEmail, TutorPerfilDTO dto) {
+        Tutor tutor = getMeuPerfil(tutorEmail); // Reusa o método anterior
+        tutor.setNomeCompleto(dto.getNomeCompleto());
+        tutor.setTelefoneTutor(dto.getTelefoneTutor());
+        tutor.setDataNascimento(dto.getDataNascimento());
+        return tutorRepository.save(tutor);
+    }
+
+    /**
+     * Deleta o perfil do tutor logado e todos os seus animais.
+     */
+    @Transactional // Garante que tudo execute (ou falhe) em conjunto
+    public void deleteMeuPerfil(String tutorEmail) {
+        Tutor tutor = getMeuPerfil(tutorEmail);
+        String idTutor = tutor.getIdTutor();
+
+        // [CASCADE DELETE] Deleta os animais associados
+        animalRepository.deleteByIdTutor(idTutor);
+
+        // Deleta o tutor
+        tutorRepository.delete(tutor);
+    }
 }

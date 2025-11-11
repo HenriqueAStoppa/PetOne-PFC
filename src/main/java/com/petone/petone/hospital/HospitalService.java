@@ -1,8 +1,24 @@
+<<<<<<< Updated upstream:src/main/java/com/petone/petone/hospital/HospitalService.java
 package com.petone.petone.hospital;
+=======
+package com.petone.petone.service;
+>>>>>>> Stashed changes:src/main/java/com/petone/petone/Service/HospitalService.java
 
-import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
+import com.petone.petone.dto.AuthRequestDTO;
+import com.petone.petone.dto.AuthResponseDTO;
+import com.petone.petone.dto.HospitalCadastroDTO;
+import com.petone.petone.model.Hospital;
+import com.petone.petone.repository.HospitalRepository;
+import com.petone.petone.util.JwtUtil;
+import com.petone.petone.util.PasswordUtil;
+import jakarta.validation.ValidationException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+<<<<<<< Updated upstream:src/main/java/com/petone/petone/hospital/HospitalService.java
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
@@ -10,81 +26,84 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+=======
+>>>>>>> Stashed changes:src/main/java/com/petone/petone/Service/HospitalService.java
 
+/**
+ * [ARQUIVO CORRIGIDO]
+ * Serviço para a lógica de negócio do Hospital.
+ * (Versão completa e corrigida com login via AuthenticationManager)
+ */
 @Service
 public class HospitalService {
 
-  private final HospitalRepository repo;
-  private final HospitalHoursRepository hoursRepo;
+    private final HospitalRepository hospitalRepository;
+    private final JwtUtil jwtUtil;
+    private final AuthenticationManager authenticationManager; // Corrigido
 
-  public HospitalService(HospitalRepository repo, HospitalHoursRepository hoursRepo) {
-    this.repo = repo;
-    this.hoursRepo = hoursRepo;
-  }
-
-  public Hospital create(@Valid Hospital h) { return repo.save(h); }
-
-  public Hospital get(String id) {
-    return repo.findById(id).orElseThrow(() ->
-        new ResponseStatusException(HttpStatus.NOT_FOUND, "Hospital não encontrado"));
-  }
-
-  public List<Hospital> list(Boolean parceiro, String tipo, Boolean abertoAgora) {
-    // base: sempre ativos
-    List<Hospital> base = Boolean.TRUE.equals(parceiro)
-        ? repo.findByAtivoTrueAndParceiroTrue()
-        : repo.findByAtivoTrue();
-
-    // filtro por tipo (se enviado)
-    if (tipo != null && !tipo.isBlank()) {
-      String t = tipo.toLowerCase();
-      base = base.stream()
-          .filter(h -> h.getTiposAtendidos() != null &&
-              h.getTiposAtendidos().stream().filter(Objects::nonNull)
-                .map(String::toLowerCase).anyMatch(v -> v.equals(t)))
-          .collect(Collectors.toList());
+    @Autowired
+    public HospitalService(HospitalRepository hospitalRepository, JwtUtil jwtUtil, AuthenticationManager authenticationManager) { // Corrigido
+        this.hospitalRepository = hospitalRepository;
+        this.jwtUtil = jwtUtil;
+        this.authenticationManager = authenticationManager; // Corrigido
     }
 
-    // filtro "aberto agora" usando HospitalHours (MVP: apenas dia da semana e intervalo abre-fecha)
-    if (Boolean.TRUE.equals(abertoAgora)) {
-      int hoje = LocalDate.now().getDayOfWeek().getValue() % 7; // Dom=0
-      LocalTime agora = LocalTime.now();
-      base = base.stream().filter(h -> {
-        List<HospitalHours> hs = hoursRepo.findByHospitalIdAndDiaSemana(h.getId(), hoje);
-        return hs.stream().anyMatch(slot ->
-            isWithin(agora, slot.getAbre(), slot.getFecha()));
-      }).collect(Collectors.toList());
+    /**
+     * Cadastra um novo hospital.
+     */
+    public Hospital cadastrarHospital(HospitalCadastroDTO dto) {
+        if (hospitalRepository.findByEmailHospital(dto.getEmailHospital()).isPresent()) {
+            throw new ValidationException("Email já cadastrado.");
+        }
+        if (hospitalRepository.findByCnpj(dto.getCnpj()).isPresent()) {
+            throw new ValidationException("CNPJ já cadastrado.");
+        }
+
+        Hospital hospital = new Hospital();
+        hospital.setNomeFantasia(dto.getNomeFantasia());
+        hospital.setEmailHospital(dto.getEmailHospital());
+        hospital.setTelefoneHospital(dto.getTelefoneHospital());
+        hospital.setEndereco(dto.getEndereco());
+        hospital.setCnpj(dto.getCnpj());
+        hospital.setClassificacaoServico(dto.getClassificacaoServico());
+        hospital.setVeterinarioResponsavel(dto.getVeterinarioResponsavel());
+        hospital.setCrmvVeterinario(dto.getCrmvVeterinario());
+        hospital.setSenhaHash(PasswordUtil.encode(dto.getSenha()));
+        hospital.setEmailVerificado(true); // Simulação TCC
+
+        return hospitalRepository.save(hospital);
     }
 
-    return base;
-  }
+    /**
+     * [MÉTODO CORRIGIDO]
+     * Autentica um hospital usando o AuthenticationManager.
+     */
+    public AuthResponseDTO authenticateHospital(AuthRequestDTO dto) throws Exception {
+        
+        // 1. Autenticar com o Spring Security
+        // (O UserDetailsServiceImpl agora entende Hospitais)
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getSenha())
+            );
+        } catch (BadCredentialsException e) {
+            throw new Exception("Credenciais inválidas", e);
+        }
 
-  private boolean isWithin(LocalTime now, String abre, String fecha) {
-    try {
-      LocalTime a = LocalTime.parse(abre);
-      LocalTime f = LocalTime.parse(fecha);
-      return !now.isBefore(a) && now.isBefore(f);
-    } catch (Exception e) {
-      return false;
+        // 2. Se a autenticação passou, buscar o hospital
+        Hospital hospital = hospitalRepository.findByEmailHospital(dto.getEmail())
+                // NOTA: Esta linha foi atualizada para lançar a exceção correta
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com o email: " + dto.getEmail()));
+
+        // 3. Gerar o token JWT
+        final String token = jwtUtil.generateToken(hospital.getEmailHospital());
+
+        // 4. Retornar a resposta
+        return AuthResponseDTO.builder()
+                .token(token)
+                .idTutor(hospital.getIdHospital()) // Reutilizando o DTO
+                .email(hospital.getEmailHospital())
+                .nomeCompleto(hospital.getNomeFantasia()) // Reutilizando o DTO
+                .build();
     }
-  }
-
-  public Hospital update(String id, @Valid Hospital in) {
-    Hospital h = get(id);
-    h.setNomeFantasia(in.getNomeFantasia());
-    h.setEmail(in.getEmail());
-    h.setTelefone(in.getTelefone());
-    h.setEndereco(in.getEndereco());
-    h.setLat(in.getLat());
-    h.setLng(in.getLng());
-    h.setTiposAtendidos(in.getTiposAtendidos());
-    h.setParceiro(in.isParceiro());
-    h.setAtivo(in.isAtivo());
-    return repo.save(h);
-  }
-
-  public void delete(String id) {
-    Hospital h = get(id);
-    repo.delete(h);
-  }
 }

@@ -1,74 +1,136 @@
+<<<<<<< Updated upstream:src/main/java/com/petone/petone/animal/AnimalService.java
 package com.petone.petone.animal;
+=======
+package com.petone.petone.service;
+>>>>>>> Stashed changes:src/main/java/com/petone/petone/Service/AnimalService.java
 
-import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
+import com.petone.petone.dto.AnimalDTO;
+import com.petone.petone.model.Animal;
+import com.petone.petone.model.Tutor;
+import com.petone.petone.repository.AnimalRepository;
+import com.petone.petone.repository.TutorRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+<<<<<<< Updated upstream:src/main/java/com/petone/petone/animal/AnimalService.java
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
+=======
 
+import java.nio.file.AccessDeniedException;
+>>>>>>> Stashed changes:src/main/java/com/petone/petone/Service/AnimalService.java
+import java.util.List;
+import java.util.NoSuchElementException;
+
+/**
+ * Serviço para a lógica de negócio do Animal (CRUD).
+ * (Versão completa e corrigida)
+ */
 @Service
 public class AnimalService {
 
-    private final AnimalRepository repository;
+    private final AnimalRepository animalRepository;
+    private final TutorRepository tutorRepository;
 
-    public AnimalService(AnimalRepository repository) {
-        this.repository = repository;
+    @Autowired
+    public AnimalService(AnimalRepository animalRepository, TutorRepository tutorRepository) {
+        this.animalRepository = animalRepository;
+        this.tutorRepository = tutorRepository;
     }
 
-    public Animal create(String tutorId, @Valid AnimalDTO dto) {
-        if (dto.getNome() == null || dto.getNome().isBlank()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nome do animal é obrigatório");
+    /**
+     * Método auxiliar para buscar o Tutor pelo email (do token).
+     */
+    private Tutor getTutorFromEmail(String email) {
+        return tutorRepository.findByEmailTutor(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Tutor não encontrado com o email: " + email));
+    }
+
+    /**
+     * Cria um novo animal para o tutor logado.
+     *
+     * @param dto DTO com os dados do animal.
+     * @param tutorEmail Email do tutor logado (vem do Principal/Token).
+     * @return O animal salvo.
+     */
+    public Animal createAnimal(AnimalDTO dto, String tutorEmail) {
+        Tutor tutor = getTutorFromEmail(tutorEmail);
+
+        Animal animal = new Animal();
+        animal.setIdTutor(tutor.getIdTutor());
+        animal.setNomeAnimal(dto.getNomeAnimal());
+        animal.setIdade(dto.getIdade());
+        animal.setEspecie(dto.getEspecie());
+        animal.setRaca(dto.getRaca());
+        animal.setSexo(dto.getSexo());
+        animal.setCastrado(dto.isCastrado());
+        animal.setUsaMedicacao(dto.isUsaMedicacao());
+        animal.setQualMedicacao(dto.getQualMedicacao());
+
+        return animalRepository.save(animal);
+    }
+
+    /**
+     * Busca todos os animais do tutor logado.
+     *
+     * @param tutorEmail Email do tutor logado.
+     * @return Lista de animais.
+     */
+    public List<Animal> getAnimalsByTutor(String tutorEmail) {
+        Tutor tutor = getTutorFromEmail(tutorEmail);
+        return animalRepository.findByIdTutor(tutor.getIdTutor());
+    }
+
+    /**
+     * Atualiza um animal, verificando se pertence ao tutor logado.
+     *
+     * @param animalId ID do animal a ser atualizado.
+     * @param dto      DTO com os novos dados.
+     * @param tutorEmail Email do tutor logado.
+     * @return O animal atualizado.
+     * @throws AccessDeniedException Se o animal não pertencer ao tutor.
+     */
+    public Animal updateAnimal(String animalId, AnimalDTO dto, String tutorEmail) throws AccessDeniedException {
+        Tutor tutor = getTutorFromEmail(tutorEmail);
+        
+        Animal animal = animalRepository.findById(animalId)
+                .orElseThrow(() -> new NoSuchElementException("Animal não encontrado com ID: " + animalId));
+
+        // Verificação de Propriedade
+        if (!animal.getIdTutor().equals(tutor.getIdTutor())) {
+            throw new AccessDeniedException("Este animal não pertence ao tutor logado.");
         }
-        if (dto.getTipo() == null || dto.getTipo().isBlank()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tipo do animal é obrigatório");
+
+        animal.setNomeAnimal(dto.getNomeAnimal());
+        animal.setIdade(dto.getIdade());
+        animal.setEspecie(dto.getEspecie());
+        animal.setRaca(dto.getRaca());
+        animal.setSexo(dto.getSexo());
+        animal.setCastrado(dto.isCastrado());
+        animal.setUsaMedicacao(dto.isUsaMedicacao());
+        animal.setQualMedicacao(dto.getQualMedicacao());
+
+        return animalRepository.save(animal);
+    }
+
+    /**
+     * Deleta um animal, verificando se pertence ao tutor logado.
+     *
+     * @param animalId ID do animal a ser deletado.
+     * @param tutorEmail Email do tutor logado.
+     * @throws AccessDeniedException Se o animal não pertencer ao tutor.
+     */
+    public void deleteAnimal(String animalId, String tutorEmail) throws AccessDeniedException {
+        Tutor tutor = getTutorFromEmail(tutorEmail);
+        
+        Animal animal = animalRepository.findById(animalId)
+                .orElseThrow(() -> new NoSuchElementException("Animal não encontrado com ID: " + animalId));
+
+        // Verificação de Propriedade
+        if (!animal.getIdTutor().equals(tutor.getIdTutor())) {
+            throw new AccessDeniedException("Este animal não pertence ao tutor logado.");
         }
 
-        Animal a = new Animal();
-        a.setTutorId(tutorId);
-        a.setNome(dto.getNome());
-        a.setTipo(dto.getTipo());
-        a.setRaca(dto.getRaca());
-        a.setSexo(dto.getSexo());
-        a.setCastrado(dto.isCastrado());
-        a.setIdade(dto.getIdade());
-        return repository.save(a);
-    }
-
-    public List<Animal> list(String tutorId, String tipo, String raca, String sexo, Boolean castrado, Integer idadeMinima) {
-        List<Animal> base = repository.findByTutorId(tutorId);
-        return base.stream()
-                .filter(a -> tipo == null || (a.getTipo() != null && a.getTipo().equalsIgnoreCase(tipo)))
-                .filter(a -> raca == null || (a.getRaca() != null && a.getRaca().equalsIgnoreCase(raca)))
-                .filter(a -> sexo == null || (a.getSexo() != null && a.getSexo().equalsIgnoreCase(sexo)))
-                .filter(a -> castrado == null || (a.getCastrado() != null && a.getCastrado() == castrado))
-                .filter(a -> idadeMinima == null || (a.getIdade() != null && a.getIdade() >= idadeMinima))
-                .toList();
-    }
-
-    public Animal get(String tutorId, String id) {
-        Animal a = repository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Animal não encontrado"));
-        if (!a.getTutorId().equals(tutorId)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Animal não pertence ao tutor");
-        }
-        return a;
-    }
-
-    public Animal update(String tutorId, String id, @Valid AnimalDTO in) {
-        Animal a = get(tutorId, id); // garante 404 se não for do tutor
-        // PUT completo: substitui os campos
-        a.setNome(in.getNome());
-        a.setTipo(in.getTipo());
-        a.setRaca(in.getRaca());
-        a.setSexo(in.getSexo());
-        a.setCastrado(in.isCastrado());
-        a.setIdade(in.getIdade());
-        return repository.save(a);
-    }
-
-    public void delete(String tutorId, String id) {
-        Animal a = get(tutorId, id);
-        repository.delete(a);
+        animalRepository.delete(animal);
     }
 }

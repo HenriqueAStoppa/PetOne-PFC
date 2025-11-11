@@ -1,13 +1,21 @@
+<<<<<<< Updated upstream:src/main/java/com/petone/petone/animal/Animal.java
 package com.petone.petone.animal;
+=======
+package com.petone.petone.model;
+>>>>>>> Stashed changes:src/main/java/com/petone/petone/Model/Animal.java
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import lombok.Data;
 
-@Document(collection = "animals")
+/**
+ * Modelo para a entidade Animal.
+ * Vinculado ao tutor (idTutor). Usa Lombok.
+ */
+@Data
+@Document(collection = "animais")
 public class Animal {
+<<<<<<< Updated upstream:src/main/java/com/petone/petone/animal/Animal.java
  @Id
  private String id;
  @NotBlank
@@ -41,4 +49,17 @@ public class Animal {
  public void setCastrado(Boolean castrado) { this.castrado = castrado; }
  public Integer getIdade() { return idade; }
  public void setIdade(Integer idade) { this.idade = idade; }
+=======
+    @Id
+    private String idAnimal;
+    private String idTutor; // Chave estrangeira para Tutor
+    private String nomeAnimal;
+    private int idade;
+    private String especie;
+    private String raca;
+    private String sexo;
+    private boolean castrado;
+    private boolean usaMedicacao;
+    private String qualMedicacao;
+>>>>>>> Stashed changes:src/main/java/com/petone/petone/Model/Animal.java
 }
