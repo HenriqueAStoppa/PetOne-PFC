@@ -1,5 +1,9 @@
 <<<<<<< Updated upstream:src/main/java/com/petone/petone/animal/Animal.java
+<<<<<<< Updated upstream:src/main/java/com/petone/petone/animal/Animal.java
 package com.petone.petone.animal;
+=======
+package com.petone.petone.model;
+>>>>>>> Stashed changes:src/main/java/com/petone/petone/Model/Animal.java
 =======
 package com.petone.petone.model;
 >>>>>>> Stashed changes:src/main/java/com/petone/petone/Model/Animal.java
@@ -15,6 +19,7 @@ import lombok.Data;
 @Data
 @Document(collection = "animais")
 public class Animal {
+<<<<<<< Updated upstream:src/main/java/com/petone/petone/animal/Animal.java
 <<<<<<< Updated upstream:src/main/java/com/petone/petone/animal/Animal.java
  @Id
  private String id;
@@ -50,6 +55,8 @@ public class Animal {
  public Integer getIdade() { return idade; }
  public void setIdade(Integer idade) { this.idade = idade; }
 =======
+=======
+>>>>>>> Stashed changes:src/main/java/com/petone/petone/Model/Animal.java
     @Id
     private String idAnimal;
     private String idTutor; // Chave estrangeira para Tutor
@@ -61,5 +68,8 @@ public class Animal {
     private boolean castrado;
     private boolean usaMedicacao;
     private String qualMedicacao;
+<<<<<<< Updated upstream:src/main/java/com/petone/petone/animal/Animal.java
+>>>>>>> Stashed changes:src/main/java/com/petone/petone/Model/Animal.java
+=======
 >>>>>>> Stashed changes:src/main/java/com/petone/petone/Model/Animal.java
 }
