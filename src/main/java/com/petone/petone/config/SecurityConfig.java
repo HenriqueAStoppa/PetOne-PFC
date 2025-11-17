@@ -35,7 +35,7 @@ public class SecurityConfig {
                 .requestMatchers("/v3/api-docs/**").permitAll()
                 .requestMatchers("/swagger-ui.html").permitAll()
                 
-                // --- CORREÇÃO AQUI ---
+                // --- [CORREÇÃO] ---
                 // Permite acesso aos arquivos HTML estáticos
                 .requestMatchers("/", "/index.html", "/dashboard_tutor.html", "/dashboard_hospital.html").permitAll()
                 

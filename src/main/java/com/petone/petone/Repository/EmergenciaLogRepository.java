@@ -1,3 +1,4 @@
+package com.petone.petone.repository;
 // ... (código existente e imports) ...
 
 /**

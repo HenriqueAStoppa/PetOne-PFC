@@ -1,5 +1,7 @@
 package com.petone.petone.model;
 
+import java.time.LocalDateTime;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import lombok.Data;
@@ -23,4 +25,6 @@ public class Hospital {
     private String crmvVeterinario;
     private boolean emailVerificado = false;
     private String senhaHash; // Armazena o hash da senha (BCrypt)
+    private String resetToken;
+    private LocalDateTime resetTokenExpiry;
 }

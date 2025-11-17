@@ -23,9 +23,9 @@
 
   <dependencies>
     <!-- Web/API REST -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-web</artifactId>
+        <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-data-mongodb</artifactId>
     </dependency>
 
     <!-- MongoDB Atlas -->
@@ -57,7 +57,8 @@
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
-      <optional>true</optional>
+      <version>1.18.36</version>
+      <scope>provided</scope>
     </dependency>
 
     <!-- JWT (JSON Web Token) Support -->

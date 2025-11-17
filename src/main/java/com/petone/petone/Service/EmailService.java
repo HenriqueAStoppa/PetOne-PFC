@@ -1,50 +1,40 @@
 package com.petone.petone.service;
 
-import com.petone.petone.model.Hospital;
+import com.petone.petone.model.EmergenciaLog;
 import com.petone.petone.model.Tutor;
 import org.springframework.stereotype.Service;
 
 /**
- * Serviço SIMULADO para envio de emails.
- * (Para o TCC, apenas loga no console).
+ * SERVIÇO SIMULADO (STUB)
+ * ... (comentários existentes) ...
  */
 @Service
 public class EmailService {
 
-    /**
-     * Simula o envio de email para o Tutor com o token.
-     */
-    public void enviarEmailTokenTutor(Tutor tutor, String tokenEmergencia, Hospital hospital) {
-        String email = tutor.getEmailTutor();
-        String nome = tutor.getNomeCompleto();
-        String hospitalNome = hospital.getNomeFantasia();
+    public void enviarEmailTokenParaTutor(Tutor tutor, EmergenciaLog log) {
+// ... (código existente) ...
+        System.out.println("Assunto: [PetOne] Token da sua Emergência");
+        System.out.println("Seu token é: " + log.getTokenEmergencia());
+// ... (código existente) ...
+    }
+
+    public void enviarEmailAlertaParaHospital(EmergenciaLog log) {
+        System.out.println("==================================================");
+// ... (código existente) ...
+        System.out.println("Assunto: [ALERTA DE EMERGÊNCIA] Paciente a caminho!");
+        System.out.println("Token: " + log.getTokenEmergencia());
         
-        System.out.println("======================================================");
-        System.out.println("== SIMULAÇÃO DE ENVIO DE EMAIL ==");
-        System.out.println("Para: Tutor <" + email + ">");
-        System.out.println("Assunto: [PetOne] Emergência Registrada (Token: " + tokenEmergencia + ")");
-        System.out.println("Olá, " + nome + ". Sua emergência foi registrada.");
-        System.out.println("Seu token é: " + tokenEmergencia);
-        System.out.println("Dirija-se imediatamente ao " + hospitalNome);
-        System.out.println("======================================================");
+        // [CORREÇÃO AQUI] Renomear o método para o novo nome do campo
+        System.out.println("Sintoma: " + log.getTipoEmergencia()); // Antes era getSintomaCausa()
+        
+        System.out.println("Tutor: " + log.getNomeCompletoTutor());
+// ... (código existente) ...
     }
 
     /**
-     * Simula o envio de email para o Hospital com o token.
+     * ... (método enviarEmailResetSenha existente) ...
      */
-    public void enviarEmailTokenHospital(Hospital hospital, String tokenEmergencia, Tutor tutor) {
-        String email = hospital.getEmailHospital();
-        String nomeHospital = hospital.getNomeFantasia();
-        String nomeTutor = tutor.getNomeCompleto();
-        
-        System.out.println("======================================================");
-        System.out.println("== SIMULAÇÃO DE ENVIO DE EMAIL ==");
-        System.out.println("Para: Hospital <" + email + ">");
-        System.out.println("Assunto: [PetOne] ALERTA DE EMERGÊNCIA (Token: " + tokenEmergencia + ")");
-        System.out.println("Olá, " + nomeHospital + ".");
-        System.out.println("Uma emergência foi registrada para o tutor: " + nomeTutor);
-        System.out.println("O token de acesso ao log é: " + tokenEmergencia);
-        System.out.println("Preparem-se para a chegada.");
-        System.out.println("======================================================");
+    public void enviarEmailResetSenha(String email, String token) {
+// ... (código existente) ...
     }
 }

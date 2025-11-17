@@ -4,6 +4,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import lombok.Data;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * Modelo para a entidade Tutor (Usuário). Usa Lombok.
@@ -20,4 +21,6 @@ public class Tutor {
     private LocalDate dataNascimento;
     private String senhaHash; // Armazena o hash da senha (BCrypt)
     private boolean emailVerificado = false;
+    private String resetToken;
+    private LocalDateTime resetTokenExpiry;
 }
