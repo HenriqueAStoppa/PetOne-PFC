@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-g">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Hospital - PetOne</title>
+    <!-- Inclui o Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inclui a biblioteca Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* bg-gray-100 */
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <!-- Navegação Principal (Dashboard) -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex-shrink-0 flex items-center">
+                    <i data-lucide="shield-plus" class="h-8 w-8 text-blue-600"></i>
+                    <span class="font-bold text-xl ml-2 text-gray-800">PetOne</span>
+                </div>
+                <div class="flex items-center">
+                    <span class="text-gray-600 mr-4">Olá, <span id="user-nome" class="font-medium">Hospital</span>!</span>
+                    <button id="btn-logout" class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg flex items-center space-x-1 transition duration-150">
+                        <i data-lucide="log-out" class="w-4 h-4"></i>
+                        <span>Sair</span>
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <main class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+        
+        <h1 class="text-3xl font-bold text-gray-900 mb-6">Painel do Hospital</h1>
+
+        <!-- Layout de Grade -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            <!-- Coluna da Esquerda (Perfil) -->
+            <div class="lg:col-span-1 space-y-6">
+
+                <!-- Card: Meu Perfil -->
+                <section class="bg-white p-6 rounded-xl shadow-lg">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-semibold text-gray-800 flex items-center">
+                            <i data-lucide="building-2" class="w-5 h-5 mr-2 text-blue-600"></i>
+                            Meu Perfil
+                        </h2>
+                        <button id="btn-open-edit-profile" class="text-blue-600 hover:text-blue-800 p-1">
+                            <i data-lucide="edit-3" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                    <div id="perfil-info" class="space-y-2 text-gray-700">
+                        <p><strong>Hospital:</strong> <span id="hospital-nome">Carregando...</span></p>
+                        <p><strong>Email:</strong> <span id="hospital-email">Carregando...</span></p>
+                        <p><strong>Telefone:</strong> <span id="hospital-telefone">Carregando...</span></p>
+                        <p><strong>Endereço:</strong> <span id="hospital-endereco">Carregando...</span></p>
+                        <p><strong>Vet. Resp.:</strong> <span id="hospital-vet">Carregando...</span></p>
+                        <p><strong>CRMV:</strong> <span id="hospital-crmv">Carregando...</span></p>
+                        <p><strong>Classificação:</strong> <span id="hospital-classificacao">Carregando...</span></p>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Coluna da Direita (Logs de Emergência) -->
+            <div class="lg:col-span-2 space-y-6">
+
+                <!-- Card: Lista de Emergências -->
+                <section class="bg-white p-6 rounded-xl shadow-lg">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Logs de Emergência</h2>
+                    <div id="logs-list" class="space-y-4">
+                        <!-- Logs serão inseridos aqui pelo JS -->
+                        <p class="text-gray-500">Carregando emergências...</p>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal: Editar Perfil (Oculto) -->
+    <div id="modal-edit-profile" class="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 hidden z-50">
+        <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-lg">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold">Editar Perfil do Hospital</h3>
+                <button id="btn-close-edit-profile" class="text-gray-500 hover:text-gray-800">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            <form id="form-edit-profile" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input type="text" id="edit-nome" placeholder="Nome Fantasia" required class="p-2 border rounded-md md:col-span-2">
+                <input type="text" id="edit-telefone" placeholder="Telefone" required class="p-2 border rounded-md">
+                <input type="number" id="edit-classificacao" placeholder="Classificação (1-4)" required class="p-2 border rounded-md">
+                <input type="text" id="edit-endereco" placeholder="Endereço" required class="p-2 border rounded-md md:col-span-2">
+                <input type="text" id="edit-vet" placeholder="Veterinário Responsável" required class="p-2 border rounded-md">
+                <input type="text" id="edit-crmv" placeholder="CRMV" required class="p-2 border rounded-md">
+                
+                <button type="submit" class="md:col-span-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg">
+                    Salvar Alterações
+                </button>
+            </form>
+            <div id="edit-profile-message" class="mt-4 text-center"></div>
+        </div>
+    </div>
+
+    <!-- Modal: Finalizar Atendimento (Oculto) -->
+    <div id="modal-finalizar" class="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 hidden z-50">
+        <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-lg">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold">Finalizar Atendimento</h3>
+                <button id="btn-close-finalizar" class="text-gray-500 hover:text-gray-800">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            <form id="form-finalizar">
+                <input type="hidden" id="finalizar-token">
+                <div class="space-y-4">
+                    <textarea id="finalizar-relatorio" rows="4" placeholder="Relatório Médico do Atendimento" required class="w-full p-2 border rounded-md"></textarea>
+                    <textarea id="finalizar-prescricao" rows="3" placeholder="Prescrição de Medicamentos (se houver)" class="w-full p-2 border rounded-md"></textarea>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input type="text" id="finalizar-vet" placeholder="Vet. Responsável pela Finalização" required class="p-2 border rounded-md">
+                        <input type="text" id="finalizar-crmv" placeholder="CRMV do Responsável" required class="p-2 border rounded-md">
+                    </div>
+                    
+                    <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg">
+                        Concluir Atendimento
+                    </button>
+                </div>
+            </form>
+            <div id="finalizar-message" class="mt-4 text-center"></div>
+        </div>
+    </div>
+
+
+    <script>
+        // Inicializa ícones
+        lucide.createIcons();
+
+        // Elementos Globais
+        const token = localStorage.getItem('petone_token');
+        const API_HEADERS = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        };
+        let currentHospitalData = null; // Armazena dados do hospital
+        
+        const btnLogout = document.getElementById('btn-logout');
+        
+        // Elementos do Perfil
+        const userNomeNav = document.getElementById('user-nome');
+        const hospitalNome = document.getElementById('hospital-nome');
+        const hospitalEmail = document.getElementById('hospital-email');
+        const hospitalTelefone = document.getElementById('hospital-telefone');
+        const hospitalEndereco = document.getElementById('hospital-endereco');
+        const hospitalVet = document.getElementById('hospital-vet');
+        const hospitalCrmv = document.getElementById('hospital-crmv');
+        const hospitalClassificacao = document.getElementById('hospital-classificacao');
+
+        // Elementos dos Logs
+        const logsList = document.getElementById('logs-list');
+
+        // Modal de Edição de Perfil
+        const modalEditProfile = document.getElementById('modal-edit-profile');
+        const btnOpenEditProfile = document.getElementById('btn-open-edit-profile');
+        const btnCloseEditProfile = document.getElementById('btn-close-edit-profile');
+        const formEditProfile = document.getElementById('form-edit-profile');
+        const editProfileMessage = document.getElementById('edit-profile-message');
+
+        // Modal de Finalização
+        const modalFinalizar = document.getElementById('modal-finalizar');
+        const btnCloseFinalizar = document.getElementById('btn-close-finalizar');
+        const formFinalizar = document.getElementById('form-finalizar');
+        const finalizarMessage = document.getElementById('finalizar-message');
+
+
+        // --- 1. VERIFICAÇÃO DE AUTENTICAÇÃO E INICIALIZAÇÃO ---
+        window.onload = () => {
+            if (!token) {
+                alert("Você precisa estar logado para acessar esta página.");
+                window.location.href = './index.html'; // Corrigido
+                return;
+            }
+
+            const nomeHospital = localStorage.getItem('petone_user_nome');
+            if (nomeHospital) {
+                userNomeNav.textContent = nomeHospital.split(' ')[0];
+            }
+
+            fetchHospitalData();
+            fetchLogs();
+        };
+
+        // --- 2. LÓGICA DE LOGOUT ---
+        btnLogout.addEventListener('click', () => {
+            localStorage.removeItem('petone_token');
+            localStorage.removeItem('petone_user_nome');
+            window.location.href = './index.html'; // Corrigido
+        });
+
+        // --- 3. BUSCAR DADOS (PERFIL E LOGS) ---
+        async function fetchHospitalData() {
+            try {
+                const response = await fetch('/api/hospital/me', { headers: API_HEADERS });
+                if (!response.ok) throw new Error('Falha ao buscar dados do perfil.');
+                
+                const hospital = await response.json();
+                currentHospitalData = hospital; // Salva globalmente
+                renderHospitalProfile(hospital);
+            
+            } catch (error) {
+                hospitalNome.textContent = `Erro: ${error.message}`;
+            }
+        }
+
+        async function fetchLogs() {
+            try {
+                const response = await fetch('/api/hospital/logs', { headers: API_HEADERS });
+                if (!response.ok) throw new Error('Falha ao buscar logs.');
+
+                const logs = await response.json();
+                renderLogs(logs);
+
+            } catch (error) {
+                logsList.innerHTML = `<p class="text-red-600">Erro: ${error.message}</p>`;
+            }
+        }
+
+        // --- 4. RENDERIZAÇÃO ---
+        function renderHospitalProfile(hospital) {
+            hospitalNome.textContent = hospital.nomeFantasia;
+            hospitalEmail.textContent = hospital.emailHospital;
+            hospitalTelefone.textContent = hospital.telefoneHospital;
+            hospitalEndereco.textContent = hospital.endereco;
+            hospitalVet.textContent = hospital.veterinarioResponsavel;
+            hospitalCrmv.textContent = hospital.crmvVeterinario;
+            hospitalClassificacao.textContent = hospital.classificacaoServico;
+        }
+
+        function renderLogs(logs) {
+            if (logs.length === 0) {
+                logsList.innerHTML = `<p class="text-gray-500">Nenhuma emergência encaminhada.</p>`;
+                return;
+            }
+
+            logsList.innerHTML = ''; // Limpa a lista
+            // Ordena: pendentes (sem relatório) primeiro
+            logs.sort((a, b) => a.relatorio ? 1 : -1);
+
+            logs.forEach(log => {
+                const logCard = document.createElement('div');
+                logCard.className = 'p-4 border rounded-lg bg-gray-50';
+                
+                const isFinalizado = log.relatorio ? true : false;
+                
+                logCard.innerHTML = `
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="font-bold text-lg ${isFinalizado ? 'text-gray-600' : 'text-blue-700'}">${log.tokenEmergencia}</span>
+                        <span class="text-sm text-gray-500">${new Date(log.dataHoraInicio).toLocaleString('pt-BR')}</span>
+                    </div>
+                    <p><strong>Tutor:</strong> ${log.nomeCompletoTutor} (${log.telefoneTutor})</p>
+                    <p><strong>Animal:</strong> ${log.nomeAnimal} (${log.especieAnimal} / ${log.racaAnimal})</p>
+                    <p><strong>Sintoma:</strong> <span class="font-medium text-red-600">${log.tipoEmergencia || log.sintomaCausa}</span></p>
+                    <div class="mt-4">
+                        ${isFinalizado ? 
+                            `<button class="w-full bg-gray-400 text-white font-medium py-2 px-4 rounded-lg cursor-not-allowed" disabled>Atendimento Finalizado</button>` :
+                            `<button class="btn-finalizar w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg">Finalizar Atendimento</button>`
+                        }
+                    </div>
+                `;
+
+                if (!isFinalizado) {
+                    logCard.querySelector('.btn-finalizar').addEventListener('click', () => openFinalizarModal(log));
+                }
+                
+                logsList.appendChild(logCard);
+            });
+        }
+
+        // --- 5. LÓGICA DOS MODAIS ---
+
+        // --- Modal: Editar Perfil ---
+        btnOpenEditProfile.addEventListener('click', () => {
+            if (!currentHospitalData) return;
+            // Preenche o formulário de edição
+            document.getElementById('edit-nome').value = currentHospitalData.nomeFantasia;
+            document.getElementById('edit-telefone').value = currentHospitalData.telefoneHospital;
+            document.getElementById('edit-endereco').value = currentHospitalData.endereco;
+            document.getElementById('edit-classificacao').value = currentHospitalData.classificacaoServico;
+            document.getElementById('edit-vet').value = currentHospitalData.veterinarioResponsavel;
+            document.getElementById('edit-crmv').value = currentHospitalData.crmvVeterinario;
+            
+            modalEditProfile.classList.remove('hidden');
+        });
+        btnCloseEditProfile.addEventListener('click', () => modalEditProfile.classList.add('hidden'));
+
+        formEditProfile.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            editProfileMessage.textContent = 'Salvando...';
+            
+            const profileData = {
+                nomeFantasia: document.getElementById('edit-nome').value,
+                telefoneHospital: document.getElementById('edit-telefone').value,
+                endereco: document.getElementById('edit-endereco').value,
+                classificacaoServico: parseInt(document.getElementById('edit-classificacao').value),
+                veterinarioResponsavel: document.getElementById('edit-vet').value,
+                crmvVeterinario: document.getElementById('edit-crmv').value
+            };
+
+            try {
+                const response = await fetch('/api/hospital/me', {
+                    method: 'PUT',
+                    headers: API_HEADERS,
+                    body: JSON.stringify(profileData)
+                });
+                if (!response.ok) throw new Error('Falha ao atualizar perfil.');
+                
+                const updatedHospital = await response.json();
+                currentHospitalData = updatedHospital; // Atualiza global
+                renderHospitalProfile(updatedHospital); // Re-renderiza o card
+
+                editProfileMessage.textContent = 'Perfil salvo com sucesso!';
+                editProfileMessage.className = 'text-green-600';
+                setTimeout(() => {
+                    modalEditProfile.classList.add('hidden');
+                    editProfileMessage.textContent = '';
+                }, 1500);
+
+            } catch (error) {
+                editProfileMessage.textContent = `Erro: ${error.message}`;
+                editProfileMessage.className = 'text-red-600';
+            }
+        });
+
+
+        // --- Modal: Finalizar Atendimento ---
+        function openFinalizarModal(log) {
+            modalFinalizar.classList.remove('hidden');
+            // Preenche o token
+            document.getElementById('finalizar-token').value = log.tokenEmergencia;
+            // Preenche o Vet/CRMV do perfil (se disponível)
+            if (currentHospitalData) {
+                document.getElementById('finalizar-vet').value = currentHospitalData.veterinarioResponsavel;
+                document.getElementById('finalizar-crmv').value = currentHospitalData.crmvVeterinario;
+            }
+        }
+        btnCloseFinalizar.addEventListener('click', () => modalFinalizar.classList.add('hidden'));
+
+        formFinalizar.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            finalizarMessage.textContent = 'Finalizando...';
+            
+            const tokenEmergencia = document.getElementById('finalizar-token').value;
+            const finalizacaoData = {
+                relatorio: document.getElementById('finalizar-relatorio').value,
+                prescricao: document.getElementById('finalizar-prescricao').value,
+                veterinarioResponsavelFinalizacao: document.getElementById('finalizar-vet').value,
+                crmvVeterinarioFinalizacao: document.getElementById('finalizar-crmv').value
+            };
+
+            try {
+                const response = await fetch(`/api/emergencia/finalizar/${tokenEmergencia}`, {
+                    method: 'PUT',
+                    headers: API_HEADERS,
+                    body: JSON.stringify(finalizacaoData)
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(errorText || 'Falha ao finalizar atendimento.');
+                }
+                
+                finalizarMessage.textContent = 'Atendimento finalizado com sucesso!';
+                finalizarMessage.className = 'text-green-600';
+                fetchLogs(); // Atualiza a lista de logs
+                
+                setTimeout(() => {
+                    modalFinalizar.classList.add('hidden');
+                    finalizarMessage.textContent = '';
+                    formFinalizar.reset();
+                }, 2000);
+
+            } catch (error) {
+                finalizarMessage.textContent = `Erro: ${error.message}`;
+                finalizarMessage.className = 'text-red-600';
+            }
+        });
+
+    </script>
+</body>
+</html>
