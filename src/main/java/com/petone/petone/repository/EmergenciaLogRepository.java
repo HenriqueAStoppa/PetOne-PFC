@@ -1,5 +1,9 @@
 package com.petone.petone.repository;
-// ... (código existente e imports) ...
+
+import com.petone.petone.model.EmergenciaLog;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * [ARQUIVO ATUALIZADO]
