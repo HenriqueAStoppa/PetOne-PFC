@@ -18,8 +18,40 @@
     label { display: block; margin-bottom: 6px; font-size: 14px; font-weight: 500; }
     input { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; transition: border-color 0.2s; }
     input:focus { border-color: var(--verde-escuro); border-width: 2px; }
-    .btn { width: 100%; padding: 14px; background-color: var(--verde-escuro); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 10px; transition: background 0.2s; }
+
+    /* Estilos do Checkbox LGPD */
+    .lgpd-container {
+        background-color: #f8fafc;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        padding: 15px;
+        margin-top: 20px;
+        font-size: 13px;
+        color: #475569;
+    }
+    .lgpd-checkbox {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        margin-top: 10px;
+    }
+    .lgpd-checkbox input {
+        width: 20px;
+        height: 20px;
+        margin-top: 2px;
+        cursor: pointer;
+    }
+    .lgpd-checkbox label {
+        font-weight: normal;
+        cursor: pointer;
+        font-size: 13px;
+        line-height: 1.4;
+    }
+
+    .btn { width: 100%; padding: 14px; background-color: var(--verde-escuro); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 20px; transition: background 0.2s, opacity 0.2s; }
     .btn:hover { background-color: var(--verde-escuro-hover); }
+    .btn:disabled { background-color: #9ca3af; cursor: not-allowed; opacity: 0.7; }
+
     .error { color: #dc2626; font-size: 12px; text-align: center; margin-bottom: 10px; }
     .footer-link { text-align: center; margin-top: 20px; font-size: 14px; }
     .footer-link a { color: var(--verde-escuro); text-decoration: none; font-weight: 600; }
@@ -84,9 +116,23 @@
             </div>
         </div>
         
+        <!-- Seção LGPD -->
+        <div class="lgpd-container">
+            <p><strong>Termo de Consentimento e Responsabilidade (LGPD)</strong></p>
+            <p style="margin-top: 5px;">
+                Ao cadastrar sua unidade hospitalar na plataforma PetOne, você concorda em atuar como controlador e processador de dados de saúde animal e dados pessoais de tutores encaminhados.
+            </p>
+            <div class="lgpd-checkbox">
+                <input type="checkbox" id="lgpd-consent" required>
+                <label for="lgpd-consent">
+                    Declaro que li e concordo com o armazenamento dos registros de atendimento e dados dos tutores por um período de <strong>5 (cinco) anos</strong>, conforme exigências legais e regulatórias do CRMV e LGPD. Comprometo-me a manter a confidencialidade destes dados. Após este período, os registros serão anonimizados ou excluídos.
+                </label>
+            </div>
+        </div>
+        
         <p id="msgErro" class="error"></p>
         
-        <button type="submit" class="btn">Cadastrar Unidade</button>
+        <button type="submit" id="btn-cadastrar" class="btn" disabled>Cadastrar Unidade</button>
       </form>
       <div class="footer-link">
         Já é parceiro? <a href="pages/login/index.html">Acesse sua conta</a>
@@ -95,8 +141,23 @@
   </div>
 
   <script>
+    // Lógica para habilitar o botão apenas se o checkbox estiver marcado
+    const checkboxLgpd = document.getElementById('lgpd-consent');
+    const btnCadastrar = document.getElementById('btn-cadastrar');
+
+    checkboxLgpd.addEventListener('change', function() {
+        btnCadastrar.disabled = !this.checked;
+    });
+
     document.getElementById('formCadastro').addEventListener('submit', async (e) => {
       e.preventDefault();
+      
+      // Verificação extra de segurança
+      if (!checkboxLgpd.checked) {
+          alert("Você precisa aceitar os termos da LGPD para continuar.");
+          return;
+      }
+
       const msgErro = document.getElementById('msgErro');
       msgErro.textContent = '';
 
@@ -129,7 +190,7 @@
 
         if (response.ok) {
             alert("Cadastro realizado com sucesso! Faça o login.");
-            window.location.href = 'pages/login/hospital.html'; // Ou index, dependendo do fluxo
+            window.location.href = 'pages/login/index.html'; // Redireciona para o login unificado
         } else {
             const errorText = await response.text();
             msgErro.textContent = `Erro: ${errorText}`;
