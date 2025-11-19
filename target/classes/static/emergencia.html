@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PetOne - Nova Emergência</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --vermelho: #dc2626; --vermelho-claro: #fee2e2; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Poppins", sans-serif; }
+    body { background-color: var(--vermelho-claro); color: #0f172a; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+    .container { width: 100%; max-width: 500px; }
+    .card { background-color: white; border-radius: 16px; padding: 32px; box-shadow: 0 10px 25px rgba(220, 38, 38, 0.2); border-top: 6px solid var(--vermelho); }
+    h1 { color: var(--vermelho); text-align: center; margin-bottom: 10px; }
+    p.subtitle { text-align: center; color: #64748b; margin-bottom: 24px; font-size: 14px; }
+    .form-group { margin-bottom: 20px; }
+    label { display: block; margin-bottom: 8px; font-weight: 600; }
+    select { width: 100%; padding: 14px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 16px; background-color: white; }
+    select:focus { border-color: var(--vermelho); outline: none; }
+    .btn-emergencia { width: 100%; padding: 16px; background-color: var(--vermelho); color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: 700; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: transform 0.1s; }
+    .btn-emergencia:active { transform: scale(0.98); }
+    .btn-voltar { display: block; text-align: center; margin-top: 20px; color: #64748b; text-decoration: none; font-size: 14px; }
+    
+    /* Modal de Sucesso */
+    .modal-sucesso { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; z-index: 100; }
+    .modal-content { background: white; padding: 30px; border-radius: 16px; text-align: center; max-width: 400px; width: 90%; animation: popUp 0.3s ease; }
+    .token-box { background: #f1f5f9; padding: 15px; border-radius: 8px; margin: 15px 0; font-family: monospace; font-size: 24px; font-weight: bold; letter-spacing: 2px; color: var(--vermelho); border: 2px dashed var(--vermelho); }
+    @keyframes popUp { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="card">
+      <h1>Registro de Emergência</h1>
+      <p class="subtitle">Preencha rapidamente para alertar o hospital</p>
+      
+      <form id="formEmergencia">
+        <div class="form-group">
+          <label>Qual animal?</label>
+          <select id="animal" required>
+            <option value="" disabled selected>Carregando seus animais...</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Qual o Sintoma Principal?</label>
+          <select id="sintoma" required>
+            <option value="" disabled selected>Selecione...</option>
+            <option value="Hemorragia externa">Hemorragia externa</option>
+            <option value="Convulsão">Convulsão</option>
+            <option value="Engasgo/Obstrução">Engasgo/Obstrução</option>
+            <option value="Reações alérgicas">Reações alérgicas</option>
+            <option value="Trauma/Atropelamento">Trauma/Atropelamento</option>
+            <option value="Desmaio">Desmaio</option>
+            <option value="Envenenamento">Envenenamento</option>
+            <option value="Outro">Outro</option>
+          </select>
+        </div>
+        <button type="submit" class="btn-emergencia">Solicitar Socorro</button>
+      </form>
+      <a href="dashboard_tutor.html" class="btn-voltar">Cancelar e Voltar</a>
+    </div>
+  </div>
+
+  <!-- Modal Sucesso -->
+  <div id="modalSucesso" class="modal-sucesso">
+    <div class="modal-content">
+      <h2 style="color: #16a34a; margin-bottom: 10px;">Socorro a Caminho!</h2>
+      <p>Apresente este token ao chegar no hospital:</p>
+      <div id="tokenDisplay" class="token-box">...</div>
+      <p style="font-size: 14px; color: #64748b; margin-bottom: 20px;">Hospital: <strong id="hospitalInfo"></strong></p>
+      <button onclick="window.location.href='dashboard_tutor.html'" class="btn-emergencia" style="background-color: #16a34a; font-size: 14px; padding: 10px;">Voltar ao Painel</button>
+    </div>
+  </div>
+
+  <script>
+    const token = localStorage.getItem('petone_token');
+    if(!token) window.location.href = 'pages/login/index.html';
+
+    // Carregar Animais
+    fetch('/api/animais', { headers: { 'Authorization': `Bearer ${token}` } })
+      .then(res => res.json())
+      .then(animais => {
+        const select = document.getElementById('animal');
+        if(animais.length === 0) {
+            select.innerHTML = '<option disabled>Nenhum animal cadastrado</option>';
+            alert('Você precisa cadastrar um animal antes!');
+            window.location.href = 'dashboard_tutor.html';
+        } else {
+            select.innerHTML = '<option value="" disabled selected>Selecione...</option>';
+            animais.forEach(a => {
+                select.innerHTML += `<option value="${a.idAnimal}">${a.nomeAnimal} (${a.especie})</option>`;
+            });
+        }
+      });
+
+    document.getElementById('formEmergencia').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const data = {
+            idAnimal: document.getElementById('animal').value,
+            tipoEmergencia: document.getElementById('sintoma').value
+        };
+
+        try {
+            const res = await fetch('/api/emergencia/iniciar', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(data)
+            });
+
+            if(res.ok) {
+                const result = await res.json();
+                document.getElementById('tokenDisplay').innerText = result.tokenEmergencia;
+                document.getElementById('hospitalInfo').innerText = result.hospitalNome;
+                document.getElementById('modalSucesso').style.display = 'flex';
+            } else {
+                alert('Erro ao registrar emergência.');
+            }
+        } catch(err) {
+            alert('Erro de conexão.');
+        }
+    });
+  </script>
+</body>
+</html>
