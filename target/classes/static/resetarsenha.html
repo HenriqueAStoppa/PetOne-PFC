@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Redefinir Senha</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    :root { --verde-claro: #d8f3dc; --verde-escuro: #1b4332; }
+    body { font-family: "Poppins", sans-serif; background-color: var(--verde-claro); display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+    .card { background: white; padding: 30px; border-radius: 16px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+    input { width: 100%; padding: 12px; margin: 5px 0 15px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
+    label { display: block; text-align: left; font-size: 12px; font-weight: 600; margin-left: 2px; }
+    button { width: 100%; padding: 12px; background: var(--verde-escuro); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2 style="color: #1b4332;">Nova Senha</h2>
+    <form id="formReset">
+        <label>Email</label>
+        <input type="email" id="email" required>
+        
+        <label>Token (recebido por email)</label>
+        <input type="text" id="token" required>
+        
+        <label>Nova Senha</label>
+        <input type="password" id="senha" minlength="6" required>
+        
+        <button type="submit">Alterar Senha</button>
+    </form>
+    <p id="msg" style="margin-top: 15px; font-size: 13px; color: green;"></p>
+  </div>
+
+  <script>
+    document.getElementById('formReset').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const data = {
+            email: document.getElementById('email').value,
+            token: document.getElementById('token').value,
+            novaSenha: document.getElementById('senha').value
+        };
+        
+        try {
+            const res = await fetch('/api/auth/senha/resetar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            
+            if(res.ok) {
+                document.getElementById('msg').innerText = 'Senha alterada! Redirecionando...';
+                setTimeout(() => window.location.href = 'pages/login/index.html', 2000);
+            } else {
+                alert('Token inválido ou expirado.');
+            }
+        } catch(err) {
+            alert('Erro ao conectar.');
+        }
+    });
+  </script>
+</body>
+</html>

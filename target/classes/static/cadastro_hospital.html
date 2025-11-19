@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PetOne - Cadastro de Hospital</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <!-- Reusando estilos do cadastro_tutor para consistência -->
+  <style>
+    :root { --verde-claro: #d8f3dc; --verde-card: #b7e4c7; --verde-escuro: #1b4332; --verde-escuro-hover: #163326; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Poppins", sans-serif; }
+    body { background-color: var(--verde-claro); color: #0f172a; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+    .container { width: 100%; max-width: 700px; }
+    .card { background-color: white; border-radius: 16px; padding: 32px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+    h1 { color: var(--verde-escuro); text-align: center; margin-bottom: 24px; }
+    .form-group { margin-bottom: 16px; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    label { display: block; margin-bottom: 6px; font-size: 14px; font-weight: 500; }
+    input { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; transition: border-color 0.2s; }
+    input:focus { border-color: var(--verde-escuro); border-width: 2px; }
+    .btn { width: 100%; padding: 14px; background-color: var(--verde-escuro); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 10px; transition: background 0.2s; }
+    .btn:hover { background-color: var(--verde-escuro-hover); }
+    .error { color: #dc2626; font-size: 12px; text-align: center; margin-bottom: 10px; }
+    .footer-link { text-align: center; margin-top: 20px; font-size: 14px; }
+    .footer-link a { color: var(--verde-escuro); text-decoration: none; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>Parceiro PetOne (Hospital)</h1>
+      <form id="formCadastro">
+        <div class="grid-2">
+            <div class="form-group">
+                <label>Nome Fantasia</label>
+                <input type="text" id="nome" required>
+            </div>
+            <div class="form-group">
+                <label>CNPJ</label>
+                <input type="text" id="cnpj" required>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div class="form-group">
+                <label>Email Comercial</label>
+                <input type="email" id="email" required>
+            </div>
+            <div class="form-group">
+                <label>Telefone</label>
+                <input type="tel" id="telefone" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Endereço Completo</label>
+            <input type="text" id="endereco" required>
+        </div>
+
+        <div class="grid-2">
+            <div class="form-group">
+                <label>Vet. Responsável</label>
+                <input type="text" id="vet" required>
+            </div>
+            <div class="form-group">
+                <label>CRMV</label>
+                <input type="text" id="crmv" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Classificação de Serviço (1 a 4)</label>
+            <input type="number" id="classificacao" min="1" max="4" required>
+        </div>
+
+        <div class="grid-2">
+            <div class="form-group">
+                <label>Senha</label>
+                <input type="password" id="senha" minlength="6" required>
+            </div>
+            <div class="form-group">
+                <label>Confirmar Senha</label>
+                <input type="password" id="senhaConfirma" required>
+            </div>
+        </div>
+        
+        <p id="msgErro" class="error"></p>
+        
+        <button type="submit" class="btn">Cadastrar Unidade</button>
+      </form>
+      <div class="footer-link">
+        Já é parceiro? <a href="pages/login/index.html">Acesse sua conta</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('formCadastro').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const msgErro = document.getElementById('msgErro');
+      msgErro.textContent = '';
+
+      const senha = document.getElementById('senha').value;
+      const senhaConfirma = document.getElementById('senhaConfirma').value;
+
+      if (senha !== senhaConfirma) {
+        msgErro.textContent = 'As senhas não coincidem.';
+        return;
+      }
+
+      const data = {
+        nomeFantasia: document.getElementById('nome').value,
+        cnpj: document.getElementById('cnpj').value,
+        emailHospital: document.getElementById('email').value,
+        telefoneHospital: document.getElementById('telefone').value,
+        endereco: document.getElementById('endereco').value,
+        veterinarioResponsavel: document.getElementById('vet').value,
+        crmvVeterinario: document.getElementById('crmv').value,
+        classificacaoServico: parseInt(document.getElementById('classificacao').value),
+        senha: senha
+      };
+
+      try {
+        const response = await fetch('/api/auth/cadastro/hospital', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+            alert("Cadastro realizado com sucesso! Faça o login.");
+            window.location.href = 'pages/login/hospital.html'; // Ou index, dependendo do fluxo
+        } else {
+            const errorText = await response.text();
+            msgErro.textContent = `Erro: ${errorText}`;
+        }
+      } catch (error) {
+        msgErro.textContent = 'Erro ao conectar com o servidor.';
+      }
+    });
+  </script>
+</body>
+</html>

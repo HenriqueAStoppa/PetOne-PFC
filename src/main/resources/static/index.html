@@ -1,535 +1,104 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PetOne - Emergência Veterinária</title>
-    <!-- Carregando Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Carregando biblioteca de ícones -->
-    <script src="https://unpkg.com/phosphor-icons"></script>
-    <style>
-        /* Fonte Inter (similar ao design moderno) */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        body {
-            font-family: 'Inter', sans-serif;
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PetOne - Emergência Veterinária</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'verde-claro': '#d8f3dc',
+            'verde-card': '#b7e4c7',
+            'verde-escuro': '#1b4332',
+            'verde-escuro-hover': '#163326',
+          },
+          fontFamily: {
+            sans: ['Poppins', 'sans-serif'],
+          }
         }
-        /* Animação de pulso para o botão de emergência */
-        .animate-pulse-slow {
-            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-        @keyframes pulse {
-            0%, 100% {
-                opacity: 1;
-                transform: scale(1);
-            }
-            50% {
-                opacity: 0.8;
-                transform: scale(1.05);
-            }
-        }
-        /* Efeito de fade-in para modais */
-        .modal-backdrop {
-            transition: opacity 0.3s ease-in-out;
-        }
-        .modal-content {
-            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
-        }
-        .modal-hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-        .modal-visible {
-            opacity: 1;
-            pointer-events: auto;
-        }
-        .modal-content.modal-hidden {
-            transform: translateY(20px);
-            opacity: 0;
-        }
-        .modal-content.modal-visible {
-            transform: translateY(0);
-            opacity: 1;
-        }
-    </style>
+      }
+    }
+  </script>
 </head>
-<body class="bg-gray-100 text-gray-800">
+<body class="bg-verde-claro text-gray-900 min-h-screen flex flex-col">
 
-    <!-- Wrapper Principal -->
-    <div class="min-h-screen flex flex-col">
-
-        <!-- Header (Navegação) -->
-        <header class="bg-white shadow-md sticky top-0 z-50">
-            <nav class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between items-center h-16">
-                    <!-- Logo -->
-                    <div class="flex-shrink-0 flex items-center">
-                        <i class="ph-first-aid-kit text-3xl text-red-600"></i>
-                        <span class="text-2xl font-bold text-gray-800 ml-2">PetOne</span>
-                    </div>
-                    
-                    <!-- Links de Navegação (Desktop) -->
-                    <div class="hidden sm:flex sm:items-center sm:space-x-6">
-                        <a href="#" class="text-gray-600 hover:text-red-600 px-3 py-2 text-sm font-medium">Home</a>
-                        <a href="#" class="text-gray-600 hover:text-red-600 px-3 py-2 text-sm font-medium">Sobre Nós</a>
-                        <a href="#" class="text-gray-600 hover:text-red-600 px-3 py-2 text-sm font-medium">Hospitais</a>
-                        
-                        <!-- Botões de Auth (Simulado) -->
-                        <button onclick="showModal('modal-login-tutor')" class="text-gray-700 bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg text-sm font-medium">
-                            Login Tutor
-                        </button>
-                        <button onclick="showModal('modal-login-hospital')" class="text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-sm font-medium">
-                            Login Hospital
-                        </button>
-                    </div>
-                    
-                    <!-- Botão Menu (Mobile) -->
-                    <div class="sm:hidden">
-                        <button class="text-gray-600 hover:text-red-600">
-                            <i class="ph-list text-3xl"></i>
-                        </button>
-                    </div>
-                </div>
-            </nav>
-        </header>
-
-        <!-- Conteúdo Principal (Home) -->
-        <main class="flex-grow">
-            <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 text-center">
-                
-                <!-- Hero Section -->
-                <div class="bg-white p-8 rounded-xl shadow-lg">
-                    <i class="ph-heartbeat text-7xl text-red-500 mx-auto"></i>
-                    <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mt-4">
-                        Seu pet está em uma emergência?
-                    </h1>
-                    <p class="text-lg text-gray-600 mt-4 max-w-2xl mx-auto">
-                        Não perca tempo. Toque no botão abaixo para registrar a emergência e encontrar o hospital veterinário mais próximo imediatamente.
-                    </p>
-                    
-                    <!-- Botão de Emergência Principal -->
-                    <div class="mt-10">
-                        <button 
-                            id="btn-emergencia"
-                            class="animate-pulse-slow w-full sm:w-auto text-xl sm:text-2xl font-bold text-white bg-red-600 hover:bg-red-700 shadow-xl rounded-full px-10 py-5 transition-transform transform hover:scale-105"
-                        >
-                            <span class="flex items-center justify-center">
-                                <i class="ph-warning-circle-fill text-3xl mr-3"></i>
-                                REGISTRAR EMERGÊNCIA
-                            </span>
-                        </button>
-                    </div>
-                </div>
-
-            </div>
-        </main>
-
-        <!-- Footer -->
-        <footer class="bg-gray-800 text-gray-300 py-8">
-            <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
-                <p>&copy; 2025 PetOne. Todos os direitos reservados.</p>
-                <p class="text-sm text-gray-500 mt-1">Projeto de TCC - Henrique A. Stoppa</p>
-            </div>
-        </footer>
-
-    </div>
-    <!-- Fim do Wrapper Principal -->
-
-    <!-- ====================================================== -->
-    <!-- MODAIS (Login, Formulário, Sucesso) -->
-    <!-- ====================================================== -->
-
-    <!-- Modal: Login Tutor (Simulação) -->
-    <div id="modal-login-tutor" class="modal-backdrop fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 modal-hidden">
-        <div class="modal-content modal-hidden bg-white w-full max-w-md p-6 rounded-xl shadow-2xl">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-2xl font-bold text-gray-800">Login do Tutor</h2>
-                <button onclick="hideModal('modal-login-tutor')" class="text-gray-500 hover:text-gray-800">
-                    <i class="ph-x text-2xl"></i>
-                </button>
-            </div>
-            
-            <form id="form-login-tutor">
-                <div class="mb-4">
-                    <label for="login-tutor-email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                    <input type="email" id="login-tutor-email" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="voce@email.com" required>
-                </div>
-                <div class="mb-5">
-                    <label for="login-tutor-senha" class="block text-sm font-medium text-gray-700 mb-1">Senha</label>
-                    <input type="password" id="login-tutor-senha" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="••••••••" required>
-                </div>
-                <button type="submit" class="w-full bg-red-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-red-700 transition-colors">
-                    Entrar
-                </button>
-                <!-- Mensagem de Erro/Sucesso -->
-                <div id="msg-login-tutor" class="mt-3 text-sm text-center"></div>
-            </form>
+  <!-- Navegação -->
+  <nav class="bg-white/90 backdrop-blur-md shadow-sm sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16 items-center">
+        <div class="flex items-center">
+          <div class="w-10 h-10 rounded-full bg-verde-escuro text-white flex items-center justify-center font-bold text-xl mr-2">P1</div>
+          <span class="font-bold text-2xl text-verde-escuro">PetOne</span>
         </div>
-    </div>
-    
-    <!-- Modal: Login Hospital (Simulação) -->
-    <div id="modal-login-hospital" class="modal-backdrop fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 modal-hidden">
-        <div class="modal-content modal-hidden bg-white w-full max-w-md p-6 rounded-xl shadow-2xl">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-2xl font-bold text-gray-800">Login do Hospital</h2>
-                <button onclick="hideModal('modal-login-hospital')" class="text-gray-500 hover:text-gray-800">
-                    <i class="ph-x text-2xl"></i>
-                </button>
-            </div>
-            <!-- (Formulário de login do hospital... omitido por brevidade) -->
-            <p class="text-gray-600">O formulário de login do hospital iria aqui.</p>
+        <div class="hidden md:flex space-x-4">
+          <a href="pages/login/index.html" class="text-verde-escuro font-medium hover:text-verde-escuro-hover py-2 px-4">Login</a>
+          <a href="cadastro_tutor.html" class="bg-verde-escuro text-white font-medium py-2 px-4 rounded-full hover:bg-verde-escuro-hover transition">Cadastrar-se</a>
         </div>
+      </div>
     </div>
+  </nav>
 
+  <!-- Hero Section -->
+  <main class="flex-grow flex items-center justify-center px-4 py-12">
+    <div class="max-w-4xl w-full text-center">
+      <h1 class="text-4xl md:text-6xl font-bold text-verde-escuro mb-6">
+        Emergência Veterinária <br/> ao seu Alcance
+      </h1>
+      <p class="text-lg md:text-xl text-gray-700 mb-10 max-w-2xl mx-auto">
+        Conectamos você ao hospital veterinário mais próximo quando cada segundo conta. Rápido, seguro e vital para o seu pet.
+      </p>
+      
+      <div class="flex flex-col sm:flex-row justify-center gap-4">
+        <button onclick="iniciarEmergencia()" class="bg-red-600 text-white text-lg font-bold py-4 px-8 rounded-full shadow-lg hover:bg-red-700 transform hover:scale-105 transition animate-pulse">
+          🚨 INICIAR CHAMADO DE EMERGÊNCIA
+        </button>
+        <a href="cadastro_hospital.html" class="bg-white text-verde-escuro border-2 border-verde-escuro text-lg font-semibold py-4 px-8 rounded-full hover:bg-verde-claro transition">
+          Sou um Hospital
+        </a>
+      </div>
 
-    <!-- Modal: Formulário de Emergência (Passo 1: Selecionar Animal) -->
-    <div id="modal-emergencia-passo-1" class="modal-backdrop fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 modal-hidden">
-        <div class="modal-content modal-hidden bg-white w-full max-w-lg p-6 rounded-xl shadow-2xl">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-2xl font-bold text-gray-800">Registrar Emergência</h2>
-                <button onclick="hideModal('modal-emergencia-passo-1')" class="text-gray-500 hover:text-gray-800">
-                    <i class="ph-x text-2xl"></i>
-                </button>
-            </div>
-            
-            <form id="form-emergencia-animal">
-                <p class="text-gray-600 mb-4">Passo 1 de 2: Selecione o animal que está em emergência.</p>
-                <div class="mb-4">
-                    <label for="select-animal" class="block text-sm font-medium text-gray-700 mb-1">Meus Animais</label>
-                    <select id="select-animal" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" required>
-                        <!-- (Carregado via API) -->
-                    </select>
-                </div>
-                <div id="loading-animais" class="text-center text-gray-600">
-                    <i class="ph-spinner-gap text-3xl animate-spin"></i>
-                    <p>Buscando seus animais...</p>
-                </div>
-                <button type="submit" id="btn-goto-passo-2" class="w-full bg-red-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-red-700 transition-colors mt-2" disabled>
-                    Avançar
-                </button>
-            </form>
+      <!-- Info Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16 text-left">
+        <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition">
+          <div class="text-3xl mb-4">📍</div>
+          <h3 class="font-bold text-xl text-verde-escuro mb-2">Localização Rápida</h3>
+          <p class="text-gray-600">Encontramos a unidade mais próxima com base na sua localização e necessidade.</p>
         </div>
-    </div>
-
-    <!-- Modal: Formulário de Emergência (Passo 2: Descrever Sintoma) -->
-    <div id="modal-emergencia-passo-2" class="modal-backdrop fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 modal-hidden">
-        <div class="modal-content modal-hidden bg-white w-full max-w-lg p-6 rounded-xl shadow-2xl">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-2xl font-bold text-gray-800">Registrar Emergência</h2>
-                <button onclick="hideModal('modal-emergencia-passo-2'); showModal('modal-emergencia-passo-1');" class="text-gray-500 hover:text-gray-800">
-                    <i class="ph-x text-2xl"></i>
-                </button>
-            </div>
-            
-            <form id="form-emergencia-sintoma">
-                <p class="text-gray-600 mb-4">Passo 2 de 2: Qual o principal sintoma ou causa?</p>
-                
-                <div class="mb-4">
-                    <label for="select-sintoma" class="block text-sm font-medium text-gray-700 mb-1">Sintoma/Sinal/Causa</label>
-                    <select id="select-sintoma" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" required>
-                        <option value="" disabled selected>Selecione uma opção</option>
-                        <option value="Hemorragia externa">Hemorragia externa</option>
-                        <option value="Convulsão">Convulsão</option>
-                        <option value="Engasgo/Obstrução por objeto">Engasgo/Obstrução por objeto</option>
-                        <option value="Reações alérgicas (Inchaço, salivação intensa, etc)">Reações alérgicas (Inchaço, salivação, etc)</option>
-                        <option value="Trauma/Atropelamento/Briga de animal">Trauma/Atropelamento/Briga</option>
-                        <option value="Desmaio">Desmaio</option>
-                        <option value="Picada de animais peçonhentos">Picada de animais peçonhentos (Cobra, aranha, etc)</option>
-                        <option value="Envenenamento">Envenenamento</option>
-                        <option value="Queda">Queda</option>
-                        <option value="Perfuração no animal">Perfuração no animal</option>
-                    </select>
-                </div>
-                
-                <button type="submit" id="btn-submit-emergencia" class="w-full bg-red-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-red-700 transition-colors mt-2">
-                    <span class="btn-text">ENCONTRAR HOSPITAL AGORA</span>
-                    <span class="btn-loading hidden items-center justify-center">
-                        <i class="ph-spinner-gap text-xl animate-spin mr-2"></i>
-                        Processando...
-                    </span>
-                </button>
-                <!-- Mensagem de Erro/Sucesso -->
-                <div id="msg-emergencia-sintoma" class="mt-3 text-sm text-center"></div>
-            </form>
+        <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition">
+          <div class="text-3xl mb-4">⚡</div>
+          <h3 class="font-bold text-xl text-verde-escuro mb-2">Alerta Imediato</h3>
+          <p class="text-gray-600">O hospital é notificado antes mesmo de você chegar, agilizando o atendimento.</p>
         </div>
-    </div>
-    
-    <!-- Modal: Sucesso da Emergência (Passo 3: Encaminhamento) -->
-    <div id="modal-emergencia-sucesso" class="modal-backdrop fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 modal-hidden">
-        <div class="modal-content modal-hidden bg-white w-full max-w-lg p-6 rounded-xl shadow-2xl text-center">
-            <i class="ph-check-circle-fill text-6xl text-green-500 mx-auto"></i>
-            <h2 class="text-2xl font-bold text-gray-800 mt-4">Emergência Registrada!</h2>
-            
-            <div id="msg-sucesso-emergencia" class="text-gray-600 mt-2 mb-6">
-                <!-- (Conteúdo dinâmico) -->
-            </div>
-            
-            <!-- (Simulação do Google Maps) -->
-            <div class="bg-gray-200 w-full h-48 rounded-lg flex items-center justify-center text-gray-500 mb-4">
-                (Simulação da API do Google Maps com a rota)
-            </div>
-            
-            <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-800 p-4 rounded-lg text-left">
-                <h4 class="font-bold">Hospital Encontrado:</h4>
-                <p id="hospital-nome"></p>
-                <p id="hospital-endereco"></p>
-                <p id="hospital-telefone"></p>
-            </div>
-            
-            <button onclick="hideModal('modal-emergencia-sucesso')" class="w-full bg-gray-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-gray-700 transition-colors mt-6">
-                Fechar
-            </button>
+        <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition">
+          <div class="text-3xl mb-4">📄</div>
+          <h3 class="font-bold text-xl text-verde-escuro mb-2">Histórico Digital</h3>
+          <p class="text-gray-600">Mantenha todos os registros de saúde e emergências do seu pet em um só lugar.</p>
         </div>
+      </div>
     </div>
+  </main>
 
+  <footer class="bg-verde-escuro text-white py-8 mt-12">
+    <div class="max-w-7xl mx-auto px-4 text-center">
+      <p>&copy; 2025 PetOne. Salve vidas com tecnologia.</p>
+    </div>
+  </footer>
 
-    <!-- ====================================================== -->
-    <!-- JAVASCRIPT (Lógica da Página) -->
-    <!-- ====================================================== -->
-    <script>
-        // --- Gerenciamento de Estado (Simulado) ---
-        // Em um app real, o token viria do localStorage após o login
-        let GLOBAL_STATE = {
-            // (Token JWT - Adicionar o token real aqui para testes)
-            jwtToken: null, 
-            // (Dados do formulário)
-            selectedAnimalId: null,
-            selectedSintoma: null
-        };
-
-        // --- Funções Auxiliares de UI (Modais) ---
-        function showModal(modalId) {
-            const modal = document.getElementById(modalId);
-            if (modal) {
-                modal.classList.remove('modal-hidden');
-                modal.classList.add('modal-visible');
-                // Adiciona delay para a animação do conteúdo
-                setTimeout(() => {
-                    modal.querySelector('.modal-content').classList.remove('modal-hidden');
-                    modal.querySelector('.modal-content').classList.add('modal-visible');
-                }, 50);
-            }
-        }
-
-        function hideModal(modalId) {
-            const modal = document.getElementById(modalId);
-            if (modal) {
-                modal.querySelector('.modal-content').classList.remove('modal-visible');
-                modal.querySelector('.modal-content').classList.add('modal-hidden');
-                // Adiciona delay para a animação do conteúdo
-                setTimeout(() => {
-                    modal.classList.remove('modal-visible');
-                    modal.classList.add('modal-hidden');
-                }, 300);
-            }
-        }
-        
-        // --- Funções Auxiliares de UI (Botões) ---
-        function setButtonLoading(button, isLoading) {
-            const text = button.querySelector('.btn-text');
-            const loading = button.querySelector('.btn-loading');
-            
-            if (isLoading) {
-                button.disabled = true;
-                text.classList.add('hidden');
-                loading.classList.remove('hidden');
-                loading.classList.add('flex');
-            } else {
-                button.disabled = false;
-                text.classList.remove('hidden');
-                loading.classList.add('hidden');
-                loading.classList.remove('flex');
-            }
-        }
-        
-        // --- Funções Auxiliares de API ---
-        
-        /**
-         * Função de fetch (API) genérica
-         */
-        async function fetchApi(endpoint, method = 'GET', body = null) {
-            const headers = {
-                'Content-Type': 'application/json',
-            };
-            
-            // Adiciona o token JWT se ele existir
-            if (GLOBAL_STATE.jwtToken) {
-                headers['Authorization'] = `Bearer ${GLOBAL_STATE.jwtToken}`;
-            }
-
-            const config = {
-                method: method,
-                headers: headers,
-            };
-
-            if (body) {
-                config.body = JSON.stringify(body);
-            }
-
-            try {
-                const response = await fetch(endpoint, config);
-                
-                // Tenta parsear JSON
-                const data = await response.json().catch(() => null);
-
-                if (!response.ok) {
-                    // Se a resposta (data) for string (erro do backend), usa ela
-                    const errorMessage = (data && typeof data === 'string') ? data : (data?.message || `Erro ${response.status}`);
-                    throw new Error(errorMessage);
-                }
-                
-                return data; // Retorna os dados (JSON)
-
-            } catch (error) {
-                console.error(`Erro na chamada API (${endpoint}):`, error);
-                throw error; // Re-lança o erro para ser pego pelo .catch()
-            }
-        }
-        
-
-        // --- Lógica de Login (Tutor) ---
-        
-        const formLoginTutor = document.getElementById('form-login-tutor');
-        const msgLoginTutor = document.getElementById('msg-login-tutor');
-        
-        formLoginTutor.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            msgLoginTutor.textContent = '';
-            msgLoginTutor.classList.remove('text-red-600', 'text-green-600');
-            
-            const email = document.getElementById('login-tutor-email').value;
-            const senha = document.getElementById('login-tutor-senha').value;
-            
-            try {
-                const data = await fetchApi('/api/auth/login/tutor', 'POST', { email, senha });
-                
-                // Sucesso!
-                GLOBAL_STATE.jwtToken = data.token;
-                msgLoginTutor.textContent = `Bem-vindo, ${data.nomeCompleto}! Token salvo.`;
-                msgLoginTutor.classList.add('text-green-600');
-                
-                // (Em um app real, salvaria no localStorage e fecharia o modal)
-                // localStorage.setItem('jwtToken', data.token);
-                
-                setTimeout(() => {
-                    hideModal('modal-login-tutor');
-                }, 1500);
-
-            } catch (error) {
-                // Erro (ex: "Credenciais inválidas")
-                msgLoginTutor.textContent = error.message;
-                msgLoginTutor.classList.add('text-red-600');
-            }
-        });
-        
-
-        // --- Lógica de Emergência (Passo 1: Botão e carregar animais) ---
-        
-        const btnEmergencia = document.getElementById('btn-emergencia');
-        const selectAnimal = document.getElementById('select-animal');
-        const loadingAnimais = document.getElementById('loading-animais');
-        const btnGotoPasso2 = document.getElementById('btn-goto-passo-2');
-        
-        // (Ao clicar no botão vermelho da Home)
-        btnEmergencia.addEventListener('click', async () => {
-            // 1. Verifica se está logado
-            if (!GLOBAL_STATE.jwtToken) {
-                // (Simulação: Se não estiver logado, pede o login)
-                showModal('modal-login-tutor');
-                msgLoginTutor.textContent = "Você precisa estar logado para registrar uma emergência.";
-                msgLoginTutor.classList.add('text-red-600');
-                return;
-            }
-            
-            // 2. Se estiver logado, abre o Passo 1
-            showModal('modal-emergencia-passo-1');
-            
-            // 3. Busca os animais do tutor logado
-            try {
-                loadingAnimais.style.display = 'block';
-                selectAnimal.innerHTML = '<option value="" disabled selected>Carregando...</option>';
-                btnGotoPasso2.disabled = true;
-
-                const animais = await fetchApi('/api/animais', 'GET');
-                
-                if (animais.length === 0) {
-                    selectAnimal.innerHTML = '<option value="" disabled>Você não tem animais cadastrados.</option>';
-                    loadingAnimais.style.display = 'none';
-                    return;
-                }
-
-                // Preenche o <select>
-                selectAnimal.innerHTML = '<option value="" disabled selected>Selecione um animal</option>';
-                animais.forEach(animal => {
-                    const option = document.createElement('option');
-                    option.value = animal.idAnimal;
-                    option.textContent = `${animal.nomeAnimal} (${animal.especie} - ${animal.raca})`;
-                    selectAnimal.appendChild(option);
-                });
-                
-                loadingAnimais.style.display = 'none';
-                btnGotoPasso2.disabled = false;
-
-            } catch (error) {
-                loadingAnimais.textContent = `Erro ao buscar animais: ${error.message}`;
-            }
-        });
-        
-        // (Ao avançar do Passo 1)
-        document.getElementById('form-emergencia-animal').addEventListener('submit', (e) => {
-            e.preventDefault();
-            GLOBAL_STATE.selectedAnimalId = selectAnimal.value;
-            hideModal('modal-emergencia-passo-1');
-            showModal('modal-emergencia-passo-2');
-        });
-        
-
-        // --- Lógica de Emergência (Passo 2: Enviar formulário) ---
-        
-        const formSintoma = document.getElementById('form-emergencia-sintoma');
-        const selectSintoma = document.getElementById('select-sintoma');
-        const btnSubmitEmergencia = document.getElementById('btn-submit-emergencia');
-        const msgSintoma = document.getElementById('msg-emergencia-sintoma');
-
-        formSintoma.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            setButtonLoading(btnSubmitEmergencia, true);
-            msgSintoma.textContent = '';
-            msgSintoma.classList.remove('text-red-600');
-            
-            GLOBAL_STATE.selectedSintoma = selectSintoma.value;
-
-            // Prepara o DTO de requisição
-            const body = {
-                idAnimal: GLOBAL_STATE.selectedAnimalId,
-                tipoEmergencia: GLOBAL_STATE.selectedSintoma
-                // (Adicionar lat/lon aqui se estiver usando)
-            };
-
-            try {
-                // (Chama o backend - /api/emergencia/iniciar)
-                const data = await fetchApi('/api/emergencia/iniciar', 'POST', body);
-                
-                // (Sucesso! Mostra o modal de Sucesso)
-                setButtonLoading(btnSubmitEmergencia, false);
-                
-                document.getElementById('msg-sucesso-emergencia').textContent = data.mensagem;
-                document.getElementById('hospital-nome').textContent = data.hospitalEncontrado.nomeFantasia;
-                document.getElementById('hospital-endereco').textContent = data.hospitalEncontrado.endereco;
-                document.getElementById('hospital-telefone').textContent = data.hospitalEncontrado.telefoneHospital;
-                
-                hideModal('modal-emergencia-passo-2');
-                showModal('modal-emergencia-sucesso');
-
-            } catch (error) {
-                // (Erro do backend, ex: "Nenhum hospital encontrado")
-                setButtonLoading(btnSubmitEmergGncia, false);
-                msgSintoma.textContent = error.message;
-                msgSintoma.classList.add('text-red-600');
-            }
-        });
-
-    </script>
-
+  <script>
+    function iniciarEmergencia() {
+      const token = localStorage.getItem('petone_token');
+      if (!token) {
+        alert("Para sua segurança e agilidade, faça login ou cadastre-se antes de iniciar um chamado.");
+        window.location.href = 'pages/login/index.html';
+      } else {
+        // Redireciona para a página de formulário de emergência (ou abre modal)
+        window.location.href = 'emergencia.html'; 
+      }
+    }
+  </script>
 </body>
 </html>
