@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard do Tutor - PetOne</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'verde-claro': '#d8f3dc',
+                        'verde-card': '#b7e4c7',
+                        'verde-escuro': '#1b4332',
+                        'verde-escuro-hover': '#163326',
+                        'vermelho-emergencia': '#ef4444',
+                        'vermelho-hover': '#dc2626',
+                    },
+                    fontFamily: { sans: ['Poppins', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #f0fdf4; }
+        .modal { display: none; }
+        .modal.flex { display: flex; }
+    </style>
+</head>
+<body class="min-h-screen text-gray-800">
+
+    <!-- Header -->
+    <header class="bg-white shadow-md sticky top-0 z-30">
+        <nav class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center">
+                <div class="w-8 h-8 rounded-full bg-verde-escuro text-white flex items-center justify-center font-bold text-sm mr-2">P1</div>
+                <span class="text-xl font-bold text-verde-escuro">Área do Tutor</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <span id="user-nome-nav" class="hidden md:inline text-sm font-medium text-gray-600">Olá, Tutor</span>
+                <a href="./index.html" class="text-gray-600 hover:text-verde-escuro font-medium text-sm">Home</a>
+                <button id="btn-logout" class="text-red-600 hover:text-red-800 text-sm font-medium flex items-center gap-1">
+                    <i data-lucide="log-out" class="w-4 h-4"></i> Sair
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <main class="max-w-7xl mx-auto px-6 py-10">
+        
+        <!-- Botão de Emergência (Destaque) -->
+        <div class="mb-10 text-center">
+             <button onclick="iniciarEmergencia()" class="inline-block w-full md:w-auto bg-vermelho-emergencia hover:bg-vermelho-hover text-white font-bold py-4 px-10 rounded-full shadow-lg transform hover:scale-105 transition animate-pulse flex items-center justify-center gap-2 mx-auto">
+                <i data-lucide="siren" class="w-6 h-6"></i>
+                NOVA EMERGÊNCIA
+             </button>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Coluna da Esquerda: Perfil e Logs -->
+            <div class="lg:col-span-1 space-y-8">
+                
+                <!-- Card: Perfil -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-verde-card">
+                    <h2 class="text-lg font-bold text-verde-escuro mb-4 border-b border-verde-claro pb-2 flex items-center gap-2">
+                        <i data-lucide="user" class="w-5 h-5"></i> Meu Perfil
+                    </h2>
+                    <form id="form-perfil-tutor" class="space-y-3 text-sm">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase">Nome</label>
+                            <input type="text" id="perfil-nome" class="w-full mt-1 p-2 bg-gray-50 border rounded-lg focus:ring-verde-escuro focus:border-verde-escuro" required>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase">Email</label>
+                            <input type="text" id="perfil-email" class="w-full mt-1 p-2 bg-gray-100 border rounded-lg text-gray-500 cursor-not-allowed" readonly>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase">Telefone</label>
+                            <input type="tel" id="perfil-telefone" class="w-full mt-1 p-2 bg-gray-50 border rounded-lg focus:ring-verde-escuro focus:border-verde-escuro" required>
+                        </div>
+                        <div>
+                             <label class="block text-xs font-semibold text-gray-500 uppercase">Nascimento</label>
+                             <input type="date" id="perfil-nascimento" class="w-full mt-1 p-2 bg-gray-50 border rounded-lg focus:ring-verde-escuro focus:border-verde-escuro" required>
+                        </div>
+                        <button type="submit" class="w-full bg-verde-escuro text-white py-2 rounded-lg hover:bg-verde-escuro-hover transition text-xs font-bold uppercase tracking-wide">Salvar Alterações</button>
+                    </form>
+                    <button id="btn-delete-perfil" class="w-full mt-4 text-red-400 text-xs hover:text-red-600 hover:underline text-center">Excluir minha conta</button>
+                </div>
+
+                <!-- Card: Histórico -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-verde-card">
+                    <h2 class="text-lg font-bold text-verde-escuro mb-4 border-b border-verde-claro pb-2 flex items-center gap-2">
+                        <i data-lucide="history" class="w-5 h-5"></i> Histórico
+                    </h2>
+                    <div id="lista-logs" class="space-y-3 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
+                        <p class="text-gray-400 text-sm text-center py-4">Carregando...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Coluna da Direita: Animais -->
+            <div class="lg:col-span-2">
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-verde-card min-h-[500px]">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-verde-escuro flex items-center gap-2">
+                            <i data-lucide="dog" class="w-6 h-6"></i> Meus Animais
+                        </h2>
+                        <button id="btn-show-add-animal" class="bg-verde-escuro text-white py-2 px-4 rounded-full hover:bg-verde-escuro-hover shadow-md transition flex items-center gap-1 text-sm font-bold">
+                            <i data-lucide="plus" class="w-4 h-4"></i> Adicionar Pet
+                        </button>
+                    </div>
+                    
+                    <div id="lista-animais" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <p class="text-gray-400 col-span-2 text-center py-10">Carregando seus pets...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Animal -->
+    <div id="modal-animal" class="modal fixed inset-0 bg-black bg-opacity-60 z-50 items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-lg relative transform transition-all scale-100">
+            <button id="btn-close-modal-animal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+            <h3 id="modal-animal-titulo" class="text-2xl font-bold text-verde-escuro mb-6 text-center">Dados do Pet</h3>
+            
+            <form id="form-animal" class="space-y-4">
+                <input type="hidden" id="animal-id">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Nome</label>
+                        <input type="text" id="animal-nome" required class="w-full p-2 border rounded-lg bg-gray-50 focus:ring-verde-escuro focus:border-verde-escuro">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Idade (anos)</label>
+                        <input type="number" id="animal-idade" required min="0" class="w-full p-2 border rounded-lg bg-gray-50 focus:ring-verde-escuro focus:border-verde-escuro">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Espécie</label>
+                        <input type="text" id="animal-especie" placeholder="Ex: Cão" required class="w-full p-2 border rounded-lg bg-gray-50 focus:ring-verde-escuro focus:border-verde-escuro">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Raça</label>
+                        <input type="text" id="animal-raca" placeholder="Ex: Poodle" required class="w-full p-2 border rounded-lg bg-gray-50 focus:ring-verde-escuro focus:border-verde-escuro">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Sexo</label>
+                    <div class="flex gap-4 mt-1">
+                        <label class="inline-flex items-center cursor-pointer"><input type="radio" name="sexo" value="Macho" checked class="text-verde-escuro focus:ring-verde-escuro"> <span class="ml-2 text-sm">Macho</span></label>
+                        <label class="inline-flex items-center cursor-pointer"><input type="radio" name="sexo" value="Fêmea" class="text-verde-escuro focus:ring-verde-escuro"> <span class="ml-2 text-sm">Fêmea</span></label>
+                    </div>
+                </div>
+                
+                <div class="bg-verde-claro/30 p-4 rounded-lg border border-verde-card space-y-2">
+                    <label class="flex items-center space-x-2 cursor-pointer">
+                        <input type="checkbox" id="animal-castrado" class="w-4 h-4 text-verde-escuro rounded focus:ring-verde-escuro">
+                        <span class="text-sm font-medium text-gray-700">É castrado?</span>
+                    </label>
+                    <label class="flex items-center space-x-2 cursor-pointer">
+                        <input type="checkbox" id="animal-medicacao" class="w-4 h-4 text-verde-escuro rounded focus:ring-verde-escuro">
+                        <span class="text-sm font-medium text-gray-700">Usa medicação contínua?</span>
+                    </label>
+                    <div id="div-qual-medicacao" class="hidden mt-2">
+                        <input type="text" id="animal-qual-medicacao" placeholder="Qual medicação?" class="w-full p-2 border rounded-lg text-sm bg-white focus:ring-verde-escuro focus:border-verde-escuro">
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-verde-escuro text-white py-3 rounded-xl font-bold hover:bg-verde-escuro-hover shadow-md transition">Salvar Pet</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+        const API_URL = 'http://localhost:8080/api';
+        const token = localStorage.getItem('petone_token');
+        let cacheAnimais = [];
+
+        // Helper: Redireciona para emergência
+        function iniciarEmergencia() {
+             window.location.href = 'emergencia.html';
+        }
+
+        // Toggle medicação input
+        document.getElementById('animal-medicacao').addEventListener('change', function() {
+            document.getElementById('div-qual-medicacao').style.display = this.checked ? 'block' : 'none';
+        });
+
+        // Auth Check
+        function logout() {
+            localStorage.removeItem('petone_token');
+            localStorage.removeItem('petone_user_nome');
+            localStorage.removeItem('petone_user_id');
+            window.location.href = 'pages/login/index.html';
+        }
+        document.getElementById('btn-logout').addEventListener('click', logout);
+        if (!token) window.location.href = 'pages/login/index.html';
+
+        // Nome no Nav
+        const nomeUser = localStorage.getItem('petone_user_nome');
+        if(nomeUser) document.getElementById('user-nome-nav').textContent = `Olá, ${nomeUser.split(' ')[0]}`;
+
+        // API Fetcher Genérico
+        async function apiFetch(endpoint, options = {}) {
+            const headers = { 'Content-Type': 'application/json', ...options.headers, 'Authorization': `Bearer ${token}` };
+            const response = await fetch(`${API_URL}${endpoint}`, { ...options, headers });
+            if (response.status === 401 || response.status === 403) { logout(); return; }
+            if (!response.ok) throw new Error((await response.text()) || "Erro");
+            return response.headers.get('content-type')?.includes('json') ? response.json() : { ok: true };
+        }
+
+        // -- Loads --
+        document.addEventListener('DOMContentLoaded', () => {
+            carregarPerfilTutor();
+            carregarAnimais();
+            carregarLogs();
+        });
+
+        async function carregarPerfilTutor() {
+            try {
+                const tutor = await apiFetch('/tutor/me');
+                document.getElementById('perfil-nome').value = tutor.nomeCompleto;
+                document.getElementById('perfil-email').value = tutor.emailTutor;
+                document.getElementById('perfil-telefone').value = tutor.telefoneTutor;
+                document.getElementById('perfil-nascimento').value = tutor.dataNascimento;
+            } catch (e) { console.error(e); }
+        }
+
+        async function carregarAnimais() {
+            const div = document.getElementById('lista-animais');
+            try {
+                cacheAnimais = await apiFetch('/api/animais');
+                if (cacheAnimais.length === 0) {
+                    div.innerHTML = '<div class="col-span-2 text-center py-10 bg-white rounded-xl border border-dashed border-gray-300"><p class="text-gray-500">Você ainda não tem pets cadastrados.</p></div>';
+                    return;
+                }
+                div.innerHTML = '';
+                cacheAnimais.forEach(a => {
+                    const card = document.createElement('div');
+                    card.className = 'bg-white p-5 rounded-xl border border-gray-200 hover:shadow-md transition flex justify-between items-center group relative overflow-hidden';
+                    card.innerHTML = `
+                        <div class="absolute top-0 left-0 w-1 h-full bg-verde-escuro"></div>
+                        <div class="pl-3">
+                            <div class="flex items-center gap-2">
+                                <h4 class="font-bold text-lg text-verde-escuro">${a.nomeAnimal}</h4>
+                                <span class="bg-verde-claro text-verde-escuro text-xs px-2 py-0.5 rounded-full font-semibold">${a.especie}</span>
+                            </div>
+                            <p class="text-sm text-gray-600 mt-1">${a.raca}, ${a.idade} anos • ${a.sexo}</p>
+                            ${a.usaMedicacao ? `<p class="text-xs text-red-500 font-medium mt-1 flex items-center gap-1"><i data-lucide="pill" class="w-3 h-3"></i> ${a.qualMedicacao}</p>` : ''}
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="editarAnimal('${a.idAnimal}')" class="p-2 text-gray-400 hover:text-verde-escuro transition" title="Editar"><i data-lucide="edit-2" class="w-5 h-5"></i></button>
+                            <button onclick="deletarAnimal('${a.idAnimal}')" class="p-2 text-gray-400 hover:text-red-600 transition" title="Excluir"><i data-lucide="trash" class="w-5 h-5"></i></button>
+                        </div>
+                    `;
+                    div.appendChild(card);
+                });
+                lucide.createIcons();
+            } catch (e) { div.innerHTML = `<p class="text-red-500 col-span-2 text-center">Erro ao carregar animais.</p>`; }
+        }
+
+        async function carregarLogs() {
+            const div = document.getElementById('lista-logs');
+            try {
+                const logs = await apiFetch('/tutor/logs');
+                if (!logs.length) { div.innerHTML = '<p class="text-gray-400 text-xs text-center py-4">Nenhum registro encontrado.</p>'; return; }
+                div.innerHTML = '';
+                logs.forEach(l => {
+                    const date = new Date(l.dataHoraInicio).toLocaleDateString('pt-BR'); // Corrigido para dataHoraInicio
+                    const statusClass = l.status === 'Finalizado' ? 'bg-gray-100 text-gray-600' : 'bg-yellow-100 text-yellow-800';
+                    div.innerHTML += `
+                        <div class="p-3 rounded-lg border border-gray-100 hover:bg-gray-50 transition text-sm mb-2">
+                            <div class="flex justify-between mb-1 items-center">
+                                <span class="font-bold text-verde-escuro text-xs truncate w-32" title="${l.tipoEmergencia}">${l.tipoEmergencia}</span>
+                                <span class="text-[10px] px-2 py-0.5 rounded-full uppercase font-bold tracking-wide ${statusClass}">${l.status}</span>
+                            </div>
+                            <p class="text-gray-600 text-xs flex items-center gap-1"><i data-lucide="paw-print" class="w-3 h-3"></i> ${l.nomeAnimal} • ${date}</p>
+                            <p class="text-gray-500 text-xs mt-1 truncate flex items-center gap-1"><i data-lucide="building" class="w-3 h-3"></i> ${l.nomeFantasiaHospital}</p>
+                        </div>
+                    `;
+                });
+                lucide.createIcons();
+            } catch (e) { div.innerHTML = '<p class="text-red-500 text-xs text-center">Erro ao carregar logs.</p>'; }
+        }
+
+        // -- Lógica de Modais e Forms --
+        const modal = document.getElementById('modal-animal');
+        document.getElementById('btn-show-add-animal').onclick = () => {
+            document.getElementById('form-animal').reset();
+            document.getElementById('animal-id').value = '';
+            document.getElementById('modal-animal-titulo').textContent = 'Adicionar Pet';
+            document.getElementById('div-qual-medicacao').style.display = 'none';
+            modal.style.display = 'flex';
+        };
+        document.getElementById('btn-close-modal-animal').onclick = () => modal.style.display = 'none';
+
+        window.editarAnimal = (id) => {
+            const pet = cacheAnimais.find(a => a.idAnimal === id);
+            if(!pet) return;
+            document.getElementById('animal-id').value = pet.idAnimal;
+            document.getElementById('animal-nome').value = pet.nomeAnimal;
+            document.getElementById('animal-idade').value = pet.idade;
+            document.getElementById('animal-especie').value = pet.especie;
+            document.getElementById('animal-raca').value = pet.raca;
+            document.querySelector(`input[name="sexo"][value="${pet.sexo}"]`).checked = true;
+            document.getElementById('animal-castrado').checked = pet.castrado;
+            document.getElementById('animal-medicacao').checked = pet.usaMedicacao;
+            document.getElementById('animal-qual-medicacao').value = pet.qualMedicacao || '';
+            document.getElementById('div-qual-medicacao').style.display = pet.usaMedicacao ? 'block' : 'none';
+            document.getElementById('modal-animal-titulo').textContent = 'Editar Pet';
+            modal.style.display = 'flex';
+        };
+
+        window.deletarAnimal = async (id) => {
+            if(confirm("Tem certeza que deseja remover este pet?")) {
+                try { await apiFetch(`/api/animais/${id}`, { method: 'DELETE' }); carregarAnimais(); } catch(e){ alert(e.message); }
+            }
+        };
+
+        document.getElementById('form-animal').onsubmit = async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('animal-id').value;
+            const method = id ? 'PUT' : 'POST';
+            const url = id ? `/api/animais/${id}` : '/api/animais';
+            const data = {
+                nomeAnimal: document.getElementById('animal-nome').value,
+                idade: document.getElementById('animal-idade').value,
+                especie: document.getElementById('animal-especie').value,
+                raca: document.getElementById('animal-raca').value,
+                sexo: document.querySelector('input[name="sexo"]:checked').value,
+                castrado: document.getElementById('animal-castrado').checked,
+                usaMedicacao: document.getElementById('animal-medicacao').checked,
+                qualMedicacao: document.getElementById('animal-qual-medicacao').value
+            };
+            try { await apiFetch(url, { method, body: JSON.stringify(data) }); modal.style.display = 'none'; carregarAnimais(); } catch(e){ alert(e.message); }
+        };
+
+        document.getElementById('form-perfil-tutor').onsubmit = async (e) => {
+            e.preventDefault();
+            const data = {
+                nomeCompleto: document.getElementById('perfil-nome').value,
+                telefoneTutor: document.getElementById('perfil-telefone').value,
+                dataNascimento: document.getElementById('perfil-nascimento').value
+            };
+            try { await apiFetch('/tutor/me', { method: 'PUT', body: JSON.stringify(data) }); alert("Perfil atualizado com sucesso!"); carregarPerfilTutor(); } catch(e){ alert(e.message); }
+        };
+
+        document.getElementById('btn-delete-perfil').onclick = async (e) => {
+            e.preventDefault(); // Previne submit do form
+            if(confirm("ATENÇÃO: Isso apagará sua conta e todos os seus dados permanentemente. Continuar?")) {
+                try { await apiFetch('/tutor/me', { method: 'DELETE' }); logout(); } catch(e){ alert(e.message); }
+            }
+        };
+    </script>
+</body>
+</html>

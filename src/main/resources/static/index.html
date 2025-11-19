@@ -2,8 +2,8 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>PetOne - Emergência Veterinária</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -15,6 +15,8 @@
             'verde-card': '#b7e4c7',
             'verde-escuro': '#1b4332',
             'verde-escuro-hover': '#163326',
+            'vermelho-emergencia': '#ef4444',
+            'vermelho-hover': '#dc2626',
           },
           fontFamily: {
             sans: ['Poppins', 'sans-serif'],
@@ -34,68 +36,109 @@
           <div class="w-10 h-10 rounded-full bg-verde-escuro text-white flex items-center justify-center font-bold text-xl mr-2">P1</div>
           <span class="font-bold text-2xl text-verde-escuro">PetOne</span>
         </div>
-        <div class="hidden md:flex space-x-4">
-          <a href="pages/login/index.html" class="text-verde-escuro font-medium hover:text-verde-escuro-hover py-2 px-4">Login</a>
-          <a href="cadastro_tutor.html" class="bg-verde-escuro text-white font-medium py-2 px-4 rounded-full hover:bg-verde-escuro-hover transition">Cadastrar-se</a>
+        <div class="hidden md:flex space-x-4 items-center">
+          <a href="pages/login/index.html" class="text-verde-escuro font-medium hover:text-verde-escuro-hover py-2 px-4 transition">Login</a>
+          <a href="cadastro_tutor.html" class="bg-verde-escuro text-white font-medium py-2 px-5 rounded-full hover:bg-verde-escuro-hover transition shadow-md">Cadastrar Tutor</a>
+           <a href="cadastro_hospital.html" class="border-2 border-verde-escuro text-verde-escuro font-medium py-2 px-5 rounded-full hover:bg-verde-claro transition">Cadastrar Hospital</a>
+        </div>
+         <!-- Menu Mobile (Simples) -->
+        <div class="md:hidden flex items-center">
+            <a href="pages/login/index.html" class="text-verde-escuro font-medium mr-4">Entrar</a>
         </div>
       </div>
     </div>
   </nav>
 
   <!-- Hero Section -->
-  <main class="flex-grow flex items-center justify-center px-4 py-12">
-    <div class="max-w-4xl w-full text-center">
-      <h1 class="text-4xl md:text-6xl font-bold text-verde-escuro mb-6">
-        Emergência Veterinária <br/> ao seu Alcance
+  <main class="flex-grow flex items-center justify-center px-4 py-16 relative overflow-hidden">
+    <!-- Elemento decorativo de fundo -->
+    <div class="absolute top-0 left-1/2 transform -translate-x-1/2 w-full h-full opacity-10 pointer-events-none z-0">
+        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <path fill="#1b4332" d="M44.7,-76.4C58.9,-69.2,71.8,-59.1,81.6,-46.6C91.4,-34.1,98.1,-19.2,95.8,-5.3C93.5,8.6,82.2,21.4,70.8,32.2C59.4,43,47.9,51.8,35.8,59.3C23.7,66.8,11.8,73.1,-0.8,74.5C-13.5,75.9,-26.9,72.4,-39.1,65.3C-51.3,58.2,-62.2,47.5,-71.2,35.1C-80.2,22.7,-87.3,8.6,-86.4,-5.1C-85.5,-18.8,-76.6,-32.1,-65.3,-42.2C-54,-52.3,-40.3,-59.2,-26.9,-66.9C-13.5,-74.6,-0.4,-83.1,13.6,-85.1C27.6,-87.1,55.2,-82.6,44.7,-76.4Z" transform="translate(100 100)" />
+        </svg>
+    </div>
+
+    <div class="max-w-5xl w-full text-center z-10">
+      <span class="inline-block py-1 px-3 rounded-full bg-verde-card text-verde-escuro text-sm font-semibold mb-6">Segurança e Rapidez para seu Pet</span>
+      <h1 class="text-4xl md:text-6xl font-extrabold text-verde-escuro mb-8 leading-tight">
+        Emergência Veterinária <br/> <span class="text-verde-escuro-hover">Inteligente</span>
       </h1>
-      <p class="text-lg md:text-xl text-gray-700 mb-10 max-w-2xl mx-auto">
-        Conectamos você ao hospital veterinário mais próximo quando cada segundo conta. Rápido, seguro e vital para o seu pet.
+      <p class="text-lg md:text-xl text-gray-700 mb-12 max-w-3xl mx-auto leading-relaxed">
+        Conectamos você ao hospital veterinário mais próximo em segundos. O sistema PetOne alerta a unidade antes mesmo da sua chegada, garantindo que seu pet receba o socorro imediato que ele merece.
       </p>
       
-      <div class="flex flex-col sm:flex-row justify-center gap-4">
-        <button onclick="iniciarEmergencia()" class="bg-red-600 text-white text-lg font-bold py-4 px-8 rounded-full shadow-lg hover:bg-red-700 transform hover:scale-105 transition animate-pulse">
-          🚨 INICIAR CHAMADO DE EMERGÊNCIA
+      <div class="flex flex-col sm:flex-row justify-center gap-6 items-center">
+        <button onclick="iniciarEmergencia()" class="relative group bg-vermelho-emergencia text-white text-xl font-bold py-5 px-10 rounded-full shadow-xl hover:bg-vermelho-hover hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300">
+          <span class="absolute flex h-full w-full top-0 left-0">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+          </span>
+          <span class="relative flex items-center gap-2">
+            🚨 INICIAR CHAMADO DE EMERGÊNCIA
+          </span>
         </button>
-        <a href="cadastro_hospital.html" class="bg-white text-verde-escuro border-2 border-verde-escuro text-lg font-semibold py-4 px-8 rounded-full hover:bg-verde-claro transition">
-          Sou um Hospital
-        </a>
+        
+        <div class="text-sm text-gray-600 mt-4 sm:mt-0 max-w-xs">
+            <p>Ao clicar, buscaremos sua localização e o hospital ideal para o caso.</p>
+        </div>
       </div>
 
       <!-- Info Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16 text-left">
-        <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition">
-          <div class="text-3xl mb-4">📍</div>
-          <h3 class="font-bold text-xl text-verde-escuro mb-2">Localização Rápida</h3>
-          <p class="text-gray-600">Encontramos a unidade mais próxima com base na sua localização e necessidade.</p>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-20 text-left">
+        <div class="bg-white p-8 rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 border-b-4 border-verde-escuro">
+          <div class="text-4xl mb-4">📍</div>
+          <h3 class="font-bold text-xl text-verde-escuro mb-3">Geolocalização</h3>
+          <p class="text-gray-600">Utilizamos o Google Maps para encontrar a rota mais rápida para o hospital aberto mais próximo.</p>
         </div>
-        <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition">
-          <div class="text-3xl mb-4">⚡</div>
-          <h3 class="font-bold text-xl text-verde-escuro mb-2">Alerta Imediato</h3>
-          <p class="text-gray-600">O hospital é notificado antes mesmo de você chegar, agilizando o atendimento.</p>
+        <div class="bg-white p-8 rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 border-b-4 border-verde-escuro">
+          <div class="text-4xl mb-4">⚡</div>
+          <h3 class="font-bold text-xl text-verde-escuro mb-3">Notificação Prévia</h3>
+          <p class="text-gray-600">Enviamos um token e os dados do seu animal para o hospital, preparando a equipe para a chegada.</p>
         </div>
-        <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition">
-          <div class="text-3xl mb-4">📄</div>
-          <h3 class="font-bold text-xl text-verde-escuro mb-2">Histórico Digital</h3>
-          <p class="text-gray-600">Mantenha todos os registros de saúde e emergências do seu pet em um só lugar.</p>
+        <div class="bg-white p-8 rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 border-b-4 border-verde-escuro">
+          <div class="text-4xl mb-4">🔒</div>
+          <h3 class="font-bold text-xl text-verde-escuro mb-3">LGPD & Segurança</h3>
+          <p class="text-gray-600">Seus dados e o histórico médico do seu pet são armazenados com segurança e total privacidade.</p>
         </div>
       </div>
     </div>
   </main>
 
-  <footer class="bg-verde-escuro text-white py-8 mt-12">
-    <div class="max-w-7xl mx-auto px-4 text-center">
-      <p>&copy; 2025 PetOne. Salve vidas com tecnologia.</p>
+  <footer class="bg-verde-escuro text-white py-10 mt-12">
+    <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
+        <div>
+            <h4 class="font-bold text-lg mb-4">PetOne</h4>
+            <p class="text-sm opacity-80">Salvando vidas com tecnologia.</p>
+        </div>
+        <div>
+             <h4 class="font-bold text-lg mb-4">Links Úteis</h4>
+             <ul class="space-y-2 text-sm opacity-80">
+                 <li><a href="#" class="hover:text-verde-card">Sobre Nós</a></li>
+                 <li><a href="cadastro_hospital.html" class="hover:text-verde-card">Para Hospitais</a></li>
+                 <li><a href="cadastro_tutor.html" class="hover:text-verde-card">Para Tutores</a></li>
+             </ul>
+        </div>
+        <div>
+            <h4 class="font-bold text-lg mb-4">Contato</h4>
+             <p class="text-sm opacity-80">suporte@petone.com.br</p>
+        </div>
+    </div>
+    <div class="max-w-7xl mx-auto px-4 mt-8 pt-8 border-t border-white/20 text-center text-sm opacity-60">
+      &copy; 2025 PetOne. Todos os direitos reservados.
     </div>
   </footer>
 
   <script>
     function iniciarEmergencia() {
       const token = localStorage.getItem('petone_token');
+      
+      // Verificação simples se o usuário está logado
       if (!token) {
-        alert("Para sua segurança e agilidade, faça login ou cadastre-se antes de iniciar um chamado.");
+        // Salva a intenção do usuário para redirecionar de volta após o login (opcional, lógica futura)
+        sessionStorage.setItem('redirect_after_login', 'emergencia.html');
+        alert("Para iniciar uma emergência e garantir que tenhamos os dados do seu pet, por favor, faça o login.");
         window.location.href = 'pages/login/index.html';
       } else {
-        // Redireciona para a página de formulário de emergência (ou abre modal)
+        // Usuário logado, vai para o formulário de emergência
         window.location.href = 'emergencia.html'; 
       }
     }
