@@ -19,19 +19,19 @@ public class EmergenciaLog {
     private LocalDateTime dataHoraInicio;
     private String tokenEmergencia; // Token único da emergência
     
-    // Dados do Hospital (Snapshot)
+    // Dados do Hospital
     private String idHospital;
     private String nomeFantasiaHospital;
     private String telefoneHospital;
     private String emailHospital;
 
-    // Dados do Tutor (Snapshot)
+    // Dados do Tutor
     private String idTutor;
     private String nomeCompletoTutor;
     private String telefoneTutor;
     private String emailTutor;
 
-    // Dados do Animal (Snapshot)
+    // Dados do Animal
     private String idAnimal;
     private String nomeAnimal;
     private int idadeAnimal;
@@ -40,7 +40,8 @@ public class EmergenciaLog {
     private String sexoAnimal;
 
     // Dados da Emergência (Formulário)
-    private String tipoEmergencia; // Hemorragia, Convulsão, etc.
+    private String tipoEmergencia; // Hemorragia, Convulsão, etc...
+    private LocalDateTime dataHoraRegistro;
 
     // Dados de Finalização (Preenchidos pelo Hospital)
     private LocalDateTime dataHoraFim;
@@ -48,4 +49,5 @@ public class EmergenciaLog {
     private String prescricao;
     private String veterinarioResponsavelFinalizacao;
     private String crmvVeterinarioFinalizacao;
+    private String status;
 }

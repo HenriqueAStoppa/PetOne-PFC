@@ -3,9 +3,6 @@ package com.petone.petone.dto;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
-/**
- * DTO para receber os dados do Hospital ao finalizar um atendimento.
- */
 @Data
 public class FinalizacaoRequestDTO {
 

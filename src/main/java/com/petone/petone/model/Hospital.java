@@ -5,11 +5,15 @@ import java.time.LocalDateTime;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Modelo para a entidade Hospital Veterinário. Usa Lombok.
  * (Versão completa com senhaHash)
  */
+@Getter
+@Setter
 @Data
 @Document(collection = "hospitais")
 public class Hospital {

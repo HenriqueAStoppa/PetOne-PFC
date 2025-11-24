@@ -75,12 +75,12 @@ public class EmergenciaService {
                 .nomeCompletoTutor(tutor.getNomeCompleto())
                 .telefoneTutor(tutor.getTelefoneTutor())
                 .emailTutor(tutor.getEmailTutor())
-                .idHospitalEncaminhado(hospital.getIdHospital())
+                .idHospital(hospital.getIdHospital())
                 .nomeFantasiaHospital(hospital.getNomeFantasia())
                 .emailHospital(hospital.getEmailHospital())
                 .telefoneHospital(hospital.getTelefoneHospital())
-                .veterinarioResponsavel(hospital.getVeterinarioResponsavel())
-                .crmvVeterinario(hospital.getCrmvVeterinario())
+                .veterinarioResponsavelFinalizacao(hospital.getVeterinarioResponsavel())
+                .crmvVeterinarioFinalizacao(hospital.getCrmvVeterinario())
                 .build();
         
         emergenciaLogRepository.save(log);
@@ -104,16 +104,16 @@ public class EmergenciaService {
         EmergenciaLog log = emergenciaLogRepository.findByTokenEmergencia(tokenEmergencia)
                 .orElseThrow(() -> new NoSuchElementException("Log não encontrado: " + tokenEmergencia));
 
-        if (!log.getIdHospitalEncaminhado().equals(hospital.getIdHospital())) {
+        if (!log.getIdHospital().equals(hospital.getIdHospital())) {
             throw new AccessDeniedException("Este log não pertence ao seu hospital.");
         }
 
         // Atualização dos campos finais
         log.setStatus("Finalizado");
-        log.setRelatorioMedico(dto.getRelatorio());
-        log.setPrescricaoMedicamento(dto.getPrescricao());
-        log.setVeterinarioFinalizacao(dto.getVeterinarioResponsavelFinalizacao());
-        log.setCrmvFinalizacao(dto.getCrmvVeterinarioFinalizacao());
+        log.setRelatorio(dto.getRelatorio());
+        log.setPrescricao(dto.getPrescricao());
+        log.setVeterinarioResponsavelFinalizacao(dto.getVeterinarioResponsavelFinalizacao());
+        log.setCrmvVeterinarioFinalizacao(dto.getCrmvVeterinarioFinalizacao());
 
         return emergenciaLogRepository.save(log);
     }

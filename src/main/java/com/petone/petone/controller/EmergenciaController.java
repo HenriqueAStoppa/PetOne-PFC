@@ -12,14 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException; // NOVO IMPORT
 import org.springframework.web.bind.annotation.*; // NOVO IMPORT
 
-import java.nio.file.AccessDeniedException;
 import java.security.Principal;
-import java.util.NoSuchElementException; // NOVO IMPORT
+import java.util.NoSuchElementException; 
 
-/**
- * [ARQUIVO ATUALIZADO]
- * Controller protegido para o fluxo de Emergência (Início e Finalização).
- */
 @RestController
 @RequestMapping("/api/emergencia")
 public class EmergenciaController {
@@ -45,9 +40,6 @@ public class EmergenciaController {
         } catch (NoSuchElementException e) {
             // Se o Animal ou o Hospital não forem encontrados
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        } catch (AccessDeniedException e) {
-            // Se o animal não pertencer ao tutor
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
         } catch (Exception e) {
             // Outros erros
             return new ResponseEntity<>("Erro interno ao processar emergência: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -73,9 +65,6 @@ public class EmergenciaController {
             EmergenciaLog logAtualizado = emergenciaService.finalizarEmergencia(token, dto, hospitalEmail);
             return ResponseEntity.ok(logAtualizado);
 
-        } catch (AccessDeniedException e) {
-            // Se o log não pertencer ao hospital
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN); // 403
         } catch (NoSuchElementException | UsernameNotFoundException e) {
             // Se o Log ou o Hospital não forem encontrados
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND); // 404

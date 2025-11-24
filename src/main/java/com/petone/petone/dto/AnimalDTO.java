@@ -5,9 +5,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-/**
- * DTO para cadastro e atualização de Animal.
- */
 @Data
 public class AnimalDTO {
     @NotBlank(message = "O nome do animal é obrigatório.")
@@ -32,5 +29,5 @@ public class AnimalDTO {
     @NotNull(message = "Informar se usa medicação é obrigatório.")
     private boolean usaMedicacao;
 
-    private String qualMedicacao; // Opcional
+    private String qualMedicacao;
 }

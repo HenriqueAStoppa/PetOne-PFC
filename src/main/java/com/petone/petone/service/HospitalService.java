@@ -116,9 +116,8 @@ public class HospitalService {
      * @return O Hospital com dados atualizados.
      */
     public Hospital updateMeuPerfil(String hospitalEmail, HospitalPerfilDTO dto) {
-        Hospital hospital = getMeuPerfil(hospitalEmail); // Reusa o método anterior
+        Hospital hospital = getMeuPerfil(hospitalEmail);
 
-        // Atualiza os campos permitidos
         hospital.setNomeFantasia(dto.getNomeFantasia());
         hospital.setTelefoneHospital(dto.getTelefoneHospital());
         hospital.setEndereco(dto.getEndereco());
@@ -129,17 +128,9 @@ public class HospitalService {
         return hospitalRepository.save(hospital);
     }
 
-    /**
-     * [MÉTODO FALTANTE]
-     * Busca os logs de emergência que foram encaminhados para o hospital logado.
-     * @param hospitalEmail O email do hospital logado (do JWT).
-     * @return Lista de logs.
-     */
     public List<EmergenciaLog> getMeusLogs(String hospitalEmail) {
-        // 1. Busca o hospital
         Hospital hospital = getMeuPerfil(hospitalEmail);
         
-        // 2. Busca os logs pelo ID do hospital
-        return emergenciaLogRepository.findByIdHospitalEncaminhado(hospital.getIdHospital());
+        return emergenciaLogRepository.findByIdHospital(hospital.getIdHospital());
     }
 }

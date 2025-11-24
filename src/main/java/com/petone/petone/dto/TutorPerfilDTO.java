@@ -6,9 +6,6 @@ import jakarta.validation.constraints.Past;
 import lombok.Data;
 import java.time.LocalDate;
 
-/**
- * DTO para a atualização do perfil do Tutor (campos permitidos).
- */
 @Data
 public class TutorPerfilDTO {
     @NotBlank(message = "O nome completo é obrigatório.")
