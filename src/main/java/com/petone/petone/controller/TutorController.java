@@ -23,7 +23,7 @@ public class TutorController {
     /**
      * (GET /api/tutor/me) - Busca os dados do perfil logado.
      */
-    @GetMapping("/me")
+    @PostMapping("/me")
     public ResponseEntity<Tutor> getMeuPerfil(Principal principal) {
         // O email (username) vem do token JWT
         Tutor tutor = tutorService.getMeuPerfil(principal.getName());

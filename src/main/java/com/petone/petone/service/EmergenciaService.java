@@ -14,17 +14,13 @@ import com.petone.petone.repository.TutorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-// [CORREÇÃO] Usar exceção de segurança em vez de arquivo
+// Import correto para segurança
 import org.springframework.security.access.AccessDeniedException;
 
 import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
-/**
- * Serviço principal para orquestrar o fluxo de emergência.
- * (Versão atualizada com Finalização)
- */
 @Service
 public class EmergenciaService {
 
@@ -50,54 +46,36 @@ public class EmergenciaService {
         this.hospitalRepository = hospitalRepository; 
     }
 
-    /**
-     * Inicia um novo registro de emergência.
-     */
-    public EmergenciaResponseDTO iniciarEmergencia(EmergenciaRequestDTO dto, String tutorEmail) throws AccessDeniedException {
+    public EmergenciaResponseDTO iniciarEmergencia(EmergenciaRequestDTO dto, String tutorEmail) {
         
-        // 1. Validar Entidades
         Tutor tutor = tutorRepository.findByEmailTutor(tutorEmail)
                 .orElseThrow(() -> new UsernameNotFoundException("Tutor não encontrado: " + tutorEmail));
         
         Animal animal = animalRepository.findById(dto.getIdAnimal())
                 .orElseThrow(() -> new NoSuchElementException("Animal não encontrado: " + dto.getIdAnimal()));
 
-        // 2. Verificar Propriedade (Segurança)
         if (!animal.getIdTutor().equals(tutor.getIdTutor())) {
             throw new AccessDeniedException("Este animal não pertence ao tutor logado.");
         }
 
-        // 3. Encontrar Hospital (Usando o serviço simulado)
-        // [CORREÇÃO] O DTO não tem mais localização, passamos um valor simulado
-        Hospital hospital = mapsService.encontrarHospitalMaisProximo("localizacao_simulada_do_tutor"); 
-
-        // 4. Gerar Token e Criar o Log
+        Hospital hospital = mapsService.encontrarHospitalMaisProximo("localizacao_simulada"); 
         String token = "VET-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
 
-        // Usando o Builder do Lombok para criar o objeto de forma segura e limpa
+        // Criação do Log usando Builder (garante que os campos batem com o Modelo)
         EmergenciaLog log = EmergenciaLog.builder()
                 .tokenEmergencia(token)
                 .dataHoraRegistro(LocalDateTime.now())
                 .status("Encaminhado")
-                
-                // [CORREÇÃO] Usar o campo correto do DTO
                 .tipoEmergencia(dto.getTipoEmergencia())
-                
-                // Dados do Animal
                 .idAnimal(animal.getIdAnimal())
                 .nomeAnimal(animal.getNomeAnimal())
                 .especieAnimal(animal.getEspecie())
                 .racaAnimal(animal.getRaca())
-
-                // Dados do Tutor
                 .idTutor(tutor.getIdTutor())
                 .nomeCompletoTutor(tutor.getNomeCompleto())
                 .telefoneTutor(tutor.getTelefoneTutor())
                 .emailTutor(tutor.getEmailTutor())
-                
-                // Dados do Hospital
-                // [CORREÇÃO] O nome correto do campo no Model é 'idHospitalEncaminhado'
-                .idHospitalEncaminhado(hospital.getIdHospital()) 
+                .idHospitalEncaminhado(hospital.getIdHospital())
                 .nomeFantasiaHospital(hospital.getNomeFantasia())
                 .emailHospital(hospital.getEmailHospital())
                 .telefoneHospital(hospital.getTelefoneHospital())
@@ -105,47 +83,38 @@ public class EmergenciaService {
                 .crmvVeterinario(hospital.getCrmvVeterinario())
                 .build();
         
-        // 5. Salvar o Log no Banco
         emergenciaLogRepository.save(log);
 
-        // 6. Enviar Emails (Usando o serviço simulado)
+        // Chamada correta para os emails (2 argumentos)
         emailService.enviarEmailTokenParaTutor(tutor, log);
         emailService.enviarEmailAlertaParaHospital(log);
 
-        // 7. Preparar Resposta para o Frontend
         return EmergenciaResponseDTO.builder()
                 .tokenEmergencia(token)
-                .hospitalNome(hospital.getNomeFantasia()) // [CORREÇÃO] Usar hospitalNome em vez de hospitalEncontrado
-                .hospitalEndereco(hospital.getEndereco()) // [CORREÇÃO] Adicionado endereço
+                .hospitalNome(hospital.getNomeFantasia())
+                .hospitalEndereco(hospital.getEndereco())
                 .mensagem("Emergência registrada. Siga para o hospital.")
                 .build();
     }
 
-    /**
-     * Finaliza um atendimento de emergência (Ação do Hospital).
-     */
-    public EmergenciaLog finalizarEmergencia(String tokenEmergencia, FinalizacaoRequestDTO dto, String hospitalEmail) throws AccessDeniedException {
-        // 1. Busca o hospital logado
+    public EmergenciaLog finalizarEmergencia(String tokenEmergencia, FinalizacaoRequestDTO dto, String hospitalEmail) {
         Hospital hospital = hospitalRepository.findByEmailHospital(hospitalEmail)
                 .orElseThrow(() -> new UsernameNotFoundException("Hospital não encontrado: " + hospitalEmail));
 
-        // 2. Busca o log de emergência
         EmergenciaLog log = emergenciaLogRepository.findByTokenEmergencia(tokenEmergencia)
-                .orElseThrow(() -> new NoSuchElementException("Log de emergência não encontrado com o token: " + tokenEmergencia));
+                .orElseThrow(() -> new NoSuchElementException("Log não encontrado: " + tokenEmergencia));
 
-        // 3. Validação de Segurança: O log pertence a este hospital?
         if (!log.getIdHospitalEncaminhado().equals(hospital.getIdHospital())) {
-            throw new AccessDeniedException("Este log de emergência não pertence ao seu hospital.");
+            throw new AccessDeniedException("Este log não pertence ao seu hospital.");
         }
 
-        // 4. Atualiza os campos do log
+        // Atualização dos campos finais
         log.setStatus("Finalizado");
         log.setRelatorioMedico(dto.getRelatorio());
         log.setPrescricaoMedicamento(dto.getPrescricao());
         log.setVeterinarioFinalizacao(dto.getVeterinarioResponsavelFinalizacao());
         log.setCrmvFinalizacao(dto.getCrmvVeterinarioFinalizacao());
 
-        // 5. Salvar o log atualizado
         return emergenciaLogRepository.save(log);
     }
 }
