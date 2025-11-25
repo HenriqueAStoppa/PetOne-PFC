@@ -9,7 +9,8 @@
             "name": "PetoneApplication",
             "request": "launch",
             "mainClass": "com.petone.petone.PetoneApplication",
-            "projectName": "petone"
+            "projectName": "petone",
+            "vmArgs": "-Djava.net.preferIPv4Stack=true"
         }
     ]
 }
