@@ -4,16 +4,13 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import lombok.Data;
 
-/**
- * Modelo para a entidade Animal.
- * Vinculado ao tutor (idTutor). Usa Lombok.
- */
+//Modelo para a entidade Animal. Vinculado ao tutor (idTutor).
 @Data
 @Document(collection = "animais")
 public class Animal {
     @Id
     private String idAnimal;
-    private String idTutor; // Chave estrangeira para Tutor
+    private String idTutor;
     private String nomeAnimal;
     private int idade;
     private String especie;

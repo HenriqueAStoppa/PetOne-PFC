@@ -14,7 +14,6 @@ import com.petone.petone.repository.TutorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-// Import correto para segurança
 import org.springframework.security.access.AccessDeniedException;
 
 import java.time.LocalDateTime;
@@ -61,7 +60,7 @@ public class EmergenciaService {
         Hospital hospital = mapsService.encontrarHospitalMaisProximo("localizacao_simulada"); 
         String token = "VET-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
 
-        // Criação do Log usando Builder (garante que os campos batem com o Modelo)
+        //Criação do Log usando Builder (garante que os campos batem com o Modelo)
         EmergenciaLog log = EmergenciaLog.builder()
                 .tokenEmergencia(token)
                 .dataHoraRegistro(LocalDateTime.now())
@@ -85,7 +84,7 @@ public class EmergenciaService {
         
         emergenciaLogRepository.save(log);
 
-        // Chamada correta para os emails (2 argumentos)
+        //Chamada correta para os emails (2 argumentos)
         emailService.enviarEmailTokenParaTutor(tutor, log);
         emailService.enviarEmailAlertaParaHospital(log);
 
@@ -108,7 +107,7 @@ public class EmergenciaService {
             throw new AccessDeniedException("Este log não pertence ao seu hospital.");
         }
 
-        // Atualização dos campos finais
+        //Atualização dos campos finais
         log.setStatus("Finalizado");
         log.setRelatorio(dto.getRelatorio());
         log.setPrescricao(dto.getPrescricao());

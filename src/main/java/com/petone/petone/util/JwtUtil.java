@@ -12,37 +12,33 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-/**
- * Utilitário para criar, validar e extrair informações de Tokens JWT.
- */
+//Utilitário para criar, validar e extrair informações de Tokens JWT.
 @Component
 public class JwtUtil {
 
-    // Define o tempo de expiração do token (ex: 10 horas)
+    //Define o tempo de expiração do token
     public static final long JWT_TOKEN_VALIDITY = 10 * 60 * 60;
 
-    // Chave secreta para assinar o token. Em produção, use @Value e application.properties
-    // Esta é uma chave de 256 bits (32 bytes)
+    //Chave secreta para assinar o token.
     private final String secret = "aVeryStrongAndLongSecretKeyForPetOneProjectSecurity256";
     private final SecretKey secretKey = Keys.hmacShaKeyFor(secret.getBytes());
 
-    // Extrai o username (email) do token
+    //Extrai o username (email) do token
     public String getUsernameFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
     }
 
-    // Extrai a data de expiração do token
+    //Extrai a data de expiração do token
     public Date getExpirationDateFromToken(String token) {
         return getClaimFromToken(token, Claims::getExpiration);
     }
-
-    // Extrai uma "claim" (informação) específica
+    //Extrai qualquer claim do token usando uma função resolver
     public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = getAllClaimsFromToken(token);
         return claimsResolver.apply(claims);
     }
 
-    // Extrai todas as claims do token usando a chave secreta
+    //Extrai todas as claims do token usando a chave secreta
     private Claims getAllClaimsFromToken(String token) {
         return Jwts.parser()
                 .verifyWith(secretKey)
@@ -51,40 +47,36 @@ public class JwtUtil {
                 .getPayload();
     }
 
-    // Verifica se o token está expirado
+    //Verifica se o token está expirado
     private Boolean isTokenExpired(String token) {
         final Date expiration = getExpirationDateFromToken(token);
         return expiration.before(new Date());
     }
 
-    // Gera um novo token para o usuário (UserDetails)
+    //Gera um novo token para o usuário
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
-        // Você pode adicionar mais claims (informações) aqui se necessário
         return doGenerateToken(claims, userDetails.getUsername());
     }
 
-    /**
-     * Gera um novo token para um username (email)
-     * (Usado para o login manual do Hospital)
-     */
+    //Gera um novo token para um username email. Usado para o login manual do Hospital.
     public String generateToken(String username) {
         Map<String, Object> claims = new HashMap<>();
         return doGenerateToken(claims, username);
     }
 
-    // Cria o token com as claims, JWS (JWT Signed)
+    //Cria o token com as claims, JWS (JWT Signed)
     private String doGenerateToken(Map<String, Object> claims, String subject) {
         return Jwts.builder()
                 .claims(claims)
-                .subject(subject) // "Subject" é o username (email)
+                .subject(subject)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000))
                 .signWith(secretKey)
                 .compact();
     }
 
-    // Valida o token
+    //Valida o token
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = getUsernameFromToken(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));

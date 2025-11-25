@@ -4,10 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
-/**
- * DTO para o formulário "Resetar minha senha".
- * Recebe o token (da URL/email) e a nova senha.
- */
+//DTO para o formulário "Resetar minha senha". Recebe o token (da URL/email) e a nova senha.
 @Data
 public class ResetarSenhaRequestDTO {
 

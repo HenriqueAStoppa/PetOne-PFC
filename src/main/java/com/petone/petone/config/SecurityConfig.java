@@ -23,36 +23,32 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable()) // Desabilita CSRF para APIs
+            .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                // 1. Libera endpoints de Autenticação e Documentação
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
 
-                // 2. [CORREÇÃO] Libera TODOS os arquivos estáticos (HTMLs, imagens, pastas)
-                // Isso permite carregar as páginas de login, cadastro, etc. sem estar logado
                 .requestMatchers(
-                    "/", 
+                    "/",
                     "/index.html",
                     "/cadastro_tutor.html",
                     "/cadastro_hospital.html",
                     "/recuperar_senha.html",
                     "/resetar_senha.html",
-                    "/pages/**",       // Libera tudo dentro da pasta pages (ex: login)
-                    "/assets/**",      // Caso tenha css/js externos
-                    "/dashboard_tutor.html",   // O HTML é público, os dados da API não
+                    "/pages/**",
+                    "/assets/**",         
+                    "/dashboard_tutor.html",
                     "/dashboard_hospital.html",
                     "/emergencia.html"
                 ).permitAll()
 
-                // 3. Qualquer outra requisição (ex: /api/tutor/me) exige token válido
+                // Qualquer outra requisição (ex: /api/tutor/me) irá exigir token válido
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             );
 
-        // Adiciona o filtro de JWT antes da autenticação padrão
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

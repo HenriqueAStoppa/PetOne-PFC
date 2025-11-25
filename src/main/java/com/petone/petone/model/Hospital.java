@@ -8,10 +8,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * Modelo para a entidade Hospital Veterinário. Usa Lombok.
- * (Versão completa com senhaHash)
- */
+//Modelo para a entidade Hospital Veterinário. (Versão completa com senhaHash)
 @Getter
 @Setter
 @Data
@@ -22,13 +19,13 @@ public class Hospital {
     private String nomeFantasia;
     private String emailHospital;
     private String telefoneHospital;
-    private String endereco; // Para uso com a API do Google Maps
-    private String cnpj; // Dado sensível
-    private int classificacaoServico; // 1 a 4
+    private String endereco; //Uso com a API do Google Maps
+    private String cnpj; 
+    private int classificacaoServico; 
     private String veterinarioResponsavel;
     private String crmvVeterinario;
     private boolean emailVerificado = false;
-    private String senhaHash; // Armazena o hash da senha (BCrypt)
+    private String senhaHash; 
     private String resetToken;
     private LocalDateTime resetTokenExpiry;
 }

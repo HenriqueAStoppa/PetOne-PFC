@@ -47,11 +47,9 @@
         </nav>
     </header>
 
-    <!-- Conteúdo Principal -->
     <main class="max-w-7xl mx-auto px-6 py-10">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             
-            <!-- Coluna Esquerda: Perfil da Unidade -->
             <div class="lg:col-span-1">
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
                     <div class="flex justify-between items-center mb-4 border-b pb-2">
@@ -78,7 +76,6 @@
                 </div>
             </div>
 
-            <!-- Coluna Direita: Lista de Emergências -->
             <div class="lg:col-span-2">
                 <div class="bg-white p-8 rounded-2xl shadow-sm border border-blue-100 min-h-[600px]">
                     <div class="flex justify-between items-center mb-6 border-b pb-4">
@@ -96,7 +93,6 @@
         </div>
     </main>
 
-    <!-- Modal de Finalização de Atendimento -->
     <div id="modal-finalizar" class="modal fixed inset-0 bg-black bg-opacity-60 z-50 items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-2xl relative transform transition-all scale-100">
             <button onclick="document.getElementById('modal-finalizar').style.display='none'" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
@@ -143,19 +139,16 @@
     </div>
 
     <script>
-        // Inicializa ícones
         lucide.createIcons();
         
         const API_URL = 'http://localhost:8080/api';
         const token = localStorage.getItem('petone_token');
         
-        // Verifica autenticação
         if (!token) {
             alert("Sessão expirada ou não encontrada. Faça login novamente.");
             window.location.href = 'pages/login/index.html';
         }
 
-        // Fetch genérico com tratamento de erro
         async function apiFetch(endpoint, options = {}) {
             const headers = { 'Content-Type': 'application/json', ...options.headers, 'Authorization': `Bearer ${token}` };
             try {
@@ -169,7 +162,6 @@
                     const errorText = await response.text();
                     throw new Error(errorText || `Erro na requisição: ${response.status}`);
                 }
-                // Retorna JSON se houver, ou null se vazio
                 const contentType = response.headers.get('content-type');
                 if (contentType && contentType.includes('application/json')) {
                     return await response.json();
@@ -181,13 +173,11 @@
             }
         }
 
-        // Inicialização
         document.addEventListener('DOMContentLoaded', () => {
             carregarPerfil();
             carregarLogs();
         });
 
-        // Logout
         document.getElementById('btn-logout').onclick = () => {
             localStorage.removeItem('petone_token');
             localStorage.removeItem('petone_user_nome');
@@ -195,7 +185,6 @@
             window.location.href = 'pages/login/index.html';
         };
 
-        // --- Perfil do Hospital ---
         async function carregarPerfil() {
             try {
                 const h = await apiFetch('/hospital/me');
@@ -217,7 +206,6 @@
             }
         }
 
-        // Habilitar edição do perfil
         document.getElementById('btn-unlock-profile').onclick = function() {
             const inputs = document.querySelectorAll('#form-perfil input:not([readonly])');
             const btnSave = document.getElementById('btn-save-profile');
@@ -227,10 +215,9 @@
             btnSave.classList.toggle('hidden');
             this.textContent = isDisabled ? "Cancelar" : "Editar";
             
-            if(!isDisabled) carregarPerfil(); // Recarrega dados originais se cancelar
+            if(!isDisabled) carregarPerfil(); 
         };
 
-        // Salvar perfil
         document.getElementById('form-perfil').onsubmit = async (e) => {
             e.preventDefault();
             const data = {
@@ -245,13 +232,12 @@
             try { 
                 await apiFetch('/hospital/me', { method: 'PUT', body: JSON.stringify(data) }); 
                 alert('Perfil atualizado com sucesso!');
-                document.getElementById('btn-unlock-profile').click(); // Bloqueia novamente
+                document.getElementById('btn-unlock-profile').click();
             } catch(e){ 
                 alert(`Erro ao salvar: ${e.message}`); 
             }
         };
 
-        // --- Logs de Emergência ---
         async function carregarLogs() {
             const div = document.getElementById('lista-logs');
             div.innerHTML = '<p class="text-gray-500 text-center py-4 animate-pulse">Buscando chamados...</p>';
@@ -265,7 +251,6 @@
                 }
                 
                 div.innerHTML = '';
-                // Ordenar: Pendentes ("Encaminhado") primeiro, depois por data mais recente
                 logs.sort((a, b) => {
                     if (a.status === 'Finalizado' && b.status !== 'Finalizado') return 1;
                     if (a.status !== 'Finalizado' && b.status === 'Finalizado') return -1;
@@ -274,11 +259,10 @@
 
                 logs.forEach(l => {
                     const isFinalizado = l.status === 'Finalizado';
-                    const dataHora = l.dataHoraInicio || l.dataHoraRegistro; // Compatibilidade
+                    const dataHora = l.dataHoraInicio || l.dataHoraRegistro;
                     const dateStr = dataHora ? new Date(dataHora).toLocaleString('pt-BR') : 'Data desconhecida';
 
                     const card = document.createElement('div');
-                    // Estilos condicionais: Vermelho para pendente, Cinza/Branco para finalizado
                     card.className = `p-5 rounded-xl border transition relative overflow-hidden ${isFinalizado ? 'bg-white border-gray-200 opacity-90' : 'bg-white border-red-200 shadow-md border-l-4 border-l-red-500'}`;
                     
                     card.innerHTML = `
@@ -326,12 +310,10 @@
             }
         }
 
-        // --- Finalização de Atendimento ---
         window.abrirFinalizar = (token) => {
             document.getElementById('finalizar-token-input').value = token;
             document.getElementById('modal-token').innerText = token;
             
-            // Preenche vet responsável com o do perfil para agilizar
             const vetAtual = document.getElementById('vet').value;
             const crmvAtual = document.getElementById('crmv').value;
             if(vetAtual) document.getElementById('finalizar-vet').value = vetAtual;
@@ -357,7 +339,7 @@
                 document.getElementById('form-finalizar').reset();
                 
                 alert('Atendimento finalizado com sucesso!');
-                carregarLogs(); // Atualiza a lista
+                carregarLogs();
             } catch(e) { 
                 alert(`Erro ao finalizar: ${e.message}`); 
             }

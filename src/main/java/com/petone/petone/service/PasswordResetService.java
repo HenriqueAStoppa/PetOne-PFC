@@ -13,10 +13,6 @@ import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
-/**
- * Novo Serviço dedicado à lógica de "Esqueci minha senha"
- * para Tutores e Hospitais.
- */
 @Service
 public class PasswordResetService {
 
@@ -29,17 +25,12 @@ public class PasswordResetService {
     @Autowired
     private EmailService emailService;
 
-    /**
-     * Etapa 1: Solicita a recuperação.
-     * Encontra o usuário (Tutor ou Hospital) e envia o token.
-     *
-     * @param email Email do usuário.
-     */
+    //Solicita a recuperação.
     public void solicitarReset(String email) {
         String token = UUID.randomUUID().toString();
-        LocalDateTime expiryDate = LocalDateTime.now().plusHours(1); // Token expira em 1 hora
+        LocalDateTime expiryDate = LocalDateTime.now().plusHours(1); //Token expira em 1 hora
 
-        // Tenta encontrar como Tutor
+        //Tenta encontrar como Tutor
         var tutorOptional = tutorRepository.findByEmailTutor(email);
         if (tutorOptional.isPresent()) {
             Tutor tutor = tutorOptional.get();
@@ -48,10 +39,10 @@ public class PasswordResetService {
             tutorRepository.save(tutor);
             
             emailService.enviarEmailResetSenha(email, token);
-            return; // Encontrou e processou como Tutor
+            return; //Encontrou e processou como Tutor
         }
 
-        // Se não for Tutor, tenta como Hospital
+        //Se não for Tutor, tenta como Hospital
         var hospitalOptional = hospitalRepository.findByEmailHospital(email);
         if (hospitalOptional.isPresent()) {
             Hospital hospital = hospitalOptional.get();
@@ -60,60 +51,55 @@ public class PasswordResetService {
             hospitalRepository.save(hospital);
 
             emailService.enviarEmailResetSenha(email, token);
-            return; // Encontrou e processou como Hospital
+            return; //Encontrou e processou como Hospital
         }
 
-        // Se não encontrou nenhum, lança erro
+        //Se não encontrou nenhum, lança erro
         throw new NoSuchElementException("Nenhum usuário (Tutor ou Hospital) encontrado com o email: " + email);
     }
 
-    /**
-     * Etapa 2: Reseta a senha usando o token.
-     *
-     * @param dto DTO contendo o token e a nova senha.
-     */
+    //Reseta a senha usando o token.
     public void resetarSenha(ResetarSenhaRequestDTO dto) {
         String token = dto.getToken();
 
-        // Tenta encontrar Tutor com o token
-        var tutorOptional = tutorRepository.findByResetToken(token); // (Precisamos adicionar este método)
+        //Tenta encontrar Tutor com o token
+        var tutorOptional = tutorRepository.findByResetToken(token);
         if (tutorOptional.isPresent()) {
             Tutor tutor = tutorOptional.get();
             
-            // Valida o token (não expirado)
+            //Valida o token (não expirado)
             if (tutor.getResetTokenExpiry().isBefore(LocalDateTime.now())) {
                 throw new RuntimeException("Token expirado.");
             }
-
-            // Atualiza a senha
+            //Atualiza a senha
             tutor.setSenhaHash(PasswordUtil.encode(dto.getNovaSenha()));
-            // Limpa o token
+            //Limpa o token
             tutor.setResetToken(null);
             tutor.setResetTokenExpiry(null);
             tutorRepository.save(tutor);
             return;
         }
 
-        // Tenta encontrar Hospital com o token
-        var hospitalOptional = hospitalRepository.findByResetToken(token); // (Precisamos adicionar este método)
+        //Tenta encontrar Hospital com o token
+        var hospitalOptional = hospitalRepository.findByResetToken(token); 
         if (hospitalOptional.isPresent()) {
             Hospital hospital = hospitalOptional.get();
 
-            // Valida o token (não expirado)
+            //Valida o token (não expirado)
             if (hospital.getResetTokenExpiry().isBefore(LocalDateTime.now())) {
                 throw new RuntimeException("Token expirado.");
             }
 
-            // Atualiza a senha
+            //Atualiza a senha
             hospital.setSenhaHash(PasswordUtil.encode(dto.getNovaSenha()));
-            // Limpa o token
+            //Limpa o token
             hospital.setResetToken(null);
             hospital.setResetTokenExpiry(null);
             hospitalRepository.save(hospital);
             return;
         }
 
-        // Se não encontrou, o token é inválido
+        //Se não encontrou, o token é inválido
         throw new NoSuchElementException("Token inválido ou já utilizado.");
     }
 }

@@ -28,7 +28,6 @@
 </head>
 <body class="bg-verde-claro text-gray-900 min-h-screen flex flex-col">
 
-  <!-- Navegação -->
   <nav class="bg-white/90 backdrop-blur-md shadow-sm sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between h-16 items-center">
@@ -41,7 +40,6 @@
           <a href="cadastro_tutor.html" class="bg-verde-escuro text-white font-medium py-2 px-5 rounded-full hover:bg-verde-escuro-hover transition shadow-md">Cadastrar Tutor</a>
            <a href="cadastro_hospital.html" class="border-2 border-verde-escuro text-verde-escuro font-medium py-2 px-5 rounded-full hover:bg-verde-claro transition">Cadastrar Hospital</a>
         </div>
-         <!-- Menu Mobile (Simples) -->
         <div class="md:hidden flex items-center">
             <a href="pages/login/index.html" class="text-verde-escuro font-medium mr-4">Entrar</a>
         </div>
@@ -49,9 +47,7 @@
     </div>
   </nav>
 
-  <!-- Hero Section -->
   <main class="flex-grow flex items-center justify-center px-4 py-16 relative overflow-hidden">
-    <!-- Elemento decorativo de fundo -->
     <div class="absolute top-0 left-1/2 transform -translate-x-1/2 w-full h-full opacity-10 pointer-events-none z-0">
         <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
             <path fill="#1b4332" d="M44.7,-76.4C58.9,-69.2,71.8,-59.1,81.6,-46.6C91.4,-34.1,98.1,-19.2,95.8,-5.3C93.5,8.6,82.2,21.4,70.8,32.2C59.4,43,47.9,51.8,35.8,59.3C23.7,66.8,11.8,73.1,-0.8,74.5C-13.5,75.9,-26.9,72.4,-39.1,65.3C-51.3,58.2,-62.2,47.5,-71.2,35.1C-80.2,22.7,-87.3,8.6,-86.4,-5.1C-85.5,-18.8,-76.6,-32.1,-65.3,-42.2C-54,-52.3,-40.3,-59.2,-26.9,-66.9C-13.5,-74.6,-0.4,-83.1,13.6,-85.1C27.6,-87.1,55.2,-82.6,44.7,-76.4Z" transform="translate(100 100)" />
@@ -82,7 +78,6 @@
         </div>
       </div>
 
-      <!-- Info Cards -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-20 text-left">
         <div class="bg-white p-8 rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 border-b-4 border-verde-escuro">
           <div class="text-4xl mb-4">📍</div>
@@ -131,14 +126,11 @@
     function iniciarEmergencia() {
       const token = localStorage.getItem('petone_token');
       
-      // Verificação simples se o usuário está logado
       if (!token) {
-        // Salva a intenção do usuário para redirecionar de volta após o login (opcional, lógica futura)
         sessionStorage.setItem('redirect_after_login', 'emergencia.html');
         alert("Para iniciar uma emergência e garantir que tenhamos os dados do seu pet, por favor, faça o login.");
         window.location.href = 'pages/login/index.html';
       } else {
-        // Usuário logado, vai para o formulário de emergência
         window.location.href = 'emergencia.html'; 
       }
     }

@@ -13,10 +13,7 @@ import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-/**
- * Serviço para a lógica de negócio do Animal (CRUD).
- * (Versão completa e corrigida)
- */
+//Serviço para a lógica de negócio do Animal (CRUD).
 @Service
 public class AnimalService {
 
@@ -29,21 +26,13 @@ public class AnimalService {
         this.tutorRepository = tutorRepository;
     }
 
-    /**
-     * Método auxiliar para buscar o Tutor pelo email (do token).
-     */
+    //Método auxiliar para buscar o Tutor pelo email (do token).
     private Tutor getTutorFromEmail(String email) {
         return tutorRepository.findByEmailTutor(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Tutor não encontrado com o email: " + email));
     }
 
-    /**
-     * Cria um novo animal para o tutor logado.
-     *
-     * @param dto DTO com os dados do animal.
-     * @param tutorEmail Email do tutor logado (vem do Principal/Token).
-     * @return O animal salvo.
-     */
+    //Cria um novo animal para o tutor logado.
     public Animal createAnimal(AnimalDTO dto, String tutorEmail) {
         Tutor tutor = getTutorFromEmail(tutorEmail);
 
@@ -61,33 +50,20 @@ public class AnimalService {
         return animalRepository.save(animal);
     }
 
-    /**
-     * Busca todos os animais do tutor logado.
-     *
-     * @param tutorEmail Email do tutor logado.
-     * @return Lista de animais.
-     */
+    //Busca todos os animais do tutor logado.
     public List<Animal> getAnimalsByTutor(String tutorEmail) {
         Tutor tutor = getTutorFromEmail(tutorEmail);
         return animalRepository.findByIdTutor(tutor.getIdTutor());
     }
 
-    /**
-     * Atualiza um animal, verificando se pertence ao tutor logado.
-     *
-     * @param animalId ID do animal a ser atualizado.
-     * @param dto      DTO com os novos dados.
-     * @param tutorEmail Email do tutor logado.
-     * @return O animal atualizado.
-     * @throws AccessDeniedException Se o animal não pertencer ao tutor.
-     */
+    //Atualiza um animal, verificando se pertence ao tutor logado.
     public Animal updateAnimal(String animalId, AnimalDTO dto, String tutorEmail) throws AccessDeniedException {
         Tutor tutor = getTutorFromEmail(tutorEmail);
         
         Animal animal = animalRepository.findById(animalId)
                 .orElseThrow(() -> new NoSuchElementException("Animal não encontrado com ID: " + animalId));
 
-        // Verificação de Propriedade
+        //Verificação de Propriedade
         if (!animal.getIdTutor().equals(tutor.getIdTutor())) {
             throw new AccessDeniedException("Este animal não pertence ao tutor logado.");
         }
@@ -104,20 +80,13 @@ public class AnimalService {
         return animalRepository.save(animal);
     }
 
-    /**
-     * Deleta um animal, verificando se pertence ao tutor logado.
-     *
-     * @param animalId ID do animal a ser deletado.
-     * @param tutorEmail Email do tutor logado.
-     * @throws AccessDeniedException Se o animal não pertencer ao tutor.
-     */
+    //Deleta um animal, verificando se pertence ao tutor logado.
     public void deleteAnimal(String animalId, String tutorEmail) throws AccessDeniedException {
         Tutor tutor = getTutorFromEmail(tutorEmail);
         
         Animal animal = animalRepository.findById(animalId)
                 .orElseThrow(() -> new NoSuchElementException("Animal não encontrado com ID: " + animalId));
 
-        // Verificação de Propriedade
         if (!animal.getIdTutor().equals(tutor.getIdTutor())) {
             throw new AccessDeniedException("Este animal não pertence ao tutor logado.");
         }

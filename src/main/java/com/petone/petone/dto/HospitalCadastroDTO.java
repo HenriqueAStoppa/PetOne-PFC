@@ -3,9 +3,8 @@ package com.petone.petone.dto;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
-/**
- * DTO para receber dados do frontend durante o cadastro de um novo Hospital.
- */
+//DTO para receber dados do frontend durante o cadastro de um novo Hospital.
+
 @Data
 public class HospitalCadastroDTO {
 
@@ -20,7 +19,7 @@ public class HospitalCadastroDTO {
     private String telefoneHospital;
 
     @NotBlank(message = "O endereço é obrigatório.")
-    private String endereco; // Ex: "Rua Exemplo, 123, Bairro, Cidade - UF"
+    private String endereco; 
 
     @NotBlank(message = "O CNPJ é obrigatório.")
     @Pattern(regexp = "^\\d{2}\\.?\\d{3}\\.?\\d{3}/?\\d{4}-?\\d{2}$", message = "CNPJ inválido.")

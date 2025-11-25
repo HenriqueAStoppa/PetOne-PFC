@@ -9,9 +9,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 import java.time.LocalDate;
 
-/**
- * DTO para receber dados do frontend durante o cadastro de um novo Tutor.
- */
+//DTO para receber dados do frontend durante o cadastro de um novo Tutor.
 @Data
 public class TutorCadastroDTO {
 

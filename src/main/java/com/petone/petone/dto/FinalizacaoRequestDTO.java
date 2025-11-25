@@ -9,7 +9,7 @@ public class FinalizacaoRequestDTO {
     @NotBlank(message = "O relatório médico é obrigatório.")
     private String relatorio;
 
-    private String prescricao; // Pode ser opcional (ex: "Nenhuma medicação")
+    private String prescricao; //opcional
 
     @NotBlank(message = "O nome do veterinário que finalizou é obrigatório.")
     private String veterinarioResponsavelFinalizacao;

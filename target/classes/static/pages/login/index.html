@@ -138,7 +138,6 @@
   </div>
 
   <script>
-    // [CORREÇÃO] URL Absoluta
     const API_URL = 'http://localhost:8080';
     let userType = 'tutor'; 
 
@@ -198,7 +197,6 @@
         };
 
         try {
-            // [CORREÇÃO] Usando URL absoluta + Endpoint correto
             const endpoint = userType === 'tutor' 
                 ? `${API_URL}/api/auth/login/tutor` 
                 : `${API_URL}/api/auth/login/hospital`;
@@ -214,7 +212,7 @@
                 
                 localStorage.setItem('petone_token', data.token);
                 localStorage.setItem('petone_user_nome', data.nomeCompleto);
-                localStorage.setItem('petone_user_id', data.idTutor); // idTutor funciona para ambos (é um ID genérico no DTO)
+                localStorage.setItem('petone_user_id', data.idTutor);
 
                 if (userType === 'tutor') {
                     window.location.href = '../../dashboard_tutor.html';

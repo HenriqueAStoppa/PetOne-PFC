@@ -178,17 +178,14 @@
         const token = localStorage.getItem('petone_token');
         let cacheAnimais = [];
 
-        // Helper: Redireciona para emergência
         function iniciarEmergencia() {
              window.location.href = 'emergencia.html';
         }
 
-        // Toggle medicação input
         document.getElementById('animal-medicacao').addEventListener('change', function() {
             document.getElementById('div-qual-medicacao').style.display = this.checked ? 'block' : 'none';
         });
 
-        // Auth Check
         function logout() {
             localStorage.removeItem('petone_token');
             localStorage.removeItem('petone_user_nome');
@@ -198,11 +195,9 @@
         document.getElementById('btn-logout').addEventListener('click', logout);
         if (!token) window.location.href = 'pages/login/index.html';
 
-        // Nome no Nav
         const nomeUser = localStorage.getItem('petone_user_nome');
         if(nomeUser) document.getElementById('user-nome-nav').textContent = `Olá, ${nomeUser.split(' ')[0]}`;
 
-        // API Fetcher Genérico
         async function apiFetch(endpoint, options = {}) {
             const headers = { 'Content-Type': 'application/json', ...options.headers, 'Authorization': `Bearer ${token}` };
             const response = await fetch(`${API_URL}${endpoint}`, { ...options, headers });
@@ -210,8 +205,7 @@
             if (!response.ok) throw new Error((await response.text()) || "Erro");
             return response.headers.get('content-type')?.includes('json') ? response.json() : { ok: true };
         }
-
-        // -- Loads --
+-
         document.addEventListener('DOMContentLoaded', () => {
             carregarPerfilTutor();
             carregarAnimais();
@@ -231,7 +225,6 @@
         async function carregarAnimais() {
             const div = document.getElementById('lista-animais');
             try {
-                // URL Corrigida: Removido /api duplicado
                 cacheAnimais = await apiFetch('/animais');
                 if (cacheAnimais.length === 0) {
                     div.innerHTML = '<div class="col-span-2 text-center py-10 bg-white rounded-xl border border-dashed border-gray-300"><p class="text-gray-500">Você ainda não tem pets cadastrados.</p></div>';
@@ -286,7 +279,6 @@
             } catch (e) { div.innerHTML = '<p class="text-red-500 text-xs text-center">Erro ao carregar logs.</p>'; }
         }
 
-        // -- Lógica de Modais e Forms --
         const modal = document.getElementById('modal-animal');
         document.getElementById('btn-show-add-animal').onclick = () => {
             document.getElementById('form-animal').reset();
@@ -316,7 +308,6 @@
 
         window.deletarAnimal = async (id) => {
             if(confirm("Tem certeza que deseja remover este pet?")) {
-                // URL Corrigida
                 try { await apiFetch(`/animais/${id}`, { method: 'DELETE' }); carregarAnimais(); } catch(e){ alert(e.message); }
             }
         };
@@ -325,7 +316,6 @@
             e.preventDefault();
             const id = document.getElementById('animal-id').value;
             const method = id ? 'PUT' : 'POST';
-            // URLs Corrigidas
             const url = id ? `/animais/${id}` : '/animais';
             const data = {
                 nomeAnimal: document.getElementById('animal-nome').value,
@@ -351,7 +341,7 @@
         };
 
         document.getElementById('btn-delete-perfil').onclick = async (e) => {
-            e.preventDefault(); // Previne submit do form
+            e.preventDefault();
             if(confirm("ATENÇÃO: Isso apagará sua conta e todos os seus dados permanentemente. Continuar?")) {
                 try { await apiFetch('/tutor/me', { method: 'DELETE' }); logout(); } catch(e){ alert(e.message); }
             }

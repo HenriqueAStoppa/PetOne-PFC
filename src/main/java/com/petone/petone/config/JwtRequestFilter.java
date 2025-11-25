@@ -16,14 +16,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-/**
- * Filtro que intercepta todas as requisições para validar o Token JWT.
- */
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 
     @Autowired
-    private UserDetailsService userDetailsService; // (UserDetailsServiceImpl)
+    private UserDetailsService userDetailsService;
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -37,34 +34,30 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         String username = null;
         String jwt = null;
 
-        // 1. Extrai o "Bearer Token" do cabeçalho
+        // Extrai o Bearer Token do cabeçalho
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             jwt = authorizationHeader.substring(7);
             try {
                 username = jwtUtil.getUsernameFromToken(jwt);
             } catch (Exception e) {
-                // (Token expirado, inválido, etc.)
                 logger.warn("Não foi possível extrair o usuário do token JWT", e);
             }
         }
 
-        // 2. Valida o token e define o contexto de segurança
+        // validar o token
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
 
-            // 3. Se o token for válido, configura o Spring Security
             if (jwtUtil.validateToken(jwt, userDetails)) {
                 UsernamePasswordAuthenticationToken upat = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
                 
                 upat.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 
-                // Define o usuário como "logado" para esta requisição
                 SecurityContextHolder.getContext().setAuthentication(upat);
             }
         }
         
-        // Continua o fluxo da requisição
         chain.doFilter(request, response);
     }
 }

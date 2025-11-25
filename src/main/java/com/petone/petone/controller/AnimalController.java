@@ -14,10 +14,8 @@ import java.security.Principal;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-/**
- * Controller protegido para o CRUD de Animais.
- * (Requer Token JWT de Tutor).
- */
+//Controller protegido para o CRUD de Animais. (Requer Token JWT de Tutor).
+
 @RestController
 @RequestMapping("/api/animais")
 public class AnimalController {
@@ -25,16 +23,13 @@ public class AnimalController {
     @Autowired
     private AnimalService animalService;
 
-    /**
-     * Busca o email do usuário logado (Tutor) a partir do token.
-     */
+    //Busca o email do usuário logado (Tutor) a partir do token.
     private String getEmailFromPrincipal(Principal principal) {
         return principal.getName();
     }
 
-    /**
-     * (POST /api/animais) - Cria um novo animal.
-     */
+    //Cria um novo animal.
+
     @PostMapping
     public ResponseEntity<Animal> createAnimal(@Valid @RequestBody AnimalDTO dto, Principal principal) {
         String emailTutor = getEmailFromPrincipal(principal);
@@ -42,9 +37,7 @@ public class AnimalController {
         return new ResponseEntity<>(novoAnimal, HttpStatus.CREATED);
     }
 
-    /**
-     * (GET /api/animais) - Lista todos os animais do tutor logado.
-     */
+    //Lista todos os animais do tutor logado.
     @GetMapping
     public ResponseEntity<List<Animal>> getMeusAnimais(Principal principal) {
         String emailTutor = getEmailFromPrincipal(principal);
@@ -52,9 +45,7 @@ public class AnimalController {
         return ResponseEntity.ok(animais);
     }
 
-    /**
-     * (PUT /api/animais/{id}) - Atualiza um animal.
-     */
+    //Atualiza um animal.
     @PutMapping("/{id}")
     public ResponseEntity<?> updateAnimal(@PathVariable String id, @Valid @RequestBody AnimalDTO dto, Principal principal) {
         try {
@@ -68,9 +59,7 @@ public class AnimalController {
         }
     }
 
-    /**
-     * (DELETE /api/animais/{id}) - Deleta um animal.
-     */
+    //Deleta um animal.
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteAnimal(@PathVariable String id, Principal principal) {
         try {

@@ -3,10 +3,7 @@ package com.petone.petone.dto;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
-/**
- * DTO para a atualização do perfil do Hospital (campos permitidos).
- * Não inclui email, cnpj ou senha.
- */
+//DTO para a atualização do perfil do Hospital (campos permitidos).Não inclui email, cnpj ou senha.
 @Data
 public class HospitalPerfilDTO {
 

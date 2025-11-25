@@ -1,12 +1,12 @@
-package com.petone.petone.service; // Pacote em minúsculo
+package com.petone.petone.service; 
 
 import com.petone.petone.dto.AuthRequestDTO;
 import com.petone.petone.dto.AuthResponseDTO;
 import com.petone.petone.dto.HospitalCadastroDTO;
-import com.petone.petone.dto.HospitalPerfilDTO; // Import DTO Perfil
-import com.petone.petone.model.EmergenciaLog; // Import Log
+import com.petone.petone.dto.HospitalPerfilDTO; 
+import com.petone.petone.model.EmergenciaLog; 
 import com.petone.petone.model.Hospital;
-import com.petone.petone.repository.EmergenciaLogRepository; // Import Log Repo
+import com.petone.petone.repository.EmergenciaLogRepository; 
 import com.petone.petone.repository.HospitalRepository;
 import com.petone.petone.util.JwtUtil;
 import com.petone.petone.util.PasswordUtil;
@@ -17,35 +17,29 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import java.util.List; 
 
-import java.util.List; // Import List
-
-/**
- * Serviço para a lógica de negócio do Hospital.
- * (Versão completa e corrigida com Gerenciamento de Perfil e Logs)
- */
+//Serviço para a lógica de negócio do Hospital.
 @Service
 public class HospitalService {
 
     private final HospitalRepository hospitalRepository;
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
-    private final EmergenciaLogRepository emergenciaLogRepository; // Repositório de Logs
+    private final EmergenciaLogRepository emergenciaLogRepository; 
 
     @Autowired
     public HospitalService(HospitalRepository hospitalRepository, 
                            JwtUtil jwtUtil, 
                            AuthenticationManager authenticationManager,
-                           EmergenciaLogRepository emergenciaLogRepository) { // Injeção
+                           EmergenciaLogRepository emergenciaLogRepository) { 
         this.hospitalRepository = hospitalRepository;
         this.jwtUtil = jwtUtil;
         this.authenticationManager = authenticationManager;
-        this.emergenciaLogRepository = emergenciaLogRepository; // Atribuição
+        this.emergenciaLogRepository = emergenciaLogRepository; 
     }
 
-    /**
-     * Cadastra um novo hospital.
-     */
+    //Cadastra um novo hospital.
     public Hospital cadastrarHospital(HospitalCadastroDTO dto) {
         if (hospitalRepository.findByEmailHospital(dto.getEmailHospital()).isPresent()) {
             throw new ValidationException("Email já cadastrado.");
@@ -69,9 +63,7 @@ public class HospitalService {
         return hospitalRepository.save(hospital);
     }
 
-    /**
-     * Autentica um hospital usando o AuthenticationManager.
-     */
+    //Autentica um hospital usando o AuthenticationManager.
     public AuthResponseDTO authenticateHospital(AuthRequestDTO dto) throws Exception {
         
         try {
@@ -89,32 +81,17 @@ public class HospitalService {
 
         return AuthResponseDTO.builder()
                 .token(token)
-                .idTutor(hospital.getIdHospital()) // Reutilizando o DTO
+                .idTutor(hospital.getIdHospital()) 
                 .email(hospital.getEmailHospital())
-                .nomeCompleto(hospital.getNomeFantasia()) // Reutilizando o DTO
+                .nomeCompleto(hospital.getNomeFantasia())
                 .build();
     }
 
-    // --- MÉTODOS DE PERFIL (OS QUE FALTAVAM) ---
-
-    /**
-     * [MÉTODO FALTANTE]
-     * Busca os dados do perfil do hospital logado.
-     * @param hospitalEmail Email do principal (usuário logado).
-     * @return O objeto Hospital.
-     */
     public Hospital getMeuPerfil(String hospitalEmail) {
         return hospitalRepository.findByEmailHospital(hospitalEmail)
                 .orElseThrow(() -> new UsernameNotFoundException("Hospital não encontrado: " + hospitalEmail));
     }
 
-    /**
-     * [MÉTODO FALTANTE]
-     * Atualiza os dados do perfil do hospital logado.
-     * @param hospitalEmail Email do principal.
-     * @param dto DTO com os novos dados.
-     * @return O Hospital com dados atualizados.
-     */
     public Hospital updateMeuPerfil(String hospitalEmail, HospitalPerfilDTO dto) {
         Hospital hospital = getMeuPerfil(hospitalEmail);
 
