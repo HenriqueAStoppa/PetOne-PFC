@@ -13,9 +13,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-/**
- * Configuração principal do Spring Security.
- */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -23,44 +20,49 @@ public class SecurityConfig {
     @Autowired
     private JwtRequestFilter jwtRequestFilter;
 
-    // Define quais rotas são públicas e quais são protegidas
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable()) // Desabilita CSRF (comum em APIs REST)
+            .csrf(csrf -> csrf.disable()) // Desabilita CSRF para APIs
             .authorizeHttpRequests(auth -> auth
-                // Rotas públicas (Cadastro, Login, Swagger)
+                // 1. Libera endpoints de Autenticação e Documentação
                 .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/swagger-ui/**").permitAll()
-                .requestMatchers("/v3/api-docs/**").permitAll()
-                .requestMatchers("/swagger-ui.html").permitAll()
-                
-                // --- [CORREÇÃO] ---
-                // Permite acesso aos arquivos HTML estáticos
-                .requestMatchers("/", "/index.html", "/dashboard_tutor.html", "/dashboard_hospital.html").permitAll()
-                
-                // Todas as outras rotas exigem autenticação
+                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
+
+                // 2. [CORREÇÃO] Libera TODOS os arquivos estáticos (HTMLs, imagens, pastas)
+                // Isso permite carregar as páginas de login, cadastro, etc. sem estar logado
+                .requestMatchers(
+                    "/", 
+                    "/index.html",
+                    "/cadastro_tutor.html",
+                    "/cadastro_hospital.html",
+                    "/recuperar_senha.html",
+                    "/resetar_senha.html",
+                    "/pages/**",       // Libera tudo dentro da pasta pages (ex: login)
+                    "/assets/**",      // Caso tenha css/js externos
+                    "/dashboard_tutor.html",   // O HTML é público, os dados da API não
+                    "/dashboard_hospital.html",
+                    "/emergencia.html"
+                ).permitAll()
+
+                // 3. Qualquer outra requisição (ex: /api/tutor/me) exige token válido
                 .anyRequest().authenticated()
             )
-            // Define a política de sessão como STATELESS (sem estado),
-            // pois estamos usando JWT
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             );
 
-        // Adiciona o filtro JWT ANTES do filtro padrão de usuário/senha
+        // Adiciona o filtro de JWT antes da autenticação padrão
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
-    // Expõe o AuthenticationManager (usado pelo TutorService/Controller)
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
     }
 
-    // Define o BCrypt como o codificador de senhas
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
