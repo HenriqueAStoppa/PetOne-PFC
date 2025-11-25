@@ -36,13 +36,14 @@
     document.getElementById('formReset').addEventListener('submit', async (e) => {
         e.preventDefault();
         const data = {
-            email: document.getElementById('email').value,
+            // O endpoint não pede email, só token e senha, mas o form tem. 
+            // O DTO ResetarSenhaRequestDTO só tem 'token' e 'novaSenha'.
             token: document.getElementById('token').value,
             novaSenha: document.getElementById('senha').value
         };
         
         try {
-            const res = await fetch('/api/auth/senha/resetar', {
+            const res = await fetch('/api/auth/recuperar-senha/resetar', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)

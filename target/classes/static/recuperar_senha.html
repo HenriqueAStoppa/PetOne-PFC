@@ -6,7 +6,6 @@
   <title>Recuperar Senha</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
   <style>
-    /* Mesmos estilos base */
     :root { --verde-claro: #d8f3dc; --verde-escuro: #1b4332; }
     body { font-family: "Poppins", sans-serif; background-color: var(--verde-claro); display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
     .card { background: white; padding: 30px; border-radius: 16px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
@@ -34,17 +33,15 @@
         msg.innerText = 'Enviando...';
         
         try {
-            const res = await fetch('/api/auth/senha/solicitar', {
+            const res = await fetch('/api/auth/recuperar-senha/solicitar', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email })
             });
             
-            // Por segurança, sempre dizemos que enviamos
             msg.style.color = 'green';
             msg.innerText = 'Se o email existir, enviamos um token (Simulado no console do servidor).';
             
-            // Simulação para o TCC: Redireciona para a tela de reset após 2s
             setTimeout(() => {
                 window.location.href = 'resetar_senha.html';
             }, 3000);

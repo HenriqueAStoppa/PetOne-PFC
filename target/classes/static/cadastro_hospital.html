@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>PetOne - Cadastro de Hospital</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-  <!-- Reusando estilos do cadastro_tutor para consistência -->
   <style>
     :root { --verde-claro: #d8f3dc; --verde-card: #b7e4c7; --verde-escuro: #1b4332; --verde-escuro-hover: #163326; }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Poppins", sans-serif; }
@@ -19,7 +18,6 @@
     input { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; transition: border-color 0.2s; }
     input:focus { border-color: var(--verde-escuro); border-width: 2px; }
 
-    /* Estilos do Checkbox LGPD */
     .lgpd-container {
         background-color: #f8fafc;
         border: 1px solid #cbd5e1;
@@ -29,24 +27,9 @@
         font-size: 13px;
         color: #475569;
     }
-    .lgpd-checkbox {
-        display: flex;
-        align-items: flex-start;
-        gap: 10px;
-        margin-top: 10px;
-    }
-    .lgpd-checkbox input {
-        width: 20px;
-        height: 20px;
-        margin-top: 2px;
-        cursor: pointer;
-    }
-    .lgpd-checkbox label {
-        font-weight: normal;
-        cursor: pointer;
-        font-size: 13px;
-        line-height: 1.4;
-    }
+    .lgpd-checkbox { display: flex; align-items: flex-start; gap: 10px; margin-top: 10px; }
+    .lgpd-checkbox input { width: 20px; height: 20px; margin-top: 2px; cursor: pointer; }
+    .lgpd-checkbox label { font-weight: normal; cursor: pointer; font-size: 13px; line-height: 1.4; }
 
     .btn { width: 100%; padding: 14px; background-color: var(--verde-escuro); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 20px; transition: background 0.2s, opacity 0.2s; }
     .btn:hover { background-color: var(--verde-escuro-hover); }
@@ -116,16 +99,15 @@
             </div>
         </div>
         
-        <!-- Seção LGPD -->
         <div class="lgpd-container">
             <p><strong>Termo de Consentimento e Responsabilidade (LGPD)</strong></p>
             <p style="margin-top: 5px;">
-                Ao cadastrar sua unidade hospitalar na plataforma PetOne, você concorda em atuar como controlador e processador de dados de saúde animal e dados pessoais de tutores encaminhados.
+                Ao cadastrar sua unidade hospitalar, você concorda em atuar como controlador e processador de dados.
             </p>
             <div class="lgpd-checkbox">
                 <input type="checkbox" id="lgpd-consent" required>
                 <label for="lgpd-consent">
-                    Declaro que li e concordo com o armazenamento dos registros de atendimento e dados dos tutores por um período de <strong>5 (cinco) anos</strong>, conforme exigências legais e regulatórias do CRMV e LGPD. Comprometo-me a manter a confidencialidade destes dados. Após este período, os registros serão anonimizados ou excluídos.
+                    Declaro que li e concordo com o armazenamento dos registros de atendimento por <strong>5 (cinco) anos</strong>.
                 </label>
             </div>
         </div>
@@ -141,7 +123,9 @@
   </div>
 
   <script>
-    // Lógica para habilitar o botão apenas se o checkbox estiver marcado
+    // [CORREÇÃO] URL Absoluta
+    const API_URL = 'http://localhost:8080';
+
     const checkboxLgpd = document.getElementById('lgpd-consent');
     const btnCadastrar = document.getElementById('btn-cadastrar');
 
@@ -152,7 +136,6 @@
     document.getElementById('formCadastro').addEventListener('submit', async (e) => {
       e.preventDefault();
       
-      // Verificação extra de segurança
       if (!checkboxLgpd.checked) {
           alert("Você precisa aceitar os termos da LGPD para continuar.");
           return;
@@ -182,7 +165,8 @@
       };
 
       try {
-        const response = await fetch('/api/auth/cadastro/hospital', {
+        // [CORREÇÃO] Usando URL absoluta
+        const response = await fetch(`${API_URL}/api/auth/cadastro/hospital`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
@@ -190,7 +174,7 @@
 
         if (response.ok) {
             alert("Cadastro realizado com sucesso! Faça o login.");
-            window.location.href = 'pages/login/index.html'; // Redireciona para o login unificado
+            window.location.href = 'pages/login/index.html'; 
         } else {
             const errorText = await response.text();
             msgErro.textContent = `Erro: ${errorText}`;

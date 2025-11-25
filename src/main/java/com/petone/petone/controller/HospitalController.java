@@ -1,6 +1,7 @@
 package com.petone.petone.controller;
 
 import com.petone.petone.dto.HospitalPerfilDTO;
+import com.petone.petone.model.EmergenciaLog;
 import com.petone.petone.model.Hospital;
 import com.petone.petone.service.HospitalService;
 import jakarta.validation.Valid;
@@ -10,11 +11,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.List;
 
-/**
- * Controller protegido para o gerenciamento de perfil do Hospital.
- * (Requer Token JWT de Hospital).
- */
 @RestController
 @RequestMapping("/api/hospital")
 public class HospitalController {
@@ -22,13 +20,9 @@ public class HospitalController {
     @Autowired
     private HospitalService hospitalService;
 
-    /**
-     * (GET /api/hospital/me) - Busca os dados do perfil do hospital logado.
-     */
     @GetMapping("/me")
     public ResponseEntity<?> getMeuPerfil(Principal principal) {
         try {
-            // O email (username) vem do token JWT
             Hospital hospital = hospitalService.getMeuPerfil(principal.getName());
             return ResponseEntity.ok(hospital);
         } catch (UsernameNotFoundException e) {
@@ -36,9 +30,6 @@ public class HospitalController {
         }
     }
 
-    /**
-     * (PUT /api/hospital/me) - Atualiza os dados do perfil do hospital logado.
-     */
     @PutMapping("/me")
     public ResponseEntity<?> updateMeuPerfil(@Valid @RequestBody HospitalPerfilDTO dto, Principal principal) {
         try {
@@ -49,5 +40,9 @@ public class HospitalController {
         }
     }
 
-    // (O endpoint DELETE /me pode ser adicionado aqui se necessário)
+    @GetMapping("/logs")
+    public ResponseEntity<List<EmergenciaLog>> getMeusLogs(Principal principal) {
+        List<EmergenciaLog> logs = hospitalService.getMeusLogs(principal.getName());
+        return ResponseEntity.ok(logs);
+    }
 }
