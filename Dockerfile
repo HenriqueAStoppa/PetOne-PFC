@@ -5,7 +5,8 @@ COPY . .
 RUN mvn clean package -DskipTests
 
 # Etapa 2: Execução
-FROM openjdk:17-jdk-slim
+# [CORREÇÃO] Trocamos 'openjdk:17-jdk-slim' por 'eclipse-temurin:17-jdk-jammy'
+FROM eclipse-temurin:17-jdk-jammy
 WORKDIR /app
 # Copia o JAR gerado na etapa anterior
 COPY --from=build /app/target/petone-1.0.0.jar app.jar
@@ -14,4 +15,4 @@ COPY --from=build /app/target/petone-1.0.0.jar app.jar
 EXPOSE 8080
 
 # Comando para iniciar
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]  
