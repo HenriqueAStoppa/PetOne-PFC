@@ -19,7 +19,6 @@
     }
     input:focus { border-color: var(--verde-escuro); border-width: 2px; }
     
-    /* Estilos do Checkbox LGPD */
     .lgpd-container {
         background-color: #f8fafc;
         border: 1px solid #cbd5e1;
@@ -35,18 +34,8 @@
         gap: 10px;
         margin-top: 10px;
     }
-    .lgpd-checkbox input {
-        width: 20px;
-        height: 20px;
-        margin-top: 2px;
-        cursor: pointer;
-    }
-    .lgpd-checkbox label {
-        font-weight: normal;
-        cursor: pointer;
-        font-size: 13px;
-        line-height: 1.4;
-    }
+    .lgpd-checkbox input { width: 20px; height: 20px; margin-top: 2px; cursor: pointer; }
+    .lgpd-checkbox label { font-weight: normal; cursor: pointer; font-size: 13px; line-height: 1.4; }
 
     .btn { width: 100%; padding: 14px; background-color: var(--verde-escuro); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 20px; transition: background 0.2s, opacity 0.2s; }
     .btn:hover { background-color: var(--verde-escuro-hover); }
@@ -93,17 +82,15 @@
             <input type="password" id="senhaConfirma" required>
         </div>
         
-        <!-- Seção LGPD -->
         <div class="lgpd-container">
             <p><strong>Termo de Consentimento e Privacidade (LGPD)</strong></p>
             <p style="margin-top: 5px;">
                 Ao se cadastrar na plataforma PetOne, você concorda com a coleta e tratamento dos seus dados pessoais e dos dados de saúde do seu animal.
-                Estes dados serão utilizados exclusivamente para fins de atendimento veterinário de emergência e encaminhamento hospitalar.
             </p>
             <div class="lgpd-checkbox">
                 <input type="checkbox" id="lgpd-consent" required>
                 <label for="lgpd-consent">
-                    Declaro que li e concordo que meus dados e os registros de emergência serão armazenados de forma segura por um período de <strong>5 (cinco) anos</strong>, conforme exigências legais e regulatórias. Após este período, os dados serão automaticamente anonimizados ou excluídos permanentemente de nossos registros.
+                    Declaro que li e concordo que meus dados e os registros de emergência serão armazenados de forma segura por um período de <strong>5 (cinco) anos</strong>.
                 </label>
             </div>
         </div>
@@ -119,7 +106,9 @@
   </div>
 
   <script>
-    // Lógica para habilitar o botão apenas se o checkbox estiver marcado
+    // [CORREÇÃO] URL Absoluta para o backend
+    const API_URL = 'http://localhost:8080';
+
     const checkboxLgpd = document.getElementById('lgpd-consent');
     const btnCadastrar = document.getElementById('btn-cadastrar');
 
@@ -130,7 +119,6 @@
     document.getElementById('formCadastro').addEventListener('submit', async (e) => {
       e.preventDefault();
       
-      // Verificação extra de segurança
       if (!checkboxLgpd.checked) {
           alert("Você precisa aceitar os termos da LGPD para continuar.");
           return;
@@ -157,7 +145,8 @@
       };
 
       try {
-        const response = await fetch('/api/auth/cadastro/tutor', {
+        // [CORREÇÃO] Usando URL absoluta
+        const response = await fetch(`${API_URL}/api/auth/cadastro/tutor`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
@@ -171,9 +160,12 @@
         } else {
             const errorText = await response.text();
             msgErro.textContent = `Erro: ${errorText}`;
+            msgErro.style.display = 'block';
         }
       } catch (error) {
-        msgErro.textContent = 'Erro ao conectar com o servidor.';
+        console.error(error);
+        msgErro.textContent = 'Erro ao conectar com o servidor (Verifique se o backend está rodando na porta 8080).';
+        msgErro.style.display = 'block';
       }
     });
   </script>

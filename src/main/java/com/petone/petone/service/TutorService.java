@@ -4,8 +4,10 @@ import com.petone.petone.dto.AuthRequestDTO;
 import com.petone.petone.dto.AuthResponseDTO;
 import com.petone.petone.dto.TutorCadastroDTO;
 import com.petone.petone.dto.TutorPerfilDTO;
+import com.petone.petone.model.EmergenciaLog;
 import com.petone.petone.model.Tutor;
 import com.petone.petone.repository.AnimalRepository;
+import com.petone.petone.repository.EmergenciaLogRepository;
 import com.petone.petone.repository.TutorRepository;
 import com.petone.petone.util.JwtUtil;
 import com.petone.petone.util.PasswordUtil;
@@ -20,10 +22,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * Serviço para a lógica de negócio do Tutor (Autenticação e Perfil).
- * (Versão completa e corrigida)
- */
+import java.util.List;
+
 @Service
 public class TutorService {
 
@@ -32,23 +32,23 @@ public class TutorService {
     private final UserDetailsService userDetailsService;
     private final JwtUtil jwtUtil;
     private final AnimalRepository animalRepository;
+    private final EmergenciaLogRepository emergenciaLogRepository;
 
     @Autowired
     public TutorService(TutorRepository tutorRepository, 
                         AuthenticationManager authenticationManager, 
                         UserDetailsService userDetailsService, 
                         JwtUtil jwtUtil, 
-                        AnimalRepository animalRepository) {
+                        AnimalRepository animalRepository,
+                        EmergenciaLogRepository emergenciaLogRepository) {
         this.tutorRepository = tutorRepository;
         this.authenticationManager = authenticationManager;
         this.userDetailsService = userDetailsService;
         this.jwtUtil = jwtUtil;
         this.animalRepository = animalRepository;
+        this.emergenciaLogRepository = emergenciaLogRepository;
     }
 
-    /**
-     * Cadastra um novo tutor.
-     */
     public AuthResponseDTO cadastrarTutor(TutorCadastroDTO dto) {
         if (tutorRepository.findByEmailTutor(dto.getEmailTutor()).isPresent()) {
             throw new ValidationException("Email já cadastrado.");
@@ -61,15 +61,13 @@ public class TutorService {
         tutor.setTelefoneTutor(dto.getTelefoneTutor());
         tutor.setDataNascimento(dto.getDataNascimento());
         tutor.setSenhaHash(PasswordUtil.encode(dto.getSenha()));
-        tutor.setEmailVerificado(true); // Simulação TCC
+        tutor.setEmailVerificado(true);
 
         Tutor tutorSalvo = tutorRepository.save(tutor);
 
-        // Gera token de login
         final UserDetails userDetails = userDetailsService.loadUserByUsername(dto.getEmailTutor());
         final String token = jwtUtil.generateToken(userDetails);
         
-        // Retorna o DTO de resposta
         return AuthResponseDTO.builder()
                 .token(token)
                 .idTutor(tutorSalvo.getIdTutor())
@@ -78,9 +76,6 @@ public class TutorService {
                 .build();
     }
 
-    /**
-     * Autentica um tutor.
-     */
     public AuthResponseDTO authenticate(AuthRequestDTO dto) throws Exception {
         try {
             authenticationManager.authenticate(
@@ -104,39 +99,29 @@ public class TutorService {
                 .build();
     }
 
-    // --- MÉTODOS (GERENCIAMENTO DE PERFIL) ---
-
-    /**
-     * Busca os dados do perfil do tutor logado.
-     */
     public Tutor getMeuPerfil(String tutorEmail) {
         return tutorRepository.findByEmailTutor(tutorEmail)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado: " + tutorEmail));
     }
 
-    /**
-     * Atualiza os dados do perfil do tutor logado.
-     */
     public Tutor updateMeuPerfil(String tutorEmail, TutorPerfilDTO dto) {
-        Tutor tutor = getMeuPerfil(tutorEmail); // Reusa o método anterior
+        Tutor tutor = getMeuPerfil(tutorEmail);
         tutor.setNomeCompleto(dto.getNomeCompleto());
         tutor.setTelefoneTutor(dto.getTelefoneTutor());
         tutor.setDataNascimento(dto.getDataNascimento());
         return tutorRepository.save(tutor);
     }
 
-    /**
-     * Deleta o perfil do tutor logado e todos os seus animais.
-     */
-    @Transactional // Garante que tudo execute (ou falhe) em conjunto
+    @Transactional
     public void deleteMeuPerfil(String tutorEmail) {
         Tutor tutor = getMeuPerfil(tutorEmail);
         String idTutor = tutor.getIdTutor();
-
-        // [CASCADE DELETE] Deleta os animais associados
         animalRepository.deleteByIdTutor(idTutor);
-
-        // Deleta o tutor
         tutorRepository.delete(tutor);
+    }
+
+    public List<EmergenciaLog> getMeusLogs(String tutorEmail) {
+        Tutor tutor = getMeuPerfil(tutorEmail);
+        return emergenciaLogRepository.findByIdTutor(tutor.getIdTutor());
     }
 }

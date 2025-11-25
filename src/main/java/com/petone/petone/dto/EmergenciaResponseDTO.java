@@ -1,9 +1,10 @@
 package com.petone.petone.dto;
 
-
 import com.petone.petone.model.Hospital;
 import lombok.Builder;
 import lombok.Data;
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 public class EmergenciaResponseDTO {
@@ -12,5 +13,5 @@ public class EmergenciaResponseDTO {
     private String mensagem;
     private String hospitalNome;
     private String hospitalEndereco;
-    private Data dataHoraRegistro;
+    private LocalDateTime dataHoraRegistro;
 }

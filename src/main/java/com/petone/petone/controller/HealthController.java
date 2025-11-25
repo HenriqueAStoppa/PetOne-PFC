@@ -1,25 +1,48 @@
 package com.petone.petone.controller;
 
-import io.swagger.v3.oas.annotations.Hidden;
-import org.springframework.http.CacheControl;
+import com.petone.petone.dto.HospitalPerfilDTO;
+import com.petone.petone.model.EmergenciaLog;
+import com.petone.petone.model.Hospital;
+import com.petone.petone.service.HospitalService;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.bind.annotation.*;
 
-import java.time.Instant;
-import java.util.Map;
+import java.security.Principal;
+import java.util.List;
 
 @RestController
-public class HealthController {
+@RequestMapping("/api/hospital")
+public class HospitalController {
 
-    @Hidden 
-    @GetMapping("/health")
-    public ResponseEntity<Map<String, Object>> health() {
-        return ResponseEntity.ok()
-            .cacheControl(CacheControl.noCache().mustRevalidate())
-            .body(Map.of(
-                "status", "OK",
-                "timestamp", Instant.now().toString()
-            ));
+    @Autowired
+    private HospitalService hospitalService;
+
+    @GetMapping("/me")
+    public ResponseEntity<?> getMeuPerfil(Principal principal) {
+        try {
+            Hospital hospital = hospitalService.getMeuPerfil(principal.getName());
+            return ResponseEntity.ok(hospital);
+        } catch (UsernameNotFoundException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/me")
+    public ResponseEntity<?> updateMeuPerfil(@Valid @RequestBody HospitalPerfilDTO dto, Principal principal) {
+        try {
+            Hospital hospitalAtualizado = hospitalService.updateMeuPerfil(principal.getName(), dto);
+            return ResponseEntity.ok(hospitalAtualizado);
+        } catch (UsernameNotFoundException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/logs")
+    public ResponseEntity<List<EmergenciaLog>> getMeusLogs(Principal principal) {
+        List<EmergenciaLog> logs = hospitalService.getMeusLogs(principal.getName());
+        return ResponseEntity.ok(logs);
     }
 }
