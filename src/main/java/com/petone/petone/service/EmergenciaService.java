@@ -84,7 +84,7 @@ public class EmergenciaService {
         
         emergenciaLogRepository.save(log);
 
-        //Chamada correta para os emails (2 argumentos)
+        //Chamada correta para os emails
         emailService.enviarEmailTokenParaTutor(tutor, log);
         emailService.enviarEmailAlertaParaHospital(log);
 
