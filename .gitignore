@@ -1,0 +1,22 @@
+# Pastas de compilação e binários
+target/
+bin/
+
+# Arquivos de IDE (VS Code, IntelliJ)
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+.classpath
+.project
+.settings/
+
+# Arquivos de LOG
+*.log
+logs/
+
+# Arquivos de segredo e configuração local
+.env
+application-dev.properties
+application-local.properties
