@@ -22,9 +22,21 @@
     .btn-voltar { display: block; text-align: center; margin-top: 20px; color: #64748b; text-decoration: none; font-size: 14px; }
     
     /* Modal de Sucesso */
-    .modal-sucesso { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; z-index: 100; }
-    .modal-content { background: white; padding: 30px; border-radius: 16px; text-align: center; max-width: 400px; width: 90%; animation: popUp 0.3s ease; }
-    .token-box { background: #f1f5f9; padding: 15px; border-radius: 8px; margin: 15px 0; font-family: monospace; font-size: 24px; font-weight: bold; letter-spacing: 2px; color: var(--vermelho); border: 2px dashed var(--vermelho); }
+    .modal-sucesso { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(220, 38, 38, 0.95); align-items: center; justify-content: center; z-index: 100; backdrop-filter: blur(4px); }
+    .modal-content { background: white; padding: 40px 30px; border-radius: 24px; text-align: center; max-width: 400px; width: 90%; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); animation: popUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    
+    .token-label { font-size: 14px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-bottom: 5px; }
+    .token-box { background: #fef2f2; padding: 15px; border-radius: 12px; margin-bottom: 25px; font-family: monospace; font-size: 32px; font-weight: 800; letter-spacing: 3px; color: var(--vermelho); border: 3px dashed var(--vermelho); user-select: all; }
+    
+    .hospital-info { margin-bottom: 25px; font-size: 15px; color: #334155; line-height: 1.5; }
+    .hospital-name { display: block; font-weight: 700; font-size: 18px; color: #0f172a; margin-bottom: 4px; }
+    
+    .btn-maps { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 16px; background-color: #2563eb; color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; margin-bottom: 12px; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3); transition: background 0.2s; text-decoration: none; }
+    .btn-maps:hover { background-color: #1d4ed8; }
+    
+    .btn-close { background: transparent; border: none; color: #94a3b8; font-weight: 600; cursor: pointer; font-size: 14px; margin-top: 10px; }
+    .btn-close:hover { color: #64748b; text-decoration: underline; }
+
     @keyframes popUp { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
   </style>
 </head>
@@ -32,8 +44,8 @@
 
   <div class="container">
     <div class="card">
-      <h1>Registro de Emergência</h1>
-      <p class="subtitle">Preencha rapidamente para alertar o hospital</p>
+      <h1>🚨 Registro de Emergência</h1>
+      <p class="subtitle">Informe os dados para alertar a rede PetOne</p>
       
       <form id="formEmergencia">
         <div class="form-group">
@@ -53,30 +65,48 @@
             <option value="Trauma/Atropelamento">Trauma/Atropelamento</option>
             <option value="Desmaio">Desmaio</option>
             <option value="Envenenamento">Envenenamento</option>
+            <option value="Parto difícil">Parto difícil</option>
             <option value="Outro">Outro</option>
           </select>
         </div>
-        <button type="submit" class="btn-emergencia">Solicitar Socorro</button>
+        <button type="submit" class="btn-emergencia">SOLICITAR SOCORRO IMEDIATO</button>
       </form>
-      <a href="dashboard_tutor.html" class="btn-voltar">Cancelar e Voltar</a>
+      <a href="dashboard_tutor.html" class="btn-voltar">Cancelar</a>
     </div>
   </div>
 
   <div id="modalSucesso" class="modal-sucesso">
     <div class="modal-content">
-      <h2 style="color: #16a34a; margin-bottom: 10px;">Socorro a Caminho!</h2>
-      <p>Apresente este token ao chegar no hospital:</p>
+      <div style="font-size: 40px; margin-bottom: 10px;">🚑</div>
+      <h2 style="color: #0f172a; margin-bottom: 20px; font-size: 22px; font-weight: 700;">Socorro Solicitado!</h2>
+      
+      <p class="token-label">Seu Token de Atendimento</p>
       <div id="tokenDisplay" class="token-box">...</div>
-      <p style="font-size: 14px; color: #64748b; margin-bottom: 20px;">Hospital: <strong id="hospitalInfo"></strong></p>
-      <button onclick="window.location.href='dashboard_tutor.html'" class="btn-emergencia" style="background-color: #16a34a; font-size: 14px; padding: 10px;">Voltar ao Painel</button>
+      
+      <div class="hospital-info">
+        <div>Hospital Destino:</div>
+        <span id="hospitalNome" class="hospital-name">...</span>
+        <span id="hospitalEndereco" style="font-size: 13px; color: #64748b;">...</span>
+      </div>
+      
+      <a id="btnRota" href="#" target="_blank" class="btn-maps">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>
+        NAVEGAR AGORA
+      </a>
+
+      <button onclick="window.location.href='dashboard_tutor.html'" class="btn-close">Voltar ao Painel</button>
     </div>
   </div>
 
   <script>
+    // URL do Backend (Local) - Certifique-se de que é esta porta que está rodando
+    const API_URL = 'http://localhost:8080'; 
+    
     const token = localStorage.getItem('petone_token');
     if(!token) window.location.href = 'pages/login/index.html';
 
-    fetch('/api/animais', { headers: { 'Authorization': `Bearer ${token}` } })
+    // 1. Carregar lista de animais do tutor
+    fetch(`${API_URL}/api/animais`, { headers: { 'Authorization': `Bearer ${token}` } })
       .then(res => res.json())
       .then(animais => {
         const select = document.getElementById('animal');
@@ -90,17 +120,24 @@
                 select.innerHTML += `<option value="${a.idAnimal}">${a.nomeAnimal} (${a.especie})</option>`;
             });
         }
-      });
+      })
+      .catch(() => alert("Erro ao carregar animais. Verifique a conexão."));
 
+    // 2. Enviar formulário de emergência
     document.getElementById('formEmergencia').addEventListener('submit', async (e) => {
         e.preventDefault();
+        
+        const btnSubmit = e.target.querySelector('button[type="submit"]');
+        btnSubmit.disabled = true;
+        btnSubmit.innerText = "Buscando hospital...";
+
         const data = {
             idAnimal: document.getElementById('animal').value,
             tipoEmergencia: document.getElementById('sintoma').value
         };
 
         try {
-            const res = await fetch('/api/emergencia/iniciar', {
+            const res = await fetch(`${API_URL}/api/emergencia/iniciar`, {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
@@ -111,14 +148,38 @@
 
             if(res.ok) {
                 const result = await res.json();
+                
+                // --- Preencher Modal ---
+                
+                // 1. Token
                 document.getElementById('tokenDisplay').innerText = result.tokenEmergencia;
-                document.getElementById('hospitalInfo').innerText = result.hospitalNome;
+                
+                // 2. Dados do Hospital
+                document.getElementById('hospitalNome').innerText = result.hospitalNome;
+                document.getElementById('hospitalEndereco').innerText = result.hospitalEndereco;
+                
+                // 3. Configurar Botão do Google Maps [CORREÇÃO PRINCIPAL]
+                // Cria uma URL de rota: Origem = GPS atual (automático), Destino = Endereço do Hospital
+                const enderecoCodificado = encodeURIComponent(result.hospitalEndereco);
+                const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${enderecoCodificado}&travelmode=driving`;
+                
+                const btnRota = document.getElementById('btnRota');
+                btnRota.href = mapsUrl;
+                
+                // Mostrar Modal
                 document.getElementById('modalSucesso').style.display = 'flex';
+
             } else {
-                alert('Erro ao registrar emergência.');
+                const erro = await res.text();
+                alert('Erro ao registrar emergência: ' + erro);
+                btnSubmit.disabled = false;
+                btnSubmit.innerText = "SOLICITAR SOCORRO IMEDIATO";
             }
         } catch(err) {
-            alert('Erro de conexão.');
+            console.error(err);
+            alert('Erro de conexão com o servidor.');
+            btnSubmit.disabled = false;
+            btnSubmit.innerText = "SOLICITAR SOCORRO IMEDIATO";
         }
     });
   </script>
