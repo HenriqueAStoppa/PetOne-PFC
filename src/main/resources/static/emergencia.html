@@ -21,7 +21,6 @@
     .btn-emergencia:active { transform: scale(0.98); }
     .btn-voltar { display: block; text-align: center; margin-top: 20px; color: #64748b; text-decoration: none; font-size: 14px; }
     
-    /* Modal de Sucesso */
     .modal-sucesso { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(220, 38, 38, 0.95); align-items: center; justify-content: center; z-index: 100; backdrop-filter: blur(4px); }
     .modal-content { background: white; padding: 40px 30px; border-radius: 24px; text-align: center; max-width: 400px; width: 90%; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); animation: popUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
     
@@ -98,90 +97,107 @@
     </div>
   </div>
 
-  <script>
-    // URL do Backend (Local) - Certifique-se de que é esta porta que está rodando
-    const API_URL = 'http://localhost:8080'; 
-    
-    const token = localStorage.getItem('petone_token');
-    if(!token) window.location.href = 'pages/login/index.html';
+ <script>
+  const API_URL = 'http://localhost:8080'; 
+  
+  const token = localStorage.getItem('petone_token');
+  if(!token) window.location.href = 'pages/login/index.html';
 
-    // 1. Carregar lista de animais do tutor
-    fetch(`${API_URL}/api/animais`, { headers: { 'Authorization': `Bearer ${token}` } })
-      .then(res => res.json())
-      .then(animais => {
-        const select = document.getElementById('animal');
-        if(animais.length === 0) {
-            select.innerHTML = '<option disabled>Nenhum animal cadastrado</option>';
-            alert('Você precisa cadastrar um animal antes!');
-            window.location.href = 'dashboard_tutor.html';
-        } else {
-            select.innerHTML = '<option value="" disabled selected>Selecione...</option>';
-            animais.forEach(a => {
-                select.innerHTML += `<option value="${a.idAnimal}">${a.nomeAnimal} (${a.especie})</option>`;
-            });
-        }
-      })
-      .catch(() => alert("Erro ao carregar animais. Verifique a conexão."));
+  // Carregar animais
+  fetch(`${API_URL}/api/animais`, { headers: { 'Authorization': `Bearer ${token}` } })
+    .then(res => res.json())
+    .then(animais => {
+      const select = document.getElementById('animal');
+      if(animais.length === 0) {
+          select.innerHTML = '<option disabled>Nenhum animal cadastrado</option>';
+          alert('Você precisa cadastrar um animal antes!');
+          window.location.href = 'dashboard_tutor.html';
+      } else {
+          select.innerHTML = '<option value="" disabled selected>Selecione...</option>';
+          animais.forEach(a => {
+              select.innerHTML += `<option value="${a.idAnimal}">${a.nomeAnimal} (${a.especie})</option>`;
+          });
+      }
+    })
+    .catch(() => alert("Erro ao carregar animais. Verifique a conexão."));
 
-    // 2. Enviar formulário de emergência
-    document.getElementById('formEmergencia').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        const btnSubmit = e.target.querySelector('button[type="submit"]');
-        btnSubmit.disabled = true;
-        btnSubmit.innerText = "Buscando hospital...";
+  // Enviar emergência
+  document.getElementById('formEmergencia').addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      const btnSubmit = e.target.querySelector('button[type="submit"]');
+      btnSubmit.disabled = true;
+      btnSubmit.innerText = "Buscando hospital...";
 
-        const data = {
-            idAnimal: document.getElementById('animal').value,
-            tipoEmergencia: document.getElementById('sintoma').value
-        };
+      const idAnimal = document.getElementById('animal').value;
+      const tipoEmergencia = document.getElementById('sintoma').value;
 
-        try {
-            const res = await fetch(`${API_URL}/api/emergencia/iniciar`, {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(data)
-            });
+      if (!navigator.geolocation) {
+        alert('Seu navegador não suporta geolocalização.');
+        btnSubmit.disabled = false;
+        btnSubmit.innerText = "SOLICITAR SOCORRO IMEDIATO";
+        return;
+      }
 
-            if(res.ok) {
-                const result = await res.json();
-                
-                // --- Preencher Modal ---
-                
-                // 1. Token
-                document.getElementById('tokenDisplay').innerText = result.tokenEmergencia;
-                
-                // 2. Dados do Hospital
-                document.getElementById('hospitalNome').innerText = result.hospitalNome;
-                document.getElementById('hospitalEndereco').innerText = result.hospitalEndereco;
-                
-                // 3. Configurar Botão do Google Maps [CORREÇÃO PRINCIPAL]
-                // Cria uma URL de rota: Origem = GPS atual (automático), Destino = Endereço do Hospital
-                const enderecoCodificado = encodeURIComponent(result.hospitalEndereco);
-                const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${enderecoCodificado}&travelmode=driving`;
-                
-                const btnRota = document.getElementById('btnRota');
-                btnRota.href = mapsUrl;
-                
-                // Mostrar Modal
-                document.getElementById('modalSucesso').style.display = 'flex';
+      navigator.geolocation.getCurrentPosition(async (position) => {
+          const latitudeTutor = position.coords.latitude;
+          const longitudeTutor = position.coords.longitude;
 
-            } else {
-                const erro = await res.text();
-                alert('Erro ao registrar emergência: ' + erro);
-                btnSubmit.disabled = false;
-                btnSubmit.innerText = "SOLICITAR SOCORRO IMEDIATO";
-            }
-        } catch(err) {
-            console.error(err);
-            alert('Erro de conexão com o servidor.');
-            btnSubmit.disabled = false;
-            btnSubmit.innerText = "SOLICITAR SOCORRO IMEDIATO";
-        }
-    });
-  </script>
+          const data = {
+              idAnimal,
+              tipoEmergencia,
+              latitudeTutor,
+              longitudeTutor
+          };
+
+          try {
+              const res = await fetch(`${API_URL}/api/emergencia/iniciar`, {
+                  method: 'POST',
+                  headers: { 
+                      'Content-Type': 'application/json',
+                      'Authorization': `Bearer ${token}`
+                  },
+                  body: JSON.stringify(data)
+              });
+
+              if(res.ok) {
+                  const result = await res.json();
+
+                  // Token
+                  document.getElementById('tokenDisplay').innerText = result.tokenEmergencia;
+
+                  // Hospital
+                  document.getElementById('hospitalNome').innerText = result.hospitalNome;
+                  document.getElementById('hospitalEndereco').innerText = result.hospitalEndereco;
+
+                  const enderecoCodificado = encodeURIComponent(result.hospitalEndereco);
+                  const mapsUrl =
+                    `https://www.google.com/maps/dir/?api=1&origin=${latitudeTutor},${longitudeTutor}&destination=${enderecoCodificado}&travelmode=driving`;
+
+                  document.getElementById('btnRota').href = mapsUrl;
+
+                  // Modal
+                  document.getElementById('modalSucesso').style.display = 'flex';
+
+              } else {
+                  const erro = await res.text();
+                  alert('Erro ao registrar emergência: ' + erro);
+                  btnSubmit.disabled = false;
+                  btnSubmit.innerText = "SOLICITAR SOCORRO IMEDIATO";
+              }
+          } catch(err) {
+              console.error(err);
+              alert('Erro de conexão com o servidor.');
+              btnSubmit.disabled = false;
+              btnSubmit.innerText = "SOLICITAR SOCORRO IMEDIATO";
+          }
+      }, (error) => {
+          console.error(error);
+          alert('Não foi possível obter sua localização. Libere a permissão de localização.');
+          btnSubmit.disabled = false;
+          btnSubmit.innerText = "SOLICITAR SOCORRO IMEDIATO";
+      });
+  });
+</script>
 </body>
 </html>

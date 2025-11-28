@@ -8,7 +8,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-//Modelo para a entidade Hospital Veterinário. (Versão completa com senhaHash)
+//Modelo para a entidade Hospital Veterinário. 
 @Getter
 @Setter
 @Data
@@ -19,7 +19,9 @@ public class Hospital {
     private String nomeFantasia;
     private String emailHospital;
     private String telefoneHospital;
-    private String endereco; //Uso com a API do Google Maps
+    private String endereco; 
+    private Double latitude;
+    private Double longitude;
     private String cnpj; 
     private int classificacaoServico; 
     private String veterinarioResponsavel;

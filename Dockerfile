@@ -1,18 +1,17 @@
-# Etapa 1: Build (Compilação)
+#Etapa 1: Build (Compilação)
 FROM maven:3.8.5-openjdk-17 AS build
 WORKDIR /app
 COPY . .
 RUN mvn clean package -DskipTests
 
-# Etapa 2: Execução
-# [CORREÇÃO] Trocamos 'openjdk:17-jdk-slim' por 'eclipse-temurin:17-jdk-jammy'
+#Etapa 2: Execução
 FROM eclipse-temurin:17-jdk-jammy
 WORKDIR /app
-# Copia o JAR gerado na etapa anterior
+#Copia o JAR gerado na etapa anterior
 COPY --from=build /app/target/petone-1.0.0.jar app.jar
 
-# Expõe a porta 8080
+#Expõe a porta 8080
 EXPOSE 8080
 
-# Comando para iniciar
+#Comando para iniciar
 ENTRYPOINT ["java", "-jar", "app.jar"]  

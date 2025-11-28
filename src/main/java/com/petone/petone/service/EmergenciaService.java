@@ -63,7 +63,7 @@ public class EmergenciaService {
                 }
 
                 // Hospital mais próximo
-                Hospital hospital = mapsService.encontrarHospitalMaisProximo("localizacao_simulada");
+                Hospital hospital = mapsService.encontrarHospitalMaisProximo(dto.getLatitudeTutor(), dto.getLongitudeTutor());
 
                 // Gera token da emergência
                 String token = "VET-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
