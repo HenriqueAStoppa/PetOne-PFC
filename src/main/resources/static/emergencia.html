@@ -126,6 +126,8 @@
       e.preventDefault();
       
       const btnSubmit = e.target.querySelector('button[type="submit"]');
+      const textoOriginal = "SOLICITAR SOCORRO IMEDIATO";
+
       btnSubmit.disabled = true;
       btnSubmit.innerText = "Buscando hospital...";
 
@@ -134,15 +136,20 @@
 
       if (!navigator.geolocation) {
         alert('Seu navegador não suporta geolocalização.');
-        btnSubmit.disabled = false;
-        btnSubmit.innerText = "SOLICITAR SOCORRO IMEDIATO";
+        restaurarBotao();
         return;
       }
+
+      const options = {
+        enableHighAccuracy: true, 
+        timeout: 10000,           
+        maximumAge: 0            
+      };
 
       navigator.geolocation.getCurrentPosition(async (position) => {
           const latitudeTutor = position.coords.latitude;
           const longitudeTutor = position.coords.longitude;
-
+          
           const data = {
               idAnimal,
               tipoEmergencia,
@@ -171,8 +178,10 @@
                   document.getElementById('hospitalEndereco').innerText = result.hospitalEndereco;
 
                   const enderecoCodificado = encodeURIComponent(result.hospitalEndereco);
+                  
+                  // CORREÇÃO FINAL DA URL DO MAPS: Origin=Coordenadas, Destination=Endereço
                   const mapsUrl =
-                    `https://www.google.com/maps/dir/?api=1&origin=${latitudeTutor},${longitudeTutor}&destination=${enderecoCodificado}&travelmode=driving`;
+                    `http://maps.google.com/maps?saddr=${latitudeTutor},${longitudeTutor}&daddr=${enderecoCodificado}&diraction=navigate`;
 
                   document.getElementById('btnRota').href = mapsUrl;
 
@@ -182,21 +191,24 @@
               } else {
                   const erro = await res.text();
                   alert('Erro ao registrar emergência: ' + erro);
-                  btnSubmit.disabled = false;
-                  btnSubmit.innerText = "SOLICITAR SOCORRO IMEDIATO";
+                  restaurarBotao();
               }
           } catch(err) {
               console.error(err);
               alert('Erro de conexão com o servidor.');
-              btnSubmit.disabled = false;
-              btnSubmit.innerText = "SOLICITAR SOCORRO IMEDIATO";
+              restaurarBotao();
           }
       }, (error) => {
           console.error(error);
           alert('Não foi possível obter sua localização. Libere a permissão de localização.');
+          restaurarBotao();
+      }, options);
+      
+      function restaurarBotao() {
           btnSubmit.disabled = false;
-          btnSubmit.innerText = "SOLICITAR SOCORRO IMEDIATO";
-      });
+          btnSubmit.innerText = textoOriginal;
+          btnSubmit.style.backgroundColor = ""; 
+      }
   });
 </script>
 </body>
