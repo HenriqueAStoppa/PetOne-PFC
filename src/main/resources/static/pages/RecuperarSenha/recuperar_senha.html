@@ -5,13 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Recuperar Senha</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-  <style>
-    :root { --verde-claro: #d8f3dc; --verde-escuro: #1b4332; }
-    body { font-family: "Poppins", sans-serif; background-color: var(--verde-claro); display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-    .card { background: white; padding: 30px; border-radius: 16px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
-    input { width: 100%; padding: 12px; margin: 10px 0 20px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
-    button { width: 100%; padding: 12px; background: var(--verde-escuro); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
-  </style>
+  <link rel="stylesheet" href="/assets/css/recuperar_senha.css">
 </head>
 <body>
   <div class="card">
@@ -22,34 +16,9 @@
         <button type="submit">Enviar Link</button>
     </form>
     <p id="msg" style="margin-top: 15px; font-size: 13px;"></p>
-    <a href="pages/login/index.html" style="display: block; margin-top: 20px; color: #1b4332; text-decoration: none; font-size: 14px;">Voltar ao Login</a>
+    <a href="/pages/login/index.html" style="display: block; margin-top: 20px; color: #1b4332; text-decoration: none; font-size: 14px;">Voltar ao Login</a>
   </div>
 
-  <script>
-    document.getElementById('formRecuperar').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const email = document.getElementById('email').value;
-        const msg = document.getElementById('msg');
-        msg.innerText = 'Enviando...';
-        
-        try {
-            const res = await fetch('/api/auth/recuperar-senha/solicitar', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email })
-            });
-            
-            msg.style.color = 'green';
-            msg.innerText = 'Se o email existir, enviamos um token (Simulado no console do servidor).';
-            
-            setTimeout(() => {
-                window.location.href = 'resetar_senha.html';
-            }, 3000);
-
-        } catch(err) {
-            msg.innerText = 'Erro ao conectar.';
-        }
-    });
-  </script>
+  <script src="/assets/js/recuperar_senha.js"></script>
 </body>
 </html>

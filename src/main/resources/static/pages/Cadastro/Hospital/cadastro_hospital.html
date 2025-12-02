@@ -5,34 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>PetOne - Cadastro de Hospital</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-  <style>
-    :root { --verde-claro: #d8f3dc; --verde-card: #b7e4c7; --verde-escuro: #1b4332; --verde-escuro-hover: #163326; }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Poppins", sans-serif; }
-    body { background-color: var(--verde-claro); color: #0f172a; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
-    .container { width: 100%; max-width: 700px; }
-    .card { background-color: white; border-radius: 16px; padding: 32px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-    h1 { color: var(--verde-escuro); text-align: center; margin-bottom: 24px; }
-    .form-group { margin-bottom: 16px; }
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
-    label { display: block; margin-bottom: 6px; font-size: 14px; font-weight: 500; }
-    input { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; transition: border-color 0.2s; }
-    input:focus { border-color: var(--verde-escuro); border-width: 2px; }
-    input:disabled { background-color: #f1f5f9; cursor: not-allowed; }
-
-    /* Checkbox LGPD */
-    .lgpd-container { background-color: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 15px; margin-top: 20px; font-size: 13px; color: #475569; }
-    .lgpd-checkbox { display: flex; align-items: flex-start; gap: 10px; margin-top: 10px; }
-    .lgpd-checkbox input { width: 20px; height: 20px; margin-top: 2px; cursor: pointer; }
-
-    .btn { width: 100%; padding: 14px; background-color: var(--verde-escuro); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 20px; transition: background 0.2s; }
-    .btn:hover { background-color: var(--verde-escuro-hover); }
-    .btn:disabled { background-color: #9ca3af; cursor: not-allowed; }
-
-    .error { color: #dc2626; font-size: 12px; text-align: center; margin-bottom: 10px; }
-    .footer-link { text-align: center; margin-top: 20px; font-size: 14px; }
-    .footer-link a { color: var(--verde-escuro); text-decoration: none; font-weight: 600; }
-  </style>
+  <link rel="stylesheet" href="/assets/css/cadastro_hospital.css">
 </head>
 <body>
   <div class="container">
@@ -116,105 +89,10 @@
         <p id="msgErro" class="error"></p>
         <button type="submit" id="btn-cadastrar" class="btn" disabled>Cadastrar Unidade</button>
       </form>
-      <div class="footer-link">Já é parceiro? <a href="pages/login/index.html">Acesse sua conta</a></div>
+      <div class="footer-link">Já é parceiro? <a href="/pages/login/index.html">Acesse sua conta</a></div>
     </div>
   </div>
 
-  <script>
-    const API_URL = 'http://localhost:8080';
-
-    // Função para buscar CEP na API ViaCEP
-    async function buscarCep() {
-        const cep = document.getElementById('cep').value.replace(/\D/g, '');
-        if (cep.length !== 8) return;
-
-        try {
-            document.getElementById('logradouro').value = "...";
-            
-            const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-            const data = await res.json();
-
-            if (!data.erro) {
-                document.getElementById('logradouro').value = data.logradouro;
-                document.getElementById('bairro').value = data.bairro;
-                document.getElementById('cidade').value = data.localidade;
-                document.getElementById('uf').value = data.uf;
-                
-                // Habilita campos para conferência, caso necessário
-                document.getElementById('logradouro').disabled = false;
-                document.getElementById('bairro').disabled = false;
-                document.getElementById('cidade').disabled = false;
-                document.getElementById('uf').disabled = false;
-                
-                document.getElementById('numero').focus();
-            } else {
-                alert("CEP não encontrado.");
-                document.getElementById('logradouro').value = "";
-            }
-        } catch (e) {
-            alert("Erro ao buscar CEP.");
-        }
-    }
-
-    // Lógica do Form
-    const checkboxLgpd = document.getElementById('lgpd-consent');
-    const btnCadastrar = document.getElementById('btn-cadastrar');
-    checkboxLgpd.addEventListener('change', function() { btnCadastrar.disabled = !this.checked; });
-
-    document.getElementById('formCadastro').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      
-      if(document.getElementById('senha').value !== document.getElementById('senhaConfirma').value) {
-          document.getElementById('msgErro').innerText = "Senhas não coincidem.";
-          return;
-      }
-
-      btnCadastrar.disabled = true;
-      btnCadastrar.innerText = "Cadastrando...";
-
-      const data = {
-        nomeFantasia: document.getElementById('nome').value,
-        cnpj: document.getElementById('cnpj').value,
-        emailHospital: document.getElementById('email').value,
-        telefoneHospital: document.getElementById('telefone').value,
-        
-        // Novos campos de endereço
-        cep: document.getElementById('cep').value,
-        logradouro: document.getElementById('logradouro').value,
-        numero: document.getElementById('numero').value,
-        bairro: document.getElementById('bairro').value,
-        complemento: document.getElementById('complemento').value,
-        cidade: document.getElementById('cidade').value,
-        uf: document.getElementById('uf').value,
-        
-        veterinarioResponsavel: document.getElementById('vet').value,
-        crmvVeterinario: document.getElementById('crmv').value,
-        classificacaoServico: parseInt(document.getElementById('classificacao').value),
-        senha: document.getElementById('senha').value
-      };
-
-      try {
-        const response = await fetch(`${API_URL}/api/auth/cadastro/hospital`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        });
-
-        if (response.ok) {
-            alert("Cadastro realizado! Endereço validado e coordenadas geradas.");
-            window.location.href = 'pages/login/index.html'; 
-        } else {
-            const errorText = await response.text();
-            document.getElementById('msgErro').innerText = `Erro: ${errorText}`;
-            btnCadastrar.disabled = false;
-            btnCadastrar.innerText = "Cadastrar Unidade";
-        }
-      } catch (error) {
-        document.getElementById('msgErro').innerText = 'Erro ao conectar com o servidor.';
-        btnCadastrar.disabled = false;
-        btnCadastrar.innerText = "Cadastrar Unidade";
-      }
-    });
-  </script>
+  <script src="/assets/js/cadastro_hospital.js"></script>
 </body>
 </html>

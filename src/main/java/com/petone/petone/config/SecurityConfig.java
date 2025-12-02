@@ -25,24 +25,36 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
+                // Endpoints de Autenticação (API)
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
 
+                // Recursos Estáticos (CSS, JS, Imagens) - FUNDAMENTAL PARA O FRONT NOVO
+                .requestMatchers("/assets/**").permitAll() 
+                .requestMatchers("/pages/**").permitAll()
+
+                // URLs das Páginas Públicas (Mapeadas no WebConfig)
                 .requestMatchers(
-                    "/",
-                    "/index.html",
-                    "/cadastro_tutor.html",
-                    "/cadastro_hospital.html",
-                    "/recuperar_senha.html",
-                    "/resetar_senha.html",
-                    "/pages/**",
-                    "/assets/**",         
-                    "/dashboard_tutor.html",
-                    "/dashboard_hospital.html",
-                    "/emergencia.html"
+                    "/", 
+                    "/index.html", 
+                    "/login", 
+                    "/cadastro_tutor", 
+                    "/cadastro_hospital", 
+                    "/recuperar_senha", 
+                    "/resetar_senha"
                 ).permitAll()
 
-                // Qualquer outra requisição (ex: /api/tutor/me) irá exigir token válido
+                // Páginas Protegidas (Exigem Login)
+                // O Spring Security vai barrar se tentar acessar direto sem token, 
+                // mas a proteção real dos dados está no JS (api.js) verificando o token.
+                // Aqui liberamos o HTML para o JS poder carregar e redirecionar se necessário.
+                .requestMatchers(
+                    "/dashboard_tutor", 
+                    "/dashboard_hospital", 
+                    "/emergencia"
+                ).permitAll()
+
+                // Qualquer outra requisição de API exige autenticação
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session

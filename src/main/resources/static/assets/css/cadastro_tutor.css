@@ -1,0 +1,38 @@
+:root { --verde-claro: #d8f3dc; --verde-card: #b7e4c7; --verde-escuro: #1b4332; --verde-escuro-hover: #163326; }
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: "Poppins", sans-serif; }
+body { background-color: var(--verde-claro); color: #0f172a; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+.container { width: 100%; max-width: 600px; }
+.card { background-color: white; border-radius: 16px; padding: 32px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+h1 { color: var(--verde-escuro); text-align: center; margin-bottom: 24px; }
+.form-group { margin-bottom: 16px; }
+label { display: block; margin-bottom: 6px; font-size: 14px; font-weight: 500; }
+input[type="text"], input[type="email"], input[type="tel"], input[type="password"], input[type="date"] { 
+    width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; transition: border-color 0.2s; 
+}
+input:focus { border-color: var(--verde-escuro); border-width: 2px; }
+
+.lgpd-container {
+    background-color: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 20px;
+    font-size: 13px;
+    color: #475569;
+}
+.lgpd-checkbox {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-top: 10px;
+}
+.lgpd-checkbox input { width: 20px; height: 20px; margin-top: 2px; cursor: pointer; }
+.lgpd-checkbox label { font-weight: normal; cursor: pointer; font-size: 13px; line-height: 1.4; }
+
+.btn { width: 100%; padding: 14px; background-color: var(--verde-escuro); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 20px; transition: background 0.2s, opacity 0.2s; }
+.btn:hover { background-color: var(--verde-escuro-hover); }
+.btn:disabled { background-color: #9ca3af; cursor: not-allowed; opacity: 0.7; }
+
+.error { color: #dc2626; font-size: 12px; margin-top: 4px; display: none; }
+.footer-link { text-align: center; margin-top: 20px; font-size: 14px; }
+.footer-link a { color: var(--verde-escuro); text-decoration: none; font-weight: 600; }

@@ -1,0 +1,8 @@
+/* home.css */
+/* O Tailwind cuida da maioria das coisas, aqui ficam apenas ajustes específicos ou variáveis se necessário, 
+   mas como você definiu cores no config do Tailwind, este arquivo pode ficar enxuto ou até vazio por enquanto. 
+   Mantive o CSS do SVG de fundo que estava inline/implícito no HTML se houver necessidade futura. */
+
+.bg-verde-claro { background-color: #d8f3dc; }
+.text-verde-escuro { color: #1b4332; }
+/* Adicione aqui qualquer estilo customizado que não seja do Tailwind */

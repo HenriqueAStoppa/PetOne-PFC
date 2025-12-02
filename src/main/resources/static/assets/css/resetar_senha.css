@@ -1,0 +1,7 @@
+:root { --verde-claro: #d8f3dc; --verde-escuro: #1b4332; }
+body { font-family: "Poppins", sans-serif; background-color: var(--verde-claro); display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+.card { background: white; padding: 30px; border-radius: 16px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+input { width: 100%; padding: 12px; margin: 5px 0 15px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
+label { display: block; text-align: left; font-size: 12px; font-weight: 600; margin-left: 2px; }
+button { width: 100%; padding: 12px; background: var(--verde-escuro); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
+button:hover { background-color: #163326; }
