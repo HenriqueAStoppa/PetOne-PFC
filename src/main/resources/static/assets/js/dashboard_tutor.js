@@ -3,31 +3,28 @@ lucide.createIcons();
 let cacheAnimais = [];
 
 document.addEventListener('DOMContentLoaded', () => {
-    checkAuth(); // Do api.js
+    checkAuth(); 
     carregarHeader();
     carregarPerfilTutor();
     carregarAnimais();
     carregarLogs();
-    
-    // Configura botões
+
     document.getElementById('btn-logout').addEventListener('click', logout);
 });
 
 function carregarHeader() {
     const nomeUser = localStorage.getItem('petone_user_nome');
-    if(nomeUser) document.getElementById('user-nome-nav').textContent = `Olá, ${nomeUser.split(' ')[0]}`;
+    if (nomeUser) document.getElementById('user-nome-nav').textContent = `Olá, ${nomeUser.split(' ')[0]}`;
 }
 
 function iniciarEmergencia() {
-     window.location.href = '/pages/Emergencia/emergencia.html';
+    window.location.href = '/pages/Emergencia/emergencia.html';
 }
-
-// --- Funções de API (Usando apiFetch do api.js) ---
 
 async function carregarPerfilTutor() {
     try {
         const tutor = await apiFetch('/tutor/me');
-        if(tutor) {
+        if (tutor) {
             document.getElementById('perfil-nome').value = tutor.nomeCompleto;
             document.getElementById('perfil-email').value = tutor.emailTutor;
             document.getElementById('perfil-telefone').value = tutor.telefoneTutor;
@@ -39,7 +36,7 @@ async function carregarPerfilTutor() {
 async function carregarAnimais() {
     const div = document.getElementById('lista-animais');
     div.innerHTML = '<p class="text-gray-400 col-span-2 text-center py-10">Carregando...</p>';
-    
+
     try {
         cacheAnimais = await apiFetch('/animais');
         if (!cacheAnimais || cacheAnimais.length === 0) {
@@ -71,31 +68,87 @@ async function carregarAnimais() {
     } catch (e) { div.innerHTML = `<p class="text-red-500 col-span-2 text-center">Erro ao carregar animais.</p>`; }
 }
 
+//Histórico de emergências do tutor
 async function carregarLogs() {
     const div = document.getElementById('lista-logs');
     try {
         const logs = await apiFetch('/tutor/logs');
-        if (!logs || !logs.length) { div.innerHTML = '<p class="text-gray-400 text-xs text-center py-4">Nenhum registro encontrado.</p>'; return; }
+
+        if (!logs || !logs.length) {
+            div.innerHTML = '<p class="text-gray-400 text-xs text-center py-4">Nenhum registro encontrado.</p>';
+            return;
+        }
+
         div.innerHTML = '';
+
         logs.forEach(l => {
-            const date = new Date(l.dataHoraInicio).toLocaleDateString('pt-BR'); 
-            const statusClass = l.status === 'Finalizado' ? 'bg-gray-100 text-gray-600' : 'bg-yellow-100 text-yellow-800';
-            div.innerHTML += `
-                <div class="p-3 rounded-lg border border-gray-100 hover:bg-gray-50 transition text-sm mb-2">
-                    <div class="flex justify-between mb-1 items-center">
-                        <span class="font-bold text-verde-escuro text-xs truncate w-32" title="${l.tipoEmergencia}">${l.tipoEmergencia}</span>
-                        <span class="text-[10px] px-2 py-0.5 rounded-full uppercase font-bold tracking-wide ${statusClass}">${l.status}</span>
-                    </div>
-                    <p class="text-gray-600 text-xs flex items-center gap-1"><i data-lucide="paw-print" class="w-3 h-3"></i> ${l.nomeAnimal} • ${date}</p>
-                    <p class="text-gray-500 text-xs mt-1 truncate flex items-center gap-1"><i data-lucide="building" class="w-3 h-3"></i> ${l.nomeFantasiaHospital}</p>
+            const dataBruta = l.dataHoraInicio || l.dataHoraRegistro;
+            const date = dataBruta
+                ? new Date(dataBruta).toLocaleDateString('pt-BR')
+                : '';
+
+            const statusFinalizado = l.status === 'Finalizado';
+            const statusClass = statusFinalizado
+                ? 'bg-gray-100 text-gray-600'
+                : 'bg-yellow-100 text-yellow-800';
+
+            //campos vindos do backend
+            const relatorio = l.relatorioMedico || l.relatorio || '';
+            const prescricao = l.prescricaoMedicamento || l.prescricao || '';
+
+            const card = document.createElement('div');
+            card.className = 'p-3 rounded-lg border border-gray-100 hover:bg-gray-50 transition text-sm mb-2';
+
+            card.innerHTML = `
+                <div class="flex justify-between mb-1 items-center">
+                    <span class="font-bold text-verde-escuro text-xs truncate w-32" title="${l.tipoEmergencia}">
+                        ${l.tipoEmergencia}
+                    </span>
+                    <span class="text-[10px] px-2 py-0.5 rounded-full uppercase font-bold tracking-wide ${statusClass}">
+                        ${l.status}
+                    </span>
                 </div>
+
+                <p class="text-gray-600 text-xs flex items-center gap-1">
+                    <i data-lucide="paw-print" class="w-3 h-3"></i>
+                    ${l.nomeAnimal} ${date ? '• ' + date : ''}
+                </p>
+                <p class="text-gray-500 text-xs mt-1 truncate flex items-center gap-1">
+                    <i data-lucide="building" class="w-3 h-3"></i>
+                    ${l.nomeFantasiaHospital || 'Hospital não informado'}
+                </p>
+
+                ${statusFinalizado && (relatorio || prescricao)
+                    ? `
+                        <div class="mt-2 p-2 bg-gray-50 rounded-lg border border-gray-100 text-[11px] text-gray-700">
+                            <p class="mb-1">
+                                <span class="font-semibold text-gray-900">Relatório Médico:</span>
+                                ${relatorio || 'Não informado.'}
+                            </p>
+                            ${prescricao
+                        ? `<p>
+                                         <span class="font-semibold text-gray-900">Prescrição:</span>
+                                         ${prescricao}
+                                       </p>`
+                        : ''
+                    }
+                        </div>
+                        `
+                    : ''
+                }
             `;
+
+            div.appendChild(card);
         });
+
         lucide.createIcons();
-    } catch (e) { div.innerHTML = '<p class="text-red-500 text-xs text-center">Erro ao carregar logs.</p>'; }
+    } catch (e) {
+        console.error(e);
+        div.innerHTML = '<p class="text-red-500 text-xs text-center">Erro ao carregar logs.</p>';
+    }
 }
 
-// --- Modais e Forms ---
+//Modais e Forms 
 
 const modal = document.getElementById('modal-animal');
 document.getElementById('btn-show-add-animal').onclick = () => {
@@ -107,13 +160,13 @@ document.getElementById('btn-show-add-animal').onclick = () => {
 };
 document.getElementById('btn-close-modal-animal').onclick = () => modal.style.display = 'none';
 
-document.getElementById('animal-medicacao').addEventListener('change', function() {
+document.getElementById('animal-medicacao').addEventListener('change', function () {
     document.getElementById('div-qual-medicacao').style.display = this.checked ? 'block' : 'none';
 });
 
 window.editarAnimal = (id) => {
     const pet = cacheAnimais.find(a => a.idAnimal === id);
-    if(!pet) return;
+    if (!pet) return;
     document.getElementById('animal-id').value = pet.idAnimal;
     document.getElementById('animal-nome').value = pet.nomeAnimal;
     document.getElementById('animal-idade').value = pet.idade;
@@ -129,8 +182,8 @@ window.editarAnimal = (id) => {
 };
 
 window.deletarAnimal = async (id) => {
-    if(confirm("Tem certeza que deseja remover este pet?")) {
-        try { await apiFetch(`/animais/${id}`, { method: 'DELETE' }); carregarAnimais(); } catch(e){ alert(e.message); }
+    if (confirm("Tem certeza que deseja remover este pet?")) {
+        try { await apiFetch(`/animais/${id}`, { method: 'DELETE' }); carregarAnimais(); } catch (e) { alert(e.message); }
     }
 };
 
@@ -149,7 +202,7 @@ document.getElementById('form-animal').onsubmit = async (e) => {
         usaMedicacao: document.getElementById('animal-medicacao').checked,
         qualMedicacao: document.getElementById('animal-qual-medicacao').value
     };
-    try { await apiFetch(url, { method, body: JSON.stringify(data) }); modal.style.display = 'none'; carregarAnimais(); } catch(e){ alert(e.message); }
+    try { await apiFetch(url, { method, body: JSON.stringify(data) }); modal.style.display = 'none'; carregarAnimais(); } catch (e) { alert(e.message); }
 };
 
 document.getElementById('form-perfil-tutor').onsubmit = async (e) => {
@@ -159,12 +212,12 @@ document.getElementById('form-perfil-tutor').onsubmit = async (e) => {
         telefoneTutor: document.getElementById('perfil-telefone').value,
         dataNascimento: document.getElementById('perfil-nascimento').value
     };
-    try { await apiFetch('/tutor/me', { method: 'PUT', body: JSON.stringify(data) }); alert("Perfil atualizado com sucesso!"); carregarPerfilTutor(); } catch(e){ alert(e.message); }
+    try { await apiFetch('/tutor/me', { method: 'PUT', body: JSON.stringify(data) }); alert("Perfil atualizado com sucesso!"); carregarPerfilTutor(); } catch (e) { alert(e.message); }
 };
 
 document.getElementById('btn-delete-perfil').onclick = async (e) => {
     e.preventDefault();
-    if(confirm("ATENÇÃO: Isso apagará sua conta e todos os seus dados permanentemente. Continuar?")) {
-        try { await apiFetch('/tutor/me', { method: 'DELETE' }); logout(); } catch(e){ alert(e.message); }
+    if (confirm("ATENÇÃO: Isso apagará sua conta e todos os seus dados permanentemente. Continuar?")) {
+        try { await apiFetch('/tutor/me', { method: 'DELETE' }); logout(); } catch (e) { alert(e.message); }
     }
 };
