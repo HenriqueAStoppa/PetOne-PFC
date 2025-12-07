@@ -7,6 +7,25 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Configura botão de logout
     document.getElementById('btn-logout').onclick = logout;
+
+   const btnDelete = document.getElementById('btn-delete-hospital');
+if (btnDelete) {
+  btnDelete.onclick = async (e) => {
+    e.preventDefault();
+    const confirmar = confirm(
+      'ATENÇÃO: isso apagará permanentemente sua conta de hospital e todos os dados associados a ela. Deseja continuar?'
+    );
+    if (!confirmar) return;
+
+    try {
+      await apiFetch('/hospital/me', { method: 'DELETE' });
+      alert('Conta excluída com sucesso.');
+      logout();
+    } catch (err) {
+      alert('Erro ao excluir conta: ' + err.message);
+    }
+  };
+}
 });
 
 // --- Perfil ---

@@ -10,21 +10,24 @@
 <body>
   <div class="card">
     <h2 style="color: #1b4332;">Nova Senha</h2>
+
     <form id="formReset">
-        <label>Email (apenas para confirmação visual, não enviado)</label>
-        <input type="email" id="email" placeholder="seu@email.com">
-        
-        <label>Token (recebido por email)</label>
-        <input type="text" id="token" placeholder="Cole o token aqui" required>
-        
-        <label>Nova Senha</label>
-        <input type="password" id="senha" minlength="6" placeholder="Mínimo 6 caracteres" required>
-        
-        <button type="submit">Alterar Senha</button>
+      <label>Email cadastrado</label>
+      <input type="email" id="email" placeholder="seu@email.com">
+
+      <label>Token (recebido por email)</label>
+      <input type="text" id="token" placeholder="Cole o token aqui" required>
+
+      <label>Nova Senha</label>
+      <input type="password" id="senha" minlength="6" placeholder="Mínimo 6 caracteres" required>
+
+      <button type="submit">Alterar Senha</button>
     </form>
+
     <p id="msg" style="margin-top: 15px; font-size: 13px;"></p>
   </div>
 
-  <script src="/assets/js/resetar_senha.js"></script>
+  <script src="/assets/js/api.js" defer></script>
+  <script src="/assets/js/resetar_senha.js" defer></script>
 </body>
 </html>

@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>PetOne - Nova Emergência</title>
+
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/emergencia.css">
 </head>
@@ -21,6 +22,7 @@
             <option value="" disabled selected>Carregando seus animais...</option>
           </select>
         </div>
+
         <div class="form-group">
           <label>Qual o Sintoma Principal?</label>
           <select id="sintoma" required>
@@ -36,8 +38,12 @@
             <option value="Outro">Outro</option>
           </select>
         </div>
-        <button type="submit" class="btn-emergencia">SOLICITAR SOCORRO IMEDIATO</button>
+
+        <button type="submit" class="btn-emergencia">
+          SOLICITAR SOCORRO IMEDIATO
+        </button>
       </form>
+
       <a href="/pages/Dashboard/Tutor/dashboard_tutor.html" class="btn-voltar">Cancelar</a>
     </div>
   </div>
@@ -61,11 +67,14 @@
         NAVEGAR AGORA
       </a>
 
-      <button onclick="window.location.href='/pages/Dashboard/Tutor/dashboard_tutor.html'" class="btn-close">Voltar ao Painel</button>
+      <button onclick="window.location.href='/pages/Dashboard/Tutor/dashboard_tutor.html'" class="btn-close">
+        Voltar ao Painel
+      </button>
     </div>
   </div>
 
- <script src="/assets/js/api.js"></script>
- <script src="/assets/js/emergencia.js"></script>
+  <!-- JS global + da página -->
+  <script src="/assets/js/api.js" defer></script>
+  <script src="/assets/js/emergencia.js" defer></script>
 </body>
 </html>

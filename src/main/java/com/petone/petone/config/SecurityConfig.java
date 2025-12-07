@@ -41,7 +41,7 @@ public class SecurityConfig {
                     "/cadastro_tutor", 
                     "/cadastro_hospital", 
                     "/recuperar_senha", 
-                    "/resetar_senha"
+                    "/resetar_senha"                    
                 ).permitAll()
 
                 // Páginas Protegidas (Exigem Login)

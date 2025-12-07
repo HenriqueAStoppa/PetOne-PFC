@@ -48,7 +48,12 @@ public class ApiErrorHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGeneric(Exception ex) {
-        Map<String, Object> body = baseBody(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected error");
+        // mostra no console
+        ex.printStackTrace();
+
+        // envia mensagem REAL pro front
+        String msg = ex.getClass().getSimpleName() + ": " + ex.getMessage();
+        Map<String, Object> body = baseBody(HttpStatus.INTERNAL_SERVER_ERROR, msg);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
     }
 }

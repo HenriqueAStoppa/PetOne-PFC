@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>PetOne - Cadastro de Tutor</title>
+
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/cadastro_tutor.css">
 </head>
@@ -16,6 +17,7 @@
           <label>Nome Completo</label>
           <input type="text" id="nome" required>
         </div>
+
         <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
           <div>
             <label>CPF</label>
@@ -26,46 +28,53 @@
             <input type="date" id="nascimento" required>
           </div>
         </div>
+
         <div class="form-group">
-            <label>Telefone (WhatsApp)</label>
-            <input type="tel" id="telefone" required>
+          <label>Telefone (WhatsApp)</label>
+          <input type="tel" id="telefone" required>
         </div>
+
         <div class="form-group">
           <label>Email</label>
           <input type="email" id="email" required>
         </div>
+
         <div class="form-group">
           <label>Senha</label>
           <input type="password" id="senha" minlength="6" required>
         </div>
+
         <div class="form-group">
-            <label>Confirmar Senha</label>
-            <input type="password" id="senhaConfirma" required>
+          <label>Confirmar Senha</label>
+          <input type="password" id="senhaConfirma" required>
         </div>
-        
+
         <div class="lgpd-container">
-            <p><strong>Termo de Consentimento e Privacidade (LGPD)</strong></p>
-            <p style="margin-top: 5px;">
-                Ao se cadastrar na plataforma PetOne, você concorda com a coleta e tratamento dos seus dados pessoais e dos dados de saúde do seu animal.
-            </p>
-            <div class="lgpd-checkbox">
-                <input type="checkbox" id="lgpd-consent" required>
-                <label for="lgpd-consent">
-                    Declaro que li e concordo que meus dados e os registros de emergência serão armazenados de forma segura por um período de <strong>5 (cinco) anos</strong>.
-                </label>
-            </div>
+          <p><strong>Termo de Consentimento e Privacidade (LGPD)</strong></p>
+          <p style="margin-top: 5px;">
+            Ao se cadastrar na plataforma PetOne, você concorda com a coleta e tratamento dos seus dados pessoais e dos dados de saúde do seu animal.
+          </p>
+          <div class="lgpd-checkbox">
+            <input type="checkbox" id="lgpd-consent" required>
+            <label for="lgpd-consent">
+              Declaro que li e concordo que meus dados e os registros de emergência serão armazenados de forma segura por um período de
+              <strong>5 (cinco) anos</strong>.
+            </label>
+          </div>
         </div>
-        
+
         <p id="msgErro" class="error" style="display: none; text-align: center; margin-bottom: 10px;"></p>
-        
+
         <button type="submit" id="btn-cadastrar" class="btn" disabled>Cadastrar</button>
       </form>
+
       <div class="footer-link">
         Já tem uma conta? <a href="/pages/login/index.html">Faça Login</a>
       </div>
     </div>
   </div>
 
-  <script src="/assets/js/cadastro_tutor.js"></script>
+  <script src="/assets/js/api.js" defer></script>
+  <script src="/assets/js/cadastro_tutor.js" defer></script>
 </body>
 </html>

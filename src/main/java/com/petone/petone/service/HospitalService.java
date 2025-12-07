@@ -22,11 +22,11 @@ public class HospitalService {
     private final GeocodingService geocodingService; // <--- Injeção Nova
 
     @Autowired
-    public HospitalService(HospitalRepository hospitalRepository, 
-                           JwtUtil jwtUtil, 
-                           AuthenticationManager authenticationManager,
-                           EmergenciaLogRepository emergenciaLogRepository,
-                           GeocodingService geocodingService) {
+    public HospitalService(HospitalRepository hospitalRepository,
+            JwtUtil jwtUtil,
+            AuthenticationManager authenticationManager,
+            EmergenciaLogRepository emergenciaLogRepository,
+            GeocodingService geocodingService) {
         this.hospitalRepository = hospitalRepository;
         this.jwtUtil = jwtUtil;
         this.authenticationManager = authenticationManager;
@@ -46,16 +46,15 @@ public class HospitalService {
         hospital.setNomeFantasia(dto.getNomeFantasia());
         hospital.setEmailHospital(dto.getEmailHospital());
         hospital.setTelefoneHospital(dto.getTelefoneHospital());
-        
+
         // 1. Monta o endereço completo para exibição
-        String enderecoCompleto = String.format("%s, %s - %s, %s - %s", 
-            dto.getLogradouro(), dto.getNumero(), dto.getBairro(), dto.getCidade(), dto.getUf());
+        String enderecoCompleto = String.format("%s, %s - %s, %s - %s",
+                dto.getLogradouro(), dto.getNumero(), dto.getBairro(), dto.getCidade(), dto.getUf());
         hospital.setEndereco(enderecoCompleto);
 
         // 2. Busca Latitude e Longitude automaticamente
         double[] coords = geocodingService.getCoordinates(
-            dto.getLogradouro(), dto.getNumero(), dto.getCidade(), dto.getUf()
-        );
+                dto.getLogradouro(), dto.getNumero(), dto.getCidade(), dto.getUf());
         hospital.setLatitude(coords[0]);
         hospital.setLongitude(coords[1]);
 
@@ -69,12 +68,12 @@ public class HospitalService {
         return hospitalRepository.save(hospital);
     }
 
-    // ... (Mantenha os outros métodos iguais: authenticateHospital, getMeuPerfil, etc.) ...
+    // ... (Mantenha os outros métodos iguais: authenticateHospital, getMeuPerfil,
+    // etc.) ...
     public AuthResponseDTO authenticateHospital(AuthRequestDTO dto) throws Exception {
         try {
             authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getSenha())
-            );
+                    new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getSenha()));
         } catch (BadCredentialsException e) {
             throw new Exception("Credenciais inválidas", e);
         }
@@ -108,5 +107,11 @@ public class HospitalService {
     public List<EmergenciaLog> getMeusLogs(String hospitalEmail) {
         Hospital hospital = getMeuPerfil(hospitalEmail);
         return emergenciaLogRepository.findByIdHospital(hospital.getIdHospital());
+    }
+
+    public void deleteMeuPerfil(String hospitalEmail) {
+        Hospital hospital = hospitalRepository.findByEmailHospital(hospitalEmail).orElseThrow(() -> new UsernameNotFoundException("Hospital não encontrado para exclusão"));
+
+        hospitalRepository.delete(hospital);
     }
 }

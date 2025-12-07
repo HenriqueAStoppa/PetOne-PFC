@@ -45,4 +45,17 @@ public class HospitalController {
         List<EmergenciaLog> logs = hospitalService.getMeusLogs(principal.getName());
         return ResponseEntity.ok(logs);
     }
+
+    @DeleteMapping("/me")
+    public ResponseEntity<?> deleteMeuPerfil(Principal principal) {
+        try {
+            hospitalService.deleteMeuPerfil(principal.getName());
+            return ResponseEntity.noContent().build(); // 204
+        } catch (UsernameNotFoundException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Erro ao excluir hospital: " + e.getMessage());
+        }
+    }
 }

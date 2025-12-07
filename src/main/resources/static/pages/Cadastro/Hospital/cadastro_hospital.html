@@ -4,95 +4,141 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>PetOne - Cadastro de Hospital</title>
+
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <!-- CSS estático -->
   <link rel="stylesheet" href="/assets/css/cadastro_hospital.css">
 </head>
 <body>
   <div class="container">
     <div class="card">
       <h1>Parceiro PetOne</h1>
+
       <form id="formCadastro">
-        
         <div class="grid-2">
-            <div class="form-group"><label>Nome Fantasia</label><input type="text" id="nome" required></div>
-            <div class="form-group"><label>CNPJ</label><input type="text" id="cnpj" required></div>
+          <div class="form-group">
+            <label for="nome">Nome Fantasia</label>
+            <input type="text" id="nome" name="nome" required>
+          </div>
+          <div class="form-group">
+            <label for="cnpj">CNPJ</label>
+            <input type="text" id="cnpj" name="cnpj" required>
+          </div>
         </div>
 
         <div class="grid-2">
-            <div class="form-group"><label>Email Comercial</label><input type="email" id="email" required></div>
-            <div class="form-group"><label>Telefone</label><input type="tel" id="telefone" required></div>
+          <div class="form-group">
+            <label for="email">Email Comercial</label>
+            <input type="email" id="email" name="email" required autocomplete="email">
+          </div>
+          <div class="form-group">
+            <label for="telefone">Telefone</label>
+            <input type="tel" id="telefone" name="telefone" required>
+          </div>
         </div>
 
         <hr style="margin: 15px 0; border: 0; border-top: 1px solid #e2e8f0;">
         <p style="margin-bottom: 15px; font-weight: 600; color: #1b4332;">Endereço da Unidade</p>
 
         <div class="grid-3">
-             <div class="form-group">
-                <label>CEP</label>
-                <input type="text" id="cep" maxlength="9" placeholder="00000-000" onblur="buscarCep()" required>
-            </div>
-            <div class="form-group" style="grid-column: span 2;">
-                <label>Rua (Logradouro)</label>
-                <input type="text" id="logradouro" required disabled> </div>
+          <div class="form-group">
+            <label for="cep">CEP</label>
+            <input
+              type="text"
+              id="cep"
+              name="cep"
+              maxlength="9"
+              placeholder="00000-000"
+              onblur="buscarCep()"
+              required
+            >
+          </div>
+          <div class="form-group" style="grid-column: span 2;">
+            <label for="logradouro">Rua (Logradouro)</label>
+            <input type="text" id="logradouro" name="logradouro" required disabled>
+          </div>
         </div>
 
         <div class="grid-3">
-             <div class="form-group">
-                <label>Número</label>
-                <input type="text" id="numero" required>
-            </div>
-            <div class="form-group">
-                <label>Bairro</label>
-                <input type="text" id="bairro" required disabled>
-            </div>
-            <div class="form-group">
-                <label>Complemento</label>
-                <input type="text" id="complemento">
-            </div>
+          <div class="form-group">
+            <label for="numero">Número</label>
+            <input type="text" id="numero" name="numero" required>
+          </div>
+          <div class="form-group">
+            <label for="bairro">Bairro</label>
+            <input type="text" id="bairro" name="bairro" required disabled>
+          </div>
+          <div class="form-group">
+            <label for="complemento">Complemento</label>
+            <input type="text" id="complemento" name="complemento">
+          </div>
         </div>
 
         <div class="grid-2">
-             <div class="form-group">
-                <label>Cidade</label>
-                <input type="text" id="cidade" required disabled>
-            </div>
-             <div class="form-group">
-                <label>Estado (UF)</label>
-                <input type="text" id="uf" required disabled>
-            </div>
+          <div class="form-group">
+            <label for="cidade">Cidade</label>
+            <input type="text" id="cidade" name="cidade" required disabled>
+          </div>
+          <div class="form-group">
+            <label for="uf">Estado (UF)</label>
+            <input type="text" id="uf" name="uf" required disabled>
+          </div>
         </div>
-        
+
         <hr style="margin: 15px 0; border: 0; border-top: 1px solid #e2e8f0;">
 
         <div class="grid-2">
-            <div class="form-group"><label>Vet. Responsável</label><input type="text" id="vet" required></div>
-            <div class="form-group"><label>CRMV</label><input type="text" id="crmv" required></div>
+          <div class="form-group">
+            <label for="vet">Vet. Responsável</label>
+            <input type="text" id="vet" name="vet" required>
+          </div>
+          <div class="form-group">
+            <label for="crmv">CRMV</label>
+            <input type="text" id="crmv" name="crmv" required>
+          </div>
         </div>
 
         <div class="form-group">
-            <label>Classificação de Serviço (1 a 4)</label>
-            <input type="number" id="classificacao" min="1" max="4" required>
+          <label for="classificacao">Classificação de Serviço (1 a 4)</label>
+          <input type="number" id="classificacao" name="classificacao" min="1" max="4" required>
         </div>
 
         <div class="grid-2">
-            <div class="form-group"><label>Senha</label><input type="password" id="senha" minlength="6" required></div>
-            <div class="form-group"><label>Confirmar Senha</label><input type="password" id="senhaConfirma" required></div>
+          <div class="form-group">
+            <label for="senha">Senha</label>
+            <input type="password" id="senha" name="senha" minlength="6" required>
+          </div>
+          <div class="form-group">
+            <label for="senhaConfirma">Confirmar Senha</label>
+            <input type="password" id="senhaConfirma" name="senhaConfirma" required>
+          </div>
         </div>
-        
+
         <div class="lgpd-container">
-            <div class="lgpd-checkbox">
-                <input type="checkbox" id="lgpd-consent" required>
-                <label for="lgpd-consent">Declaro que li e concordo com o armazenamento dos registros de atendimento.</label>
-            </div>
+          <div class="lgpd-checkbox">
+            <input type="checkbox" id="lgpd-consent" required>
+            <label for="lgpd-consent">
+              Declaro que li e concordo com o armazenamento dos registros de atendimento.
+            </label>
+          </div>
         </div>
-        
-        <p id="msgErro" class="error"></p>
-        <button type="submit" id="btn-cadastrar" class="btn" disabled>Cadastrar Unidade</button>
+
+        <p id="msgErro" class="error" style="display:none;"></p>
+
+        <button type="submit" id="btn-cadastrar" class="btn" disabled>
+          Cadastrar Unidade
+        </button>
       </form>
-      <div class="footer-link">Já é parceiro? <a href="/pages/login/index.html">Acesse sua conta</a></div>
+
+      <div class="footer-link">
+        Já é parceiro?
+        <a href="/pages/login/index.html">Acesse sua conta</a>
+      </div>
     </div>
   </div>
 
-  <script src="/assets/js/cadastro_hospital.js"></script>
+  <!-- JS estático (api + cadastro_hospital) -->
+  <script src="/assets/js/api.js" defer></script>
+  <script src="/assets/js/cadastro_hospital.js" defer></script>
 </body>
 </html>

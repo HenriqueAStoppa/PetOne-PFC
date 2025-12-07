@@ -4,8 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard do Tutor - PetOne</title>
+
+    <!-- Tailwind + Lucide (CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     
     <script>
@@ -61,65 +64,123 @@
                         <i data-lucide="user" class="w-5 h-5"></i> Meu Perfil
                     </h2>
                     <form id="form-perfil-tutor" class="space-y-3 text-sm">
-                        <div><label class="block text-xs font-semibold text-gray-500 uppercase">Nome</label><input type="text" id="perfil-nome" class="w-full mt-1 p-2 bg-gray-50 border rounded-lg focus:ring-verde-escuro focus:border-verde-escuro" required></div>
-                        <div><label class="block text-xs font-semibold text-gray-500 uppercase">Email</label><input type="text" id="perfil-email" class="w-full mt-1 p-2 bg-gray-100 border rounded-lg text-gray-500 cursor-not-allowed" readonly></div>
-                        <div><label class="block text-xs font-semibold text-gray-500 uppercase">Telefone</label><input type="tel" id="perfil-telefone" class="w-full mt-1 p-2 bg-gray-50 border rounded-lg focus:ring-verde-escuro focus:border-verde-escuro" required></div>
-                        <div><label class="block text-xs font-semibold text-gray-500 uppercase">Nascimento</label><input type="date" id="perfil-nascimento" class="w-full mt-1 p-2 bg-gray-50 border rounded-lg focus:ring-verde-escuro focus:border-verde-escuro" required></div>
-                        <button type="submit" class="w-full bg-verde-escuro text-white py-2 rounded-lg hover:bg-verde-escuro-hover transition text-xs font-bold uppercase tracking-wide">Salvar Alterações</button>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase">Nome</label>
+                            <input type="text" id="perfil-nome" class="w-full mt-1 p-2 bg-gray-50 border rounded-lg focus:ring-verde-escuro focus:border-verde-escuro" required>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase">Email</label>
+                            <input type="text" id="perfil-email" class="w-full mt-1 p-2 bg-gray-100 border rounded-lg text-gray-500 cursor-not-allowed" readonly>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase">Telefone</label>
+                            <input type="tel" id="perfil-telefone" class="w-full mt-1 p-2 bg-gray-50 border rounded-lg focus:ring-verde-escuro focus:border-verde-escuro" required>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase">Nascimento</label>
+                            <input type="date" id="perfil-nascimento" class="w-full mt-1 p-2 bg-gray-50 border rounded-lg focus:ring-verde-escuro focus:border-verde-escuro" required>
+                        </div>
+                        <button type="submit" class="w-full bg-verde-escuro text-white py-2 rounded-lg hover:bg-verde-escuro-hover transition text-xs font-bold uppercase tracking-wide">
+                            Salvar Alterações
+                        </button>
                     </form>
-                    <button id="btn-delete-perfil" class="w-full mt-4 text-red-400 text-xs hover:text-red-600 hover:underline text-center">Excluir minha conta</button>
+                    <button id="btn-delete-perfil" class="w-full mt-4 text-red-400 text-xs hover:text-red-600 hover:underline text-center">
+                        Excluir minha conta
+                    </button>
                 </div>
 
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-verde-card">
-                    <h2 class="text-lg font-bold text-verde-escuro mb-4 border-b border-verde-claro pb-2 flex items-center gap-2"><i data-lucide="history" class="w-5 h-5"></i> Histórico</h2>
-                    <div id="lista-logs" class="space-y-3 max-h-80 overflow-y-auto pr-2 custom-scrollbar"><p class="text-gray-400 text-sm text-center py-4">Carregando...</p></div>
+                    <h2 class="text-lg font-bold text-verde-escuro mb-4 border-b border-verde-claro pb-2 flex items-center gap-2">
+                        <i data-lucide="history" class="w-5 h-5"></i> Histórico
+                    </h2>
+                    <div id="lista-logs" class="space-y-3 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
+                        <p class="text-gray-400 text-sm text-center py-4">Carregando...</p>
+                    </div>
                 </div>
             </div>
 
             <div class="lg:col-span-2">
                 <div class="bg-white p-8 rounded-2xl shadow-sm border border-verde-card min-h-[500px]">
                     <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-2xl font-bold text-verde-escuro flex items-center gap-2"><i data-lucide="dog" class="w-6 h-6"></i> Meus Animais</h2>
-                        <button id="btn-show-add-animal" class="bg-verde-escuro text-white py-2 px-4 rounded-full hover:bg-verde-escuro-hover shadow-md transition flex items-center gap-1 text-sm font-bold"><i data-lucide="plus" class="w-4 h-4"></i> Adicionar Pet</button>
+                        <h2 class="text-2xl font-bold text-verde-escuro flex items-center gap-2">
+                            <i data-lucide="dog" class="w-6 h-6"></i> Meus Animais
+                        </h2>
+                        <button id="btn-show-add-animal" class="bg-verde-escuro text-white py-2 px-4 rounded-full hover:bg-verde-escuro-hover shadow-md transition flex items-center gap-1 text-sm font-bold">
+                            <i data-lucide="plus" class="w-4 h-4"></i> Adicionar Pet
+                        </button>
                     </div>
-                    <div id="lista-animais" class="grid grid-cols-1 md:grid-cols-2 gap-4"><p class="text-gray-400 col-span-2 text-center py-10">Carregando seus pets...</p></div>
+                    <div id="lista-animais" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <p class="text-gray-400 col-span-2 text-center py-10">Carregando seus pets...</p>
+                    </div>
                 </div>
             </div>
         </div>
     </main>
 
+    <!-- Modal Pet -->
     <div id="modal-animal" class="modal fixed inset-0 bg-black bg-opacity-60 z-50 items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-lg relative transform transition-all scale-100">
-            <button id="btn-close-modal-animal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i data-lucide="x" class="w-6 h-6"></i></button>
+            <button id="btn-close-modal-animal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
             <h3 id="modal-animal-titulo" class="text-2xl font-bold text-verde-escuro mb-6 text-center">Dados do Pet</h3>
             <form id="form-animal" class="space-y-4">
                 <input type="hidden" id="animal-id">
                 <div class="grid grid-cols-2 gap-4">
-                    <div><label class="block text-sm font-medium text-gray-700">Nome</label><input type="text" id="animal-nome" required class="w-full p-2 border rounded-lg bg-gray-50 focus:ring-verde-escuro focus:border-verde-escuro"></div>
-                    <div><label class="block text-sm font-medium text-gray-700">Idade (anos)</label><input type="number" id="animal-idade" required min="0" class="w-full p-2 border rounded-lg bg-gray-50 focus:ring-verde-escuro focus:border-verde-escuro"></div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Nome</label>
+                        <input type="text" id="animal-nome" required class="w-full p-2 border rounded-lg bg-gray-50 focus:ring-verde-escuro focus:border-verde-escuro">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Idade (anos)</label>
+                        <input type="number" id="animal-idade" required min="0" class="w-full p-2 border rounded-lg bg-gray-50 focus:ring-verde-escuro focus:border-verde-escuro">
+                    </div>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
-                    <div><label class="block text-sm font-medium text-gray-700">Espécie</label><input type="text" id="animal-especie" placeholder="Ex: Cão" required class="w-full p-2 border rounded-lg bg-gray-50 focus:ring-verde-escuro focus:border-verde-escuro"></div>
-                    <div><label class="block text-sm font-medium text-gray-700">Raça</label><input type="text" id="animal-raca" placeholder="Ex: Poodle" required class="w-full p-2 border rounded-lg bg-gray-50 focus:ring-verde-escuro focus:border-verde-escuro"></div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Espécie</label>
+                        <input type="text" id="animal-especie" placeholder="Ex: Cão" required class="w-full p-2 border rounded-lg bg-gray-50 focus:ring-verde-escuro focus:border-verde-escuro">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Raça</label>
+                        <input type="text" id="animal-raca" placeholder="Ex: Poodle" required class="w-full p-2 border rounded-lg bg-gray-50 focus:ring-verde-escuro focus:border-verde-escuro">
+                    </div>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Sexo</label>
                     <div class="flex gap-4 mt-1">
-                        <label class="inline-flex items-center cursor-pointer"><input type="radio" name="sexo" value="Macho" checked class="text-verde-escuro focus:ring-verde-escuro"> <span class="ml-2 text-sm">Macho</span></label>
-                        <label class="inline-flex items-center cursor-pointer"><input type="radio" name="sexo" value="Fêmea" class="text-verde-escuro focus:ring-verde-escuro"> <span class="ml-2 text-sm">Fêmea</span></label>
+                        <label class="inline-flex items-center cursor-pointer">
+                            <input type="radio" name="sexo" value="Macho" checked class="text-verde-escuro focus:ring-verde-escuro">
+                            <span class="ml-2 text-sm">Macho</span>
+                        </label>
+                        <label class="inline-flex items-center cursor-pointer">
+                            <input type="radio" name="sexo" value="Fêmea" class="text-verde-escuro focus:ring-verde-escuro">
+                            <span class="ml-2 text-sm">Fêmea</span>
+                        </label>
                     </div>
                 </div>
                 <div class="bg-verde-claro/30 p-4 rounded-lg border border-verde-card space-y-2">
-                    <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" id="animal-castrado" class="w-4 h-4 text-verde-escuro rounded focus:ring-verde-escuro"><span class="text-sm font-medium text-gray-700">É castrado?</span></label>
-                    <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" id="animal-medicacao" class="w-4 h-4 text-verde-escuro rounded focus:ring-verde-escuro"><span class="text-sm font-medium text-gray-700">Usa medicação contínua?</span></label>
-                    <div id="div-qual-medicacao" class="hidden mt-2"><input type="text" id="animal-qual-medicacao" placeholder="Qual medicação?" class="w-full p-2 border rounded-lg text-sm bg-white focus:ring-verde-escuro focus:border-verde-escuro"></div>
+                    <label class="flex items-center space-x-2 cursor-pointer">
+                        <input type="checkbox" id="animal-castrado" class="w-4 h-4 text-verde-escuro rounded focus:ring-verde-escuro">
+                        <span class="text-sm font-medium text-gray-700">É castrado?</span>
+                    </label>
+                    <label class="flex items-center space-x-2 cursor-pointer">
+                        <input type="checkbox" id="animal-medicacao" class="w-4 h-4 text-verde-escuro rounded focus:ring-verde-escuro">
+                        <span class="text-sm font-medium text-gray-700">Usa medicação contínua?</span>
+                    </label>
+                    <div id="div-qual-medicacao" class="hidden mt-2">
+                        <input type="text" id="animal-qual-medicacao" placeholder="Qual medicação?" class="w-full p-2 border rounded-lg text-sm bg-white focus:ring-verde-escuro focus:border-verde-escuro">
+                    </div>
                 </div>
-                <button type="submit" class="w-full bg-verde-escuro text-white py-3 rounded-xl font-bold hover:bg-verde-escuro-hover shadow-md transition">Salvar Pet</button>
+                <button type="submit" class="w-full bg-verde-escuro text-white py-3 rounded-xl font-bold hover:bg-verde-escuro-hover shadow-md transition">
+                    Salvar Pet
+                </button>
             </form>
         </div>
     </div>
 
-    <script src="/assets/js/api.js"></script>
-    <script src="/assets/js/dashboard_tutor.js"></script>
+    <!-- JS estático -->
+    <script src="/assets/js/api.js" defer></script>
+    <script src="/assets/js/dashboard_tutor.js" defer></script>
 </body>
 </html>

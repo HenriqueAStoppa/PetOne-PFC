@@ -1,99 +1,123 @@
 // login.js
-const API_URL = 'http://localhost:8080';
-let userType = 'tutor'; 
+
+// Tipo de usuário atual (padrão: tutor)
+let userType = 'tutor';
 
 function switchTab(type) {
-    userType = type;
-    
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.getElementById(`tab-${type}`).classList.add('active');
-    
-    const btn = document.getElementById('btnSubmit');
-    const linkCadastro = document.getElementById('link-cadastro');
-    
-    // Ajuste de caminhos relativos
-    if (type === 'tutor') {
-        btn.textContent = 'Entrar como Tutor';
-        linkCadastro.href = '../../cadastro_tutor.html';
-    } else {
-        btn.textContent = 'Entrar como Hospital';
-        linkCadastro.href = '../../cadastro_hospital.html';
-    }
-    
-    document.getElementById('loginErrorGlobal').style.display = 'none';
+  userType = type;
+
+  // Alterna aba ativa
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(`tab-${type}`).classList.add('active');
+
+  const btn = document.getElementById('btnSubmit');
+  const linkCadastro = document.getElementById('link-cadastro');
+
+  // Ajuste dos textos e links de cadastro
+  if (type === 'tutor') {
+    btn.textContent = 'Entrar como Tutor';
+    linkCadastro.href = '/pages/Cadastro/Tutor/cadastro_tutor.html';
+  } else {
+    btn.textContent = 'Entrar como Hospital';
+    linkCadastro.href = '/pages/Cadastro/Hospital/cadastro_hospital.html';
+  }
+
+  document.getElementById('loginErrorGlobal').style.display = 'none';
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    const form = document.getElementById("loginForm");
-    const usuarioInput = document.getElementById("usuario");
-    const senhaInput = document.getElementById("senha");
-    const usuarioError = document.getElementById("usuarioError");
-    const senhaError = document.getElementById("senhaError");
-    const loginErrorGlobal = document.getElementById("loginErrorGlobal");
-    const btnSubmit = document.getElementById("btnSubmit");
+  const form = document.getElementById("loginForm");
+  const usuarioInput = document.getElementById("usuario");
+  const senhaInput = document.getElementById("senha");
+  const usuarioError = document.getElementById("usuarioError");
+  const senhaError = document.getElementById("senhaError");
+  const loginErrorGlobal = document.getElementById("loginErrorGlobal");
+  const btnSubmit = document.getElementById("btnSubmit");
 
-    form.addEventListener("submit", async function (event) {
-      event.preventDefault();
+  // Estado inicial: aba Tutor
+  switchTab('tutor');
 
-      usuarioError.style.display = "none";
-      senhaError.style.display = "none";
-      loginErrorGlobal.style.display = "none";
-      
-      let valido = true;
+  form.addEventListener("submit", async function (event) {
+    event.preventDefault();
 
-      if (!usuarioInput.value.trim()) {
-        usuarioError.style.display = "block";
-        valido = false;
-      }
-      if (!senhaInput.value.trim()) {
-        senhaError.style.display = "block";
-        valido = false;
-      }
+    usuarioError.style.display = "none";
+    senhaError.style.display = "none";
+    loginErrorGlobal.style.display = "none";
 
-      if (valido) {
-        btnSubmit.disabled = true;
-        btnSubmit.textContent = "Autenticando...";
+    let valido = true;
 
-        const loginData = {
-            email: usuarioInput.value.trim(),
-            senha: senhaInput.value.trim()
-        };
+    if (!usuarioInput.value.trim()) {
+      usuarioError.style.display = "block";
+      valido = false;
+    }
+    if (!senhaInput.value.trim()) {
+      senhaError.style.display = "block";
+      valido = false;
+    }
 
-        try {
-            const endpoint = userType === 'tutor' 
-                ? `${API_URL}/api/auth/login/tutor` 
-                : `${API_URL}/api/auth/login/hospital`;
+    if (!valido) return;
 
-            const response = await fetch(endpoint, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(loginData)
-            });
+    btnSubmit.disabled = true;
+    btnSubmit.textContent = "Autenticando...";
 
-            if (response.ok) {
-                const data = await response.json();
-                
-                localStorage.setItem('petone_token', data.token);
-                localStorage.setItem('petone_user_nome', data.nomeCompleto);
-                localStorage.setItem('petone_user_id', data.idTutor);
+    const loginData = {
+      email: usuarioInput.value.trim(),
+      senha: senhaInput.value.trim()
+    };
 
-                if (userType === 'tutor') {
-                    window.location.href = '../../dashboard_tutor.html';
-                } else {
-                    window.location.href = '../../dashboard_hospital.html';
-                }
-            } else {
-                loginErrorGlobal.textContent = "Email ou senha incorretos.";
-                loginErrorGlobal.style.display = "block";
-            }
+    try {
+      // Usa AUTH_URL definido em api.js: http://localhost:8080/api/auth
+      const endpoint = userType === 'tutor'
+        ? `${AUTH_URL}/login/tutor`
+        : `${AUTH_URL}/login/hospital`;
 
-        } catch (error) {
-            loginErrorGlobal.textContent = "Erro de conexão. Tente novamente.";
-            loginErrorGlobal.style.display = "block";
-        } finally {
-            btnSubmit.disabled = false;
-            btnSubmit.textContent = userType === 'tutor' ? 'Entrar como Tutor' : 'Entrar como Hospital';
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(loginData)
+      });
+
+      if (!response.ok) {
+        // 401/403 → credenciais inválidas, mas SEM redirecionar
+        if (response.status === 401 || response.status === 403) {
+          loginErrorGlobal.textContent = "Email ou senha incorretos.";
+          loginErrorGlobal.style.display = "block";
+        } else {
+          loginErrorGlobal.textContent = "Erro ao fazer login. Tente novamente.";
+          loginErrorGlobal.style.display = "block";
         }
+        return;
       }
-    });
+
+      const data = await response.json();
+
+      // Salva informações básicas no localStorage
+      localStorage.setItem('petone_token', data.token);
+      localStorage.setItem(
+        'petone_user_nome',
+        data.nomeCompleto || data.nomeFantasiaHospital || ''
+      );
+      localStorage.setItem(
+        'petone_user_id',
+        data.idTutor || data.idHospital || data.id || ''
+      );
+
+      // Redireciona para o dashboard correto
+      if (userType === 'tutor') {
+        window.location.href = '/pages/Dashboard/Tutor/dashboard_tutor.html';
+      } else {
+        window.location.href = '/pages/Dashboard/Hospital/dashboard_hospital.html';
+      }
+
+    } catch (error) {
+      console.error(error);
+      loginErrorGlobal.textContent = "Erro de conexão. Tente novamente.";
+      loginErrorGlobal.style.display = "block";
+    } finally {
+      btnSubmit.disabled = false;
+      btnSubmit.textContent = userType === 'tutor'
+        ? 'Entrar como Tutor'
+        : 'Entrar como Hospital';
+    }
+  });
 });

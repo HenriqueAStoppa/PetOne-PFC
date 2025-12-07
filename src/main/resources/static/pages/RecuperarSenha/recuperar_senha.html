@@ -10,15 +10,25 @@
 <body>
   <div class="card">
     <h2 style="color: #1b4332; margin-bottom: 10px;">Esqueceu a Senha?</h2>
-    <p style="color: #666; font-size: 14px; margin-bottom: 20px;">Digite seu email cadastrado para receber um link de redefinição.</p>
+    <p style="color: #666; font-size: 14px; margin-bottom: 20px;">
+      Digite seu email cadastrado para receber um link de redefinição.
+    </p>
+
     <form id="formRecuperar">
-        <input type="email" id="email" placeholder="seu@email.com" required>
-        <button type="submit">Enviar Link</button>
+      <input type="email" id="email" placeholder="seu@email.com" required>
+      <button type="submit">Enviar Link</button>
     </form>
+
     <p id="msg" style="margin-top: 15px; font-size: 13px;"></p>
-    <a href="/pages/login/index.html" style="display: block; margin-top: 20px; color: #1b4332; text-decoration: none; font-size: 14px;">Voltar ao Login</a>
+
+    <a href="/pages/login/index.html"
+       style="display: block; margin-top: 20px; color: #1b4332; text-decoration: none; font-size: 14px;">
+       Voltar ao Login
+    </a>
   </div>
 
-  <script src="/assets/js/recuperar_senha.js"></script>
+  <!-- API central + script da página -->
+  <script src="/assets/js/api.js" defer></script>
+  <script src="/assets/js/recuperar_senha.js" defer></script>
 </body>
 </html>

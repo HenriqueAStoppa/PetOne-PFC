@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 
+  <!-- CSS do login -->
   <link rel="stylesheet" href="/assets/css/login.css">
 </head>
 <body>
@@ -20,8 +21,8 @@
       <p class="subtitle">Acesse sua conta PetOne</p>
 
       <div class="tabs">
-          <div class="tab active" id="tab-tutor" onclick="switchTab('tutor')">Tutor</div>
-          <div class="tab" id="tab-hospital" onclick="switchTab('hospital')">Hospital</div>
+        <div class="tab active" id="tab-tutor" onclick="switchTab('tutor')">Tutor</div>
+        <div class="tab" id="tab-hospital" onclick="switchTab('hospital')">Hospital</div>
       </div>
 
       <div id="loginErrorGlobal"></div>
@@ -43,14 +44,17 @@
       </form>
 
       <div class="links">
-          <a href="../../cadastro_tutor.html" id="link-cadastro">Criar conta</a>
-          <a href="../../recuperar_senha.html">Esqueci a senha</a>
+        <!-- cadastro tutor -->
+        <a href="/pages/Cadastro/Tutor/cadastro_tutor.html" id="link-cadastro">Criar conta</a>
+        <!-- recuperar senha -->
+        <a href="/pages/RecuperarSenha/recuperar_senha.html">Esqueci a senha</a>
       </div>
-      
-      <a href="../../index.html" class="back-link">← Voltar para a página inicial</a>
+
+      <a href="/pages/Home/index.html" class="back-link">← Voltar para a página inicial</a>
     </section>
   </div>
 
+  <script src="/assets/js/api.js" defer></script>
   <script src="/assets/js/login.js" defer></script>
 </body>
 </html>

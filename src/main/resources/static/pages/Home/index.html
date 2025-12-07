@@ -4,13 +4,15 @@
   <meta charset="UTF-8" />
   <title>PetOne - Emergência Veterinária</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-  
-  <link rel="stylesheet" href="/css/home.css">
+  <link rel="stylesheet" href="/assets/css/home.css">
 
   <script src="https://cdn.tailwindcss.com"></script>
-  
-  <script src="/js/home.js" defer></script>
+
+  <!-- JS global + da página -->
+  <script src="/assets/js/api.js" defer></script>
+  <script src="/assets/js/home.js" defer></script>
 </head>
 <body class="bg-verde-claro text-gray-900 min-h-screen flex flex-col">
 
@@ -22,12 +24,21 @@
           <span class="font-bold text-2xl text-verde-escuro">PetOne</span>
         </div>
         <div class="hidden md:flex space-x-4 items-center">
-          <a href="pages/login/index.html" class="text-verde-escuro font-medium hover:text-verde-escuro-hover py-2 px-4 transition">Login</a>
-          <a href="cadastro_tutor.html" class="bg-verde-escuro text-white font-medium py-2 px-5 rounded-full hover:bg-verde-escuro-hover transition shadow-md">Cadastrar Tutor</a>
-           <a href="cadastro_hospital.html" class="border-2 border-verde-escuro text-verde-escuro font-medium py-2 px-5 rounded-full hover:bg-verde-claro transition">Cadastrar Hospital</a>
+          <!-- Login -->
+          <a href="/pages/login/index.html" class="text-verde-escuro font-medium hover:text-verde-escuro-hover py-2 px-4 transition">
+            Login
+          </a>
+          <!-- Cadastro Tutor -->
+          <a href="/pages/Cadastro/Tutor/cadastro_tutor.html" class="bg-verde-escuro text-white font-medium py-2 px-5 rounded-full hover:bg-verde-escuro-hover transition shadow-md">
+            Cadastrar Tutor
+          </a>
+          <!-- Cadastro Hospital -->
+          <a href="/pages/Cadastro/Hospital/cadastro_hospital.html" class="border-2 border-verde-escuro text-verde-escuro font-medium py-2 px-5 rounded-full hover:bg-verde-claro transition">
+            Cadastrar Hospital
+          </a>
         </div>
         <div class="md:hidden flex items-center">
-            <a href="pages/login/index.html" class="text-verde-escuro font-medium mr-4">Entrar</a>
+          <a href="/pages/login/index.html" class="text-verde-escuro font-medium mr-4">Entrar</a>
         </div>
       </div>
     </div>
@@ -35,13 +46,15 @@
 
   <main class="flex-grow flex items-center justify-center px-4 py-16 relative overflow-hidden">
     <div class="absolute top-0 left-1/2 transform -translate-x-1/2 w-full h-full opacity-10 pointer-events-none z-0">
-        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-            <path fill="#1b4332" d="M44.7,-76.4C58.9,-69.2,71.8,-59.1,81.6,-46.6C91.4,-34.1,98.1,-19.2,95.8,-5.3C93.5,8.6,82.2,21.4,70.8,32.2C59.4,43,47.9,51.8,35.8,59.3C23.7,66.8,11.8,73.1,-0.8,74.5C-13.5,75.9,-26.9,72.4,-39.1,65.3C-51.3,58.2,-62.2,47.5,-71.2,35.1C-80.2,22.7,-87.3,8.6,-86.4,-5.1C-85.5,-18.8,-76.6,-32.1,-65.3,-42.2C-54,-52.3,-40.3,-59.2,-26.9,-66.9C-13.5,-74.6,-0.4,-83.1,13.6,-85.1C27.6,-87.1,55.2,-82.6,44.7,-76.4Z" transform="translate(100 100)" />
-        </svg>
+      <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <path fill="#1b4332" d="M44.7,-76.4C58.9,-69.2,71.8,-59.1,81.6,-46.6C91.4,-34.1,98.1,-19.2,95.8,-5.3C93.5,8.6,82.2,21.4,70.8,32.2C59.4,43,47.9,51.8,35.8,59.3C23.7,66.8,11.8,73.1,-0.8,74.5C-13.5,75.9,-26.9,72.4,-39.1,65.3C-51.3,58.2,-62.2,47.5,-71.2,35.1C-80.2,22.7,-87.3,8.6,-86.4,-5.1C-85.5,-18.8,-76.6,-32.1,-65.3,-42.2C-54,-52.3,-40.3,-59.2,-26.9,-66.9C-13.5,-74.6,-0.4,-83.1,13.6,-85.1C27.6,-87.1,55.2,-82.6,44.7,-76.4Z" transform="translate(100 100)" />
+      </svg>
     </div>
 
     <div class="max-w-5xl w-full text-center z-10">
-      <span class="inline-block py-1 px-3 rounded-full bg-verde-card text-verde-escuro text-sm font-semibold mb-6">Segurança e Rapidez para seu Pet</span>
+      <span class="inline-block py-1 px-3 rounded-full bg-verde-card text-verde-escuro text-sm font-semibold mb-6">
+        Segurança e Rapidez para seu Pet
+      </span>
       <h1 class="text-4xl md:text-6xl font-extrabold text-verde-escuro mb-8 leading-tight">
         Emergência Veterinária <br/> <span class="text-verde-escuro-hover">Inteligente</span>
       </h1>
@@ -60,7 +73,7 @@
         </button>
         
         <div class="text-sm text-gray-600 mt-4 sm:mt-0 max-w-xs">
-            <p>Ao clicar, buscaremos sua localização e o hospital ideal para o caso.</p>
+          <p>Ao clicar, buscaremos sua localização e o hospital ideal para o caso.</p>
         </div>
       </div>
 
@@ -86,22 +99,22 @@
 
   <footer class="bg-verde-escuro text-white py-10 mt-12">
     <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
-        <div>
-            <h4 class="font-bold text-lg mb-4">PetOne</h4>
-            <p class="text-sm opacity-80">Salvando vidas com tecnologia.</p>
-        </div>
-        <div>
-             <h4 class="font-bold text-lg mb-4">Links Úteis</h4>
-             <ul class="space-y-2 text-sm opacity-80">
-                 <li><a href="#" class="hover:text-verde-card">Sobre Nós</a></li>
-                 <li><a href="cadastro_hospital.html" class="hover:text-verde-card">Para Hospitais</a></li>
-                 <li><a href="cadastro_tutor.html" class="hover:text-verde-card">Para Tutores</a></li>
-             </ul>
-        </div>
-        <div>
-            <h4 class="font-bold text-lg mb-4">Contato</h4>
-             <p class="text-sm opacity-80">servicospetone@gmail.com</p>
-        </div>
+      <div>
+        <h4 class="font-bold text-lg mb-4">PetOne</h4>
+        <p class="text-sm opacity-80">Salvando vidas com tecnologia.</p>
+      </div>
+      <div>
+        <h4 class="font-bold text-lg mb-4">Links Úteis</h4>
+        <ul class="space-y-2 text-sm opacity-80">
+          <li><a href="#" class="hover:text-verde-card">Sobre Nós</a></li>
+          <li><a href="/pages/Cadastro/Hospital/cadastro_hospital.html" class="hover:text-verde-card">Para Hospitais</a></li>
+          <li><a href="/pages/Cadastro/Tutor/cadastro_tutor.html" class="hover:text-verde-card">Para Tutores</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-bold text-lg mb-4">Contato</h4>
+        <p class="text-sm opacity-80">servicospetone@gmail.com</p>
+      </div>
     </div>
     <div class="max-w-7xl mx-auto px-4 mt-8 pt-8 border-t border-white/20 text-center text-sm opacity-60">
       &copy; 2025 PetOne. Todos os direitos reservados.
