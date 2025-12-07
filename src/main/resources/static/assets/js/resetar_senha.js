@@ -1,15 +1,14 @@
+// resetar_senha.js
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('formReset');
-  const tokenInput = document.getElementById('token');
-  const senhaInput = document.getElementById('senha');
   const msg = document.getElementById('msg');
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const token = tokenInput.value.trim();
-    const novaSenha = senhaInput.value;
-    const btn = form.querySelector('button');
+    const token = document.getElementById('token').value;
+    const novaSenha = document.getElementById('senha').value;
+    const btn = form.querySelector('button[type="submit"]');
 
     msg.innerText = 'Processando...';
     msg.style.color = '#666';
@@ -18,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const data = { token, novaSenha };
 
     try {
-      const res = await fetch(`${AUTH_URL}/recuperar-senha/resetar`, {
+      const res = await fetch('/api/auth/recuperar-senha/resetar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
@@ -27,17 +26,14 @@ document.addEventListener('DOMContentLoaded', () => {
       if (res.ok) {
         msg.style.color = 'green';
         msg.innerText = 'Senha alterada com sucesso! Redirecionando...';
-        setTimeout(() => {
-          window.location.href = '/pages/login/index.html';
-        }, 2000);
+        setTimeout(() => window.location.href = '/pages/login/index.html', 2000);
       } else {
         const erro = await res.text();
         msg.style.color = 'red';
-        msg.innerText = `Erro: ${erro || 'Falha ao alterar a senha.'}`;
+        msg.innerText = `Erro: ${erro}`;
         btn.disabled = false;
       }
     } catch (err) {
-      console.error(err);
       msg.style.color = 'red';
       msg.innerText = 'Erro ao conectar. Tente novamente.';
       btn.disabled = false;

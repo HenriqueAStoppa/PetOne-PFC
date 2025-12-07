@@ -29,7 +29,6 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
 
-                // Recursos Estáticos (CSS, JS, Imagens) - FUNDAMENTAL PARA O FRONT NOVO
                 .requestMatchers("/assets/**").permitAll() 
                 .requestMatchers("/pages/**").permitAll()
 
@@ -44,10 +43,6 @@ public class SecurityConfig {
                     "/resetar_senha"                    
                 ).permitAll()
 
-                // Páginas Protegidas (Exigem Login)
-                // O Spring Security vai barrar se tentar acessar direto sem token, 
-                // mas a proteção real dos dados está no JS (api.js) verificando o token.
-                // Aqui liberamos o HTML para o JS poder carregar e redirecionar se necessário.
                 .requestMatchers(
                     "/dashboard_tutor", 
                     "/dashboard_hospital", 

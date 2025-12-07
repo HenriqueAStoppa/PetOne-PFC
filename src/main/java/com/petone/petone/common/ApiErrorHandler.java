@@ -48,7 +48,6 @@ public class ApiErrorHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGeneric(Exception ex) {
-        // mostra no console
         ex.printStackTrace();
 
         // envia mensagem REAL pro front

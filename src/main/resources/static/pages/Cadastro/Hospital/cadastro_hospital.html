@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -9,6 +10,7 @@
   <!-- CSS estático -->
   <link rel="stylesheet" href="/assets/css/cadastro_hospital.css">
 </head>
+
 <body>
   <div class="container">
     <div class="card">
@@ -43,15 +45,7 @@
         <div class="grid-3">
           <div class="form-group">
             <label for="cep">CEP</label>
-            <input
-              type="text"
-              id="cep"
-              name="cep"
-              maxlength="9"
-              placeholder="00000-000"
-              onblur="buscarCep()"
-              required
-            >
+            <input type="text" id="cep" name="cep" maxlength="9" placeholder="00000-000" onblur="buscarCep()" required>
           </div>
           <div class="form-group" style="grid-column: span 2;">
             <label for="logradouro">Rua (Logradouro)</label>
@@ -106,19 +100,39 @@
         <div class="grid-2">
           <div class="form-group">
             <label for="senha">Senha</label>
-            <input type="password" id="senha" name="senha" minlength="6" required>
+            <div class="password-wrapper">
+              <input type="password" id="senha" name="senha" minlength="6" required>
+              <button type="button" class="toggle-password" data-target="senha" aria-label="Mostrar ou ocultar senha">
+                👁
+              </button>
+            </div>
           </div>
+
           <div class="form-group">
             <label for="senhaConfirma">Confirmar Senha</label>
-            <input type="password" id="senhaConfirma" name="senhaConfirma" required>
+            <div class="password-wrapper">
+              <input type="password" id="senhaConfirma" name="senhaConfirma" required>
+              <button type="button" class="toggle-password" data-target="senhaConfirma"
+                aria-label="Mostrar ou ocultar senha">
+                👁
+              </button>
+            </div>
           </div>
+
         </div>
 
         <div class="lgpd-container">
+          <p><strong>Termo de Consentimento e Privacidade (LGPD)</strong></p>
+          <p style="margin-top: 5px;">
+            Ao se cadastrar na plataforma PetOne, você concorda com a coleta e tratamento dos dados do Hospital
+            parceiro.
+          </p>
           <div class="lgpd-checkbox">
             <input type="checkbox" id="lgpd-consent" required>
             <label for="lgpd-consent">
-              Declaro que li e concordo com o armazenamento dos registros de atendimento.
+              Declaro que li e concordo com o Termo de Consentimento e Privacidade da PetOne, autorizando o tratamento
+              dos dados informados para fins de cadastro e funcionamento da unidade parceira, em conformidade com a
+              LGPD.
             </label>
           </div>
         </div>
@@ -137,8 +151,10 @@
     </div>
   </div>
 
-  <!-- JS estático (api + cadastro_hospital) -->
   <script src="/assets/js/api.js" defer></script>
   <script src="/assets/js/cadastro_hospital.js" defer></script>
+  <script src="/assets/js/password_toggle.js" defer></script>
+
 </body>
+
 </html>

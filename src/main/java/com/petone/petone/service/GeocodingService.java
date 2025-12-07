@@ -18,11 +18,11 @@ public class GeocodingService {
 
     public double[] getCoordinates(String logradouro, String numero, String cidade, String uf) {
         try {
-            // Monta o endereço para busca (Ex: Av Paulista, 1000, Sao Paulo, SP)
+            //Monta o endereço para busca
             String query = String.format("%s, %s, %s, %s", logradouro, numero, cidade, uf);
             String encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8);
             
-            // Usa o Nominatim (OpenStreetMap)
+            //Usa o Nominatim
             String url = "https://nominatim.openstreetmap.org/search?q=" + encodedQuery + "&format=json&limit=1";
 
             HttpRequest request = HttpRequest.newBuilder()
@@ -45,7 +45,7 @@ public class GeocodingService {
         } catch (Exception e) {
             System.err.println("Erro ao geocodificar: " + e.getMessage());
         }
-        // Retorna 0,0 se falhar (para não travar o cadastro)
+        //Retorna 0,0 se falhar (para não travar o cadastro)
         return new double[]{0.0, 0.0};
     }
 }
