@@ -5,9 +5,28 @@ document.addEventListener('DOMContentLoaded', () => {
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const token = document.getElementById('token').value;
+    const token = document.getElementById('token').value.trim();
     const novaSenha = document.getElementById('senha').value;
+    const senhaConfirma = document.getElementById('senhaConfirma').value;
     const btn = form.querySelector('button[type="submit"]');
+
+    //limpa mensagem anterior
+    msg.innerText = '';
+    msg.style.color = '#666';
+
+    //validação de confirmação de senha
+    if (novaSenha !== senhaConfirma) {
+      msg.style.color = 'red';
+      msg.innerText = 'As senhas não coincidem. Verifique e tente novamente.';
+      return;
+    }
+
+    //validar mínimo de 6 caracteres
+    if (novaSenha.length < 6) {
+      msg.style.color = 'red';
+      msg.innerText = 'A senha deve ter no mínimo 6 caracteres.';
+      return;
+    }
 
     msg.innerText = 'Processando...';
     msg.style.color = '#666';

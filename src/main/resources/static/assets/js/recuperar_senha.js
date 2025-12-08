@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       msg.style.color = 'green';
-      msg.innerText = 'Se o email estiver cadastrado, enviamos um token (verifique o console do servidor para testes).';
+      msg.innerText = 'Se o email estiver cadastrado, enviamos um token.';
 
       setTimeout(() => {
         window.location.href = '/pages/ResetarSenha/resetar_senha.html';
