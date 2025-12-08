@@ -1,6 +1,4 @@
-// cadastro_hospital.js
-
-// Função para buscar CEP na API ViaCEP
+//Função para buscar CEP na API ViaCEP
 async function buscarCep() {
   const cepInput = document.getElementById("cep");
   const cep = cepInput.value.replace(/\D/g, "");
@@ -31,25 +29,25 @@ async function buscarCep() {
 
       document.getElementById("numero").focus();
     } else {
-      alert("CEP não encontrado.");
+      showToast("CEP não encontrado.");
       logradouro.value = "";
       bairro.value = "";
       cidade.value = "";
       uf.value = "";
     }
   } catch (e) {
-    alert("Erro ao buscar CEP.");
+    showToast("Erro ao buscar CEP.");
   }
 }
 
-// Lógica do Form
+//Lógica do Form
 document.addEventListener("DOMContentLoaded", () => {
   const checkboxLgpd = document.getElementById("lgpd-consent");
   const btnCadastrar = document.getElementById("btn-cadastrar");
   const form = document.getElementById("formCadastro");
   const msgErro = document.getElementById("msgErro");
 
-  // Libera botão só com LGPD
+  //Libera botão só com LGPD
   checkboxLgpd.addEventListener("change", function () {
     btnCadastrar.disabled = !this.checked;
   });
@@ -96,7 +94,6 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     try {
-      // Usa AUTH_URL definido em api.js (http://localhost:8080/api/auth)
       const endpoint = `${AUTH_URL}/cadastro/hospital`;
 
       const response = await fetch(endpoint, {
@@ -107,7 +104,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (response.ok) {
         alert("Cadastro realizado! Endereço validado e coordenadas geradas.");
-        // redireciona para a página de login estática
         window.location.href = "/pages/login/index.html";
       } else {
         const errorText = await response.text();

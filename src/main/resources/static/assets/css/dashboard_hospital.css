@@ -1,3 +1,11 @@
-body { background-color: #f8fafc; }
-.modal { display: none; }
-.modal.flex { display: flex; }
+body {
+    background-color: #f8fafc;
+}
+
+.modal {
+    display: none;
+}
+
+.modal.flex {
+    display: flex;
+}

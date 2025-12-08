@@ -1,4 +1,3 @@
-// cadastro_tutor.js
 document.addEventListener("DOMContentLoaded", () => {
     const checkboxLgpd = document.getElementById('lgpd-consent');
     const btnCadastrar = document.getElementById('btn-cadastrar');

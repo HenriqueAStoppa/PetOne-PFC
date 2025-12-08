@@ -1,4 +1,3 @@
-// resetar_senha.js
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('formReset');
   const msg = document.getElementById('msg');

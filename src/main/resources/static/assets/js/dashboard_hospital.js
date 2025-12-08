@@ -1,11 +1,11 @@
 lucide.createIcons();
 
 document.addEventListener('DOMContentLoaded', () => {
-    checkAuth(); // Verifica se está logado via api.js
+    checkAuth();
     carregarPerfil();
     carregarLogs();
 
-    // Configura botão de logout
+    //Configura botão de logout
     document.getElementById('btn-logout').onclick = logout;
 
     const btnDelete = document.getElementById('btn-delete-hospital');
@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// --- Perfil ---
+//Perfil 
 
 async function carregarPerfil() {
     try {
@@ -83,7 +83,7 @@ document.getElementById('form-perfil').onsubmit = async (e) => {
     }
 };
 
-// --- Logs de Emergência ---
+//Logs de Emergência
 
 async function carregarLogs() {
     const div = document.getElementById('lista-logs');
@@ -109,7 +109,6 @@ async function carregarLogs() {
             const dataHora = l.dataHoraInicio || l.dataHoraRegistro;
             const dateStr = dataHora ? new Date(dataHora).toLocaleString('pt-BR') : 'Data desconhecida';
 
-            // 🔎 Fallbacks: funcionam com os dois formatos de JSON
             const relatorio = l.relatorioMedico || l.relatorio || '';
             const prescricao = l.prescricaoMedicamento || l.prescricao || '';
             const vetFinal = l.veterinarioFinalizacao || l.veterinarioResponsavelFinalizacao || '';
@@ -117,8 +116,8 @@ async function carregarLogs() {
 
             const card = document.createElement('div');
             card.className = `p-5 rounded-xl border transition relative overflow-hidden ${isFinalizado
-                    ? 'bg-white border-gray-200 opacity-90'
-                    : 'bg-white border-red-200 shadow-md border-l-4 border-l-red-500'
+                ? 'bg-white border-gray-200 opacity-90'
+                : 'bg-white border-red-200 shadow-md border-l-4 border-l-red-500'
                 }`;
 
             card.innerHTML = `
@@ -199,10 +198,8 @@ async function carregarLogs() {
     }
 }
 
-// Expor função para o HTML (window)
 window.carregarLogs = carregarLogs;
 
-// --- Modal Finalização ---
 
 window.abrirFinalizar = (token) => {
     document.getElementById('finalizar-token-input').value = token;

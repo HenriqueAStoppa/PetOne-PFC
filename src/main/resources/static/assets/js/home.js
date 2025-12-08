@@ -1,6 +1,3 @@
-// home.js
-
-// Configuração do Tailwind (se você quiser manter aqui mesmo)
 tailwind.config = {
   theme: {
     extend: {
@@ -19,7 +16,7 @@ tailwind.config = {
   }
 };
 
-// Função chamada pelo botão da página inicial
+//Função chamada pelo botão da página inicial
 window.iniciarEmergencia = function () {
   alert('Para iniciar uma emergência e garantir que tenhamos os dados do seu pet, por favor, faça o login.');
   window.location.href = '/pages/login/index.html';

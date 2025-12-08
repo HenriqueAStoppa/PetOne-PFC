@@ -1,117 +1,117 @@
 :root {
-  --verde-claro: #d8f3dc;
-  --verde-escuro: #1b4332;
+    --verde-claro: #d8f3dc;
+    --verde-escuro: #1b4332;
 }
 
 body {
-  font-family: "Poppins", sans-serif;
-  background-color: var(--verde-claro);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  margin: 0;
+    font-family: "Poppins", sans-serif;
+    background-color: var(--verde-claro);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
 }
 
 .card {
-  background: white;
-  padding: 30px;
-  border-radius: 16px;
-  width: 100%;
-  max-width: 400px;
-  text-align: center;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+    background: white;
+    padding: 30px;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
 }
 
 input {
-  width: 100%;
-  padding: 12px;
-  margin: 5px 0 15px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  box-sizing: border-box;
+    width: 100%;
+    padding: 12px;
+    margin: 5px 0 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-sizing: border-box;
 }
 
 label {
-  display: block;
-  text-align: left;
-  font-size: 12px;
-  font-weight: 600;
-  margin-left: 2px;
+    display: block;
+    text-align: left;
+    font-size: 12px;
+    font-weight: 600;
+    margin-left: 2px;
 }
 
 .btn-submit {
-  width: 100%;
-  padding: 12px;
-  background: var(--verde-escuro);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
+    width: 100%;
+    padding: 12px;
+    background: var(--verde-escuro);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
 }
 
 .btn-submit:hover {
-  background-color: #163326;
+    background-color: #163326;
 }
 
 .mensagem {
-  margin-top: 15px;
-  font-size: 13px;
-  min-height: 18px;
+    margin-top: 15px;
+    font-size: 13px;
+    min-height: 18px;
 }
 
 
 .password-wrapper {
-  position: relative;
+    position: relative;
 }
 
 .password-wrapper input[type="password"],
 .password-wrapper input[type="text"] {
-  width: 100%;
-  padding-right: 40px;      
-  box-sizing: border-box;
+    width: 100%;
+    padding-right: 40px;
+    box-sizing: border-box;
 }
 
 .toggle-password {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-70%);  
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-70%);
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-  width: 24px;
-  height: 24px;
+    width: 24px;
+    height: 24px;
 
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    padding: 0;
 
-  font-size: 1rem;
-  line-height: 1;
-  color: #9ca3af;
+    font-size: 1rem;
+    line-height: 1;
+    color: #9ca3af;
 }
 
 .toggle-password::after {
-  content: "";
-  position: absolute;
-  width: 16px;
-  border-top: 2px solid currentColor;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) rotate(-45deg);
-  pointer-events: none;
-  opacity: 1;
+    content: "";
+    position: absolute;
+    width: 16px;
+    border-top: 2px solid currentColor;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-45deg);
+    pointer-events: none;
+    opacity: 1;
 }
 
 .toggle-password[aria-pressed="true"]::after {
-  opacity: 0;
+    opacity: 0;
 }
 
 .toggle-password:hover {
-  color: #4b5563;
+    color: #4b5563;
 }

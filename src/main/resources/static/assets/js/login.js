@@ -1,19 +1,16 @@
-// login.js
-
-// Tipo de usuário atual (padrão: tutor)
 let userType = 'tutor';
 
 function switchTab(type) {
   userType = type;
 
-  // Alterna aba ativa
+  //Alterna aba ativa
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.getElementById(`tab-${type}`).classList.add('active');
 
   const btn = document.getElementById('btnSubmit');
   const linkCadastro = document.getElementById('link-cadastro');
 
-  // Ajuste dos textos e links de cadastro
+  //Ajuste dos textos e links de cadastro
   if (type === 'tutor') {
     btn.textContent = 'Entrar como Tutor';
     linkCadastro.href = '/pages/Cadastro/Tutor/cadastro_tutor.html';
@@ -34,7 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const loginErrorGlobal = document.getElementById("loginErrorGlobal");
   const btnSubmit = document.getElementById("btnSubmit");
 
-  // Estado inicial: aba Tutor
+  //Estado inicial: aba Tutor
   switchTab('tutor');
 
   form.addEventListener("submit", async function (event) {
@@ -66,7 +63,6 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     try {
-      // Usa AUTH_URL definido em api.js: http://localhost:8080/api/auth
       const endpoint = userType === 'tutor'
         ? `${AUTH_URL}/login/tutor`
         : `${AUTH_URL}/login/hospital`;
@@ -78,7 +74,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       if (!response.ok) {
-        // 401/403 → credenciais inválidas, mas SEM redirecionar
         if (response.status === 401 || response.status === 403) {
           loginErrorGlobal.textContent = "Email ou senha incorretos.";
           loginErrorGlobal.style.display = "block";
@@ -91,7 +86,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const data = await response.json();
 
-      // Salva informações básicas no localStorage
       localStorage.setItem('petone_token', data.token);
       localStorage.setItem(
         'petone_user_nome',
@@ -102,7 +96,6 @@ document.addEventListener("DOMContentLoaded", () => {
         data.idTutor || data.idHospital || data.id || ''
       );
 
-      // Redireciona para o dashboard correto
       if (userType === 'tutor') {
         window.location.href = '/pages/Dashboard/Tutor/dashboard_tutor.html';
       } else {

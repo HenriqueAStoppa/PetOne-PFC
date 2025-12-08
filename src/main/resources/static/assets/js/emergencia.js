@@ -1,13 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
-    checkAuth(); // api.js
+    checkAuth(); 
 
-    // Carregar animais
+    //Carregar animais
     apiFetch('/animais')
         .then(animais => {
             const select = document.getElementById('animal');
-            if(!animais || animais.length === 0) {
+            if (!animais || animais.length === 0) {
                 select.innerHTML = '<option disabled>Nenhum animal cadastrado</option>';
-                alert('Você precisa cadastrar um animal antes!');
+                showToast('Você precisa cadastrar um animal antes!');
                 window.location.href = '/pages/Dashboard/Tutor/dashboard_tutor.html';
             } else {
                 select.innerHTML = '<option value="" disabled selected>Selecione...</option>';
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('formEmergencia').addEventListener('submit', (e) => {
         e.preventDefault();
-        
+
         const btnSubmit = e.target.querySelector('button[type="submit"]');
         const textoOriginal = "SOLICITAR SOCORRO IMEDIATO";
 
@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const tipoEmergencia = document.getElementById('sintoma').value;
 
         if (!navigator.geolocation) {
-            alert('Seu navegador não suporta geolocalização.');
+            showToast('Seu navegador não suporta geolocalização.');
             restaurarBotao();
             return;
         }
@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
         navigator.geolocation.getCurrentPosition(async (position) => {
             const latitudeTutor = position.coords.latitude;
             const longitudeTutor = position.coords.longitude;
-            
+
             const data = { idAnimal, tipoEmergencia, latitudeTutor, longitudeTutor };
 
             try {
@@ -50,15 +50,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     body: JSON.stringify(data)
                 });
 
-                if(result) {
-                    // Preenche o Modal
+                if (result) {
                     document.getElementById('tokenDisplay').innerText = result.tokenEmergencia;
                     document.getElementById('hospitalNome').innerText = result.hospitalNome;
                     document.getElementById('hospitalEndereco').innerText = result.hospitalEndereco;
 
                     const enderecoCodificado = encodeURIComponent(result.hospitalEndereco);
-                    
-                    // URL de navegação corrigida
+
                     const mapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${latitudeTutor},${longitudeTutor}&destination=${enderecoCodificado}`;
 
                     document.getElementById('btnRota').href = mapsUrl;
@@ -66,16 +64,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     restaurarBotao();
                 }
-            } catch(err) {
-                alert('Erro ao registrar emergência: ' + err.message);
+            } catch (err) {
+                showToast('Erro ao registrar emergência: ' + err.message);
                 restaurarBotao();
             }
         }, (error) => {
             console.error(error);
-            alert('Não foi possível obter sua localização. Libere a permissão de localização.');
+            showToast('Não foi possível obter sua localização. Libere a permissão de localização.');
             restaurarBotao();
         }, options);
-        
+
         function restaurarBotao() {
             btnSubmit.disabled = false;
             btnSubmit.innerText = textoOriginal;

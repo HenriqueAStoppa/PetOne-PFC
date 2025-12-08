@@ -1,4 +1,3 @@
-// /assets/js/password_toggle.js
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.toggle-password').forEach((btn) => {
     const targetId = btn.getAttribute('data-target');

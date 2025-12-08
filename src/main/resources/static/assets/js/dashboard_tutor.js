@@ -1,9 +1,9 @@
-// dashboard_tutor.js
+
 lucide.createIcons();
 let cacheAnimais = [];
 
 document.addEventListener('DOMContentLoaded', () => {
-    checkAuth(); 
+    checkAuth();
     carregarHeader();
     carregarPerfilTutor();
     carregarAnimais();
