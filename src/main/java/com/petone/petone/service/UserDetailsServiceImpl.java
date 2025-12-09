@@ -26,19 +26,25 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        
-        var tutorOptional = tutorRepository.findByEmailTutor(email);
+
+        String emailNormalizado = email.trim().toLowerCase();
+
+        var tutorOptional = tutorRepository.findByEmailTutorIgnoreCase(emailNormalizado);
         if (tutorOptional.isPresent()) {
             var tutor = tutorOptional.get();
-            return new User(tutor.getEmailTutor(), tutor.getSenhaHash(), 
-                Collections.singletonList(new SimpleGrantedAuthority("ROLE_TUTOR")));
+            return new User(
+                    tutor.getEmailTutor(),
+                    tutor.getSenhaHash(),
+                    Collections.singletonList(new SimpleGrantedAuthority("ROLE_TUTOR")));
         }
 
-        var hospitalOptional = hospitalRepository.findByEmailHospital(email);
+        var hospitalOptional = hospitalRepository.findByEmailHospitalIgnoreCase(emailNormalizado);
         if (hospitalOptional.isPresent()) {
             var hospital = hospitalOptional.get();
-            return new User(hospital.getEmailHospital(), hospital.getSenhaHash(), 
-                Collections.singletonList(new SimpleGrantedAuthority("ROLE_HOSPITAL")));
+            return new User(
+                    hospital.getEmailHospital(),
+                    hospital.getSenhaHash(),
+                    Collections.singletonList(new SimpleGrantedAuthority("ROLE_HOSPITAL")));
         }
 
         throw new UsernameNotFoundException("Usuário não encontrado com o email: " + email);

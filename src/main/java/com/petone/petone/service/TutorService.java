@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class TutorService {
@@ -35,12 +36,12 @@ public class TutorService {
     private final EmergenciaLogRepository emergenciaLogRepository;
 
     @Autowired
-    public TutorService(TutorRepository tutorRepository, 
-                        AuthenticationManager authenticationManager, 
-                        UserDetailsService userDetailsService, 
-                        JwtUtil jwtUtil, 
-                        AnimalRepository animalRepository,
-                        EmergenciaLogRepository emergenciaLogRepository) {
+    public TutorService(TutorRepository tutorRepository,
+            AuthenticationManager authenticationManager,
+            UserDetailsService userDetailsService,
+            JwtUtil jwtUtil,
+            AnimalRepository animalRepository,
+            EmergenciaLogRepository emergenciaLogRepository) {
         this.tutorRepository = tutorRepository;
         this.authenticationManager = authenticationManager;
         this.userDetailsService = userDetailsService;
@@ -50,14 +51,19 @@ public class TutorService {
     }
 
     public AuthResponseDTO cadastrarTutor(TutorCadastroDTO dto) {
-        if (tutorRepository.findByEmailTutor(dto.getEmailTutor()).isPresent()) {
+
+        String emailNormalizado = dto.getEmailTutor()
+                .trim()
+                .toLowerCase();
+
+        if (tutorRepository.existsByEmailTutorIgnoreCase(emailNormalizado)) {
             throw new ValidationException("Email já cadastrado.");
         }
-        
+
         Tutor tutor = new Tutor();
         tutor.setNomeCompleto(dto.getNomeCompleto());
         tutor.setCpf(dto.getCpf());
-        tutor.setEmailTutor(dto.getEmailTutor());
+        tutor.setEmailTutor(emailNormalizado);
         tutor.setTelefoneTutor(dto.getTelefoneTutor());
         tutor.setDataNascimento(dto.getDataNascimento());
         tutor.setSenhaHash(PasswordUtil.encode(dto.getSenha()));
@@ -65,9 +71,9 @@ public class TutorService {
 
         Tutor tutorSalvo = tutorRepository.save(tutor);
 
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(dto.getEmailTutor());
+        final UserDetails userDetails = userDetailsService.loadUserByUsername(emailNormalizado);
         final String token = jwtUtil.generateToken(userDetails);
-        
+
         return AuthResponseDTO.builder()
                 .token(token)
                 .idTutor(tutorSalvo.getIdTutor())
@@ -77,18 +83,21 @@ public class TutorService {
     }
 
     public AuthResponseDTO authenticate(AuthRequestDTO dto) throws Exception {
+        String emailNormalizado = dto.getEmail()
+                .trim()
+                .toLowerCase();
+
         try {
             authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getSenha())
-            );
+                    new UsernamePasswordAuthenticationToken(emailNormalizado, dto.getSenha()));
         } catch (BadCredentialsException e) {
             throw new Exception("Credenciais inválidas", e);
         }
 
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(dto.getEmail());
+        final UserDetails userDetails = userDetailsService.loadUserByUsername(emailNormalizado);
         final String token = jwtUtil.generateToken(userDetails);
-        
-        Tutor tutor = tutorRepository.findByEmailTutor(dto.getEmail())
+
+        Tutor tutor = tutorRepository.findByEmailTutorIgnoreCase(emailNormalizado)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado."));
 
         return AuthResponseDTO.builder()
@@ -100,7 +109,8 @@ public class TutorService {
     }
 
     public Tutor getMeuPerfil(String tutorEmail) {
-        return tutorRepository.findByEmailTutor(tutorEmail)
+        String emailNormalizado = tutorEmail.trim().toLowerCase(Locale.ROOT);
+        return tutorRepository.findByEmailTutorIgnoreCase(emailNormalizado)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado: " + tutorEmail));
     }
 

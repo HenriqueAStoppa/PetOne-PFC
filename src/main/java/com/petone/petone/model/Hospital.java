@@ -2,6 +2,7 @@ package com.petone.petone.model;
 
 import java.time.LocalDateTime;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import lombok.Data;
 
@@ -11,14 +12,16 @@ public class Hospital {
     @Id
     private String idHospital;
     private String nomeFantasia;
+
+    @Indexed(unique = true)
     private String emailHospital;
+
     private String telefoneHospital;
-    private String endereco; // Endereço completo formatado (Rua, Numero - Bairro...)
-    
-    // [IMPORTANTE] Campos para o Maps
+    private String endereco;
+
     private Double latitude;
     private Double longitude;
-    
+
     private String cnpj;
     private int classificacaoServico;
     private String veterinarioResponsavel;
