@@ -20,6 +20,14 @@ document.addEventListener('DOMContentLoaded', () => {
         body: JSON.stringify({ email })
       });
 
+      if (!res.ok) {
+        const erro = await res.text();
+        msg.style.color = 'red';
+        msg.innerText = `Erro ao enviar email: ${erro || 'tente novamente.'}`;
+        btn.disabled = false;
+        return;
+      }
+
       msg.style.color = 'green';
       msg.innerText = 'Se o email estiver cadastrado, enviamos um token.';
 

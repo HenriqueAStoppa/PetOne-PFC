@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    checkAuth(); 
+    checkAuth();
 
     //Carregar animais
     apiFetch('/animais')

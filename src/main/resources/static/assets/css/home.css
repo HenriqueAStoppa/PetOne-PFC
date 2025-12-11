@@ -5,3 +5,11 @@
 .text-verde-escuro {
    color: #1b4332;
 }
+
+.modal {
+   display: none;
+}
+
+.modal.flex {
+   display: flex;
+}

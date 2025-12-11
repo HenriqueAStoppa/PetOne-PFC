@@ -10,18 +10,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const senhaConfirma = document.getElementById('senhaConfirma').value;
     const btn = form.querySelector('button[type="submit"]');
 
-    //limpa mensagem anterior
     msg.innerText = '';
     msg.style.color = '#666';
 
-    //validação de confirmação de senha
     if (novaSenha !== senhaConfirma) {
       msg.style.color = 'red';
       msg.innerText = 'As senhas não coincidem. Verifique e tente novamente.';
       return;
     }
 
-    //validar mínimo de 6 caracteres
     if (novaSenha.length < 6) {
       msg.style.color = 'red';
       msg.innerText = 'A senha deve ter no mínimo 6 caracteres.';
@@ -35,11 +32,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const data = { token, novaSenha };
 
     try {
-      const res = await fetch('/api/auth/recuperar-senha/resetar', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
+      const res = await fetch(`${AUTH_URL}/recuperar-senha/resetar`, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify(data)
+});
 
       if (res.ok) {
         msg.style.color = 'green';
@@ -48,10 +45,11 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         const erro = await res.text();
         msg.style.color = 'red';
-        msg.innerText = `Erro: ${erro}`;
+        msg.innerText = `Erro: ${erro || 'não foi possível resetar a senha.'}`;
         btn.disabled = false;
       }
     } catch (err) {
+      console.error(err);
       msg.style.color = 'red';
       msg.innerText = 'Erro ao conectar. Tente novamente.';
       btn.disabled = false;

@@ -1,34 +1,125 @@
-lucide.createIcons();
+if (window.lucide) {
+    lucide.createIcons();
+}
+
+function showToast(message, variant = 'success') {
+    const toast = document.getElementById('toast');
+    const toastInner = document.getElementById('toast-inner');
+    const toastMsg = document.getElementById('toast-message');
+
+    if (!toast || !toastInner || !toastMsg) {
+        console.warn('Toast não encontrado no DOM.');
+        return;
+    }
+
+    toastMsg.textContent = message;
+
+    // Base
+    toastInner.className = 'px-4 py-3 rounded-lg shadow-lg flex items-center gap-2 text-sm';
+
+    if (variant === 'success') {
+        toastInner.classList.add('bg-green-600', 'text-white');
+    } else if (variant === 'error') {
+        toastInner.classList.add('bg-red-600', 'text-white');
+    } else {
+        toastInner.classList.add('bg-blue-600', 'text-white');
+    }
+
+    toast.classList.remove('hidden');
+
+    setTimeout(() => {
+        toast.classList.add('hidden');
+    }, 3000);
+}
+
+function confirmDialog(options) {
+    const {
+        title = "Atenção",
+        message = "Tem certeza que deseja continuar?",
+        confirmText = "Confirmar",
+        cancelText = "Cancelar",
+        confirmVariant = "danger",
+        onConfirm = () => { },
+    } = options || {};
+
+    const modal = document.getElementById("modal-confirm");
+    const titleEl = document.getElementById("confirm-title");
+    const msgEl = document.getElementById("confirm-message");
+    const btnOk = document.getElementById("confirm-ok");
+    const btnCancel = document.getElementById("confirm-cancel");
+
+    if (!modal || !titleEl || !msgEl || !btnOk || !btnCancel) {
+        console.warn("Modal de confirmação não encontrada no DOM.");
+        return;
+    }
+
+    titleEl.textContent = title;
+    msgEl.textContent = message;
+    btnOk.textContent = confirmText;
+    btnCancel.textContent = cancelText;
+
+    if (confirmVariant === "danger") {
+        btnOk.className =
+            "px-4 py-2 rounded-lg bg-red-600 text-white text-sm font-semibold hover:bg-red-700 shadow-sm";
+    } else {
+        btnOk.className =
+            "px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 shadow-sm";
+    }
+
+    const close = () => {
+        modal.classList.remove("flex");
+        btnOk.onclick = null;
+        btnCancel.onclick = null;
+    };
+
+    btnCancel.onclick = () => close();
+
+    btnOk.onclick = () => {
+        close();
+        onConfirm();
+    };
+
+    modal.classList.add("flex");
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     checkAuth();
     carregarPerfil();
     carregarLogs();
 
-    //Configura botão de logout
-    document.getElementById('btn-logout').onclick = logout;
+    const btnLogout = document.getElementById('btn-logout');
+    if (btnLogout) {
+        btnLogout.onclick = logout;
+    }
 
+    // Botão "Excluir minha conta"
     const btnDelete = document.getElementById('btn-delete-hospital');
     if (btnDelete) {
-        btnDelete.onclick = async (e) => {
+        btnDelete.onclick = (e) => {
             e.preventDefault();
-            const confirmar = confirm(
-                'ATENÇÃO: isso apagará permanentemente sua conta de hospital e todos os dados associados a ela. Deseja continuar?'
-            );
-            if (!confirmar) return;
 
-            try {
-                await apiFetch('/hospital/me', { method: 'DELETE' });
-                alert('Conta excluída com sucesso.');
-                logout();
-            } catch (err) {
-                alert('Erro ao excluir conta: ' + err.message);
-            }
+            confirmDialog({
+                title: "ATENÇÃO",
+                message: "Isso apagará permanentemente sua conta de hospital e todos os dados associados a ela. Deseja continuar?",
+                confirmText: "Sim, apagar conta",
+                cancelText: "Cancelar",
+                confirmVariant: "danger",
+                onConfirm: async () => {
+                    try {
+                        await apiFetch('/hospital/me', { method: 'DELETE' });
+                        showToast('Conta excluída com sucesso.', 'success');
+                        // dá um tempinho pra pessoa ver o toast
+                        setTimeout(() => logout(), 1500);
+                    } catch (err) {
+                        showToast('Erro ao excluir conta: ' + err.message, 'error');
+                    }
+                }
+            });
         };
     }
 });
 
-//Perfil 
+//PERFIL
 
 async function carregarPerfil() {
     try {
@@ -44,7 +135,9 @@ async function carregarPerfil() {
             document.getElementById('classificacao').value = h.classificacaoServico;
 
             const nomeNav = localStorage.getItem('petone_user_nome');
-            if (nomeNav) document.getElementById('user-nome-nav').textContent = nomeNav;
+            if (nomeNav) {
+                document.getElementById('user-nome-nav').textContent = nomeNav;
+            }
         }
     } catch (e) {
         console.error("Erro ao carregar perfil:", e);
@@ -76,14 +169,14 @@ document.getElementById('form-perfil').onsubmit = async (e) => {
 
     try {
         await apiFetch('/hospital/me', { method: 'PUT', body: JSON.stringify(data) });
-        alert('Perfil atualizado com sucesso!');
+        showToast('Perfil atualizado com sucesso!', 'success');
         document.getElementById('btn-unlock-profile').click();
     } catch (e) {
-        alert(`Erro ao salvar: ${e.message}`);
+        showToast(`Erro ao salvar: ${e.message}`, 'error');
     }
 };
 
-//Logs de Emergência
+//LOGS DE EMERGÊNCIA
 
 async function carregarLogs() {
     const div = document.getElementById('lista-logs');
@@ -192,7 +285,9 @@ async function carregarLogs() {
             div.appendChild(card);
         });
 
-        lucide.createIcons();
+        if (window.lucide) {
+            lucide.createIcons();
+        }
     } catch (e) {
         div.innerHTML = `<p class="text-red-500 text-center">Erro ao carregar logs: ${e.message}</p>`;
     }
@@ -200,6 +295,7 @@ async function carregarLogs() {
 
 window.carregarLogs = carregarLogs;
 
+//MODAL FINALIZAÇÃO 
 
 window.abrirFinalizar = (token) => {
     document.getElementById('finalizar-token-input').value = token;
@@ -229,9 +325,9 @@ document.getElementById('form-finalizar').onsubmit = async (e) => {
         document.getElementById('modal-finalizar').style.display = 'none';
         document.getElementById('form-finalizar').reset();
 
-        alert('Atendimento finalizado com sucesso!');
+        showToast('Atendimento finalizado com sucesso!', 'success');
         carregarLogs();
     } catch (e) {
-        alert(`Erro ao finalizar: ${e.message}`);
+        showToast(`Erro ao finalizar: ${e.message}`, 'error');
     }
 };

@@ -1,6 +1,37 @@
+if (window.lucide) {
+    lucide.createIcons();
+}
 
-lucide.createIcons();
 let cacheAnimais = [];
+
+function showToast(message, variant = 'success') {
+    const toast = document.getElementById('toast');
+    const toastInner = document.getElementById('toast-inner');
+    const toastMsg = document.getElementById('toast-message');
+
+    if (!toast || !toastInner || !toastMsg) {
+        console.warn('Toast não encontrado no DOM.');
+        return;
+    }
+
+    toastMsg.textContent = message;
+
+    toastInner.className = 'px-4 py-3 rounded-lg shadow-lg flex items-center gap-2 text-sm';
+
+    if (variant === 'success') {
+        toastInner.classList.add('bg-green-600', 'text-white');
+    } else if (variant === 'error') {
+        toastInner.classList.add('bg-red-600', 'text-white');
+    } else {
+        toastInner.classList.add('bg-blue-600', 'text-white');
+    }
+
+    toast.classList.remove('hidden');
+
+    setTimeout(() => {
+        toast.classList.add('hidden');
+    }, 3000);
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     checkAuth();
@@ -30,7 +61,9 @@ async function carregarPerfilTutor() {
             document.getElementById('perfil-telefone').value = tutor.telefoneTutor;
             document.getElementById('perfil-nascimento').value = tutor.dataNascimento;
         }
-    } catch (e) { console.error(e); }
+    } catch (e) {
+        console.error(e);
+    }
 }
 
 async function carregarAnimais() {
@@ -64,11 +97,16 @@ async function carregarAnimais() {
             `;
             div.appendChild(card);
         });
-        lucide.createIcons();
-    } catch (e) { div.innerHTML = `<p class="text-red-500 col-span-2 text-center">Erro ao carregar animais.</p>`; }
+        if (window.lucide) {
+            lucide.createIcons();
+        }
+    } catch (e) {
+        console.error(e);
+        div.innerHTML = `<p class="text-red-500 col-span-2 text-center">Erro ao carregar animais.</p>`;
+    }
 }
 
-//Histórico de emergências do tutor
+// Histórico de emergências do tutor
 async function carregarLogs() {
     const div = document.getElementById('lista-logs');
     try {
@@ -92,7 +130,6 @@ async function carregarLogs() {
                 ? 'bg-gray-100 text-gray-600'
                 : 'bg-yellow-100 text-yellow-800';
 
-            //campos vindos do backend
             const relatorio = l.relatorioMedico || l.relatorio || '';
             const prescricao = l.prescricaoMedicamento || l.prescricao || '';
 
@@ -141,14 +178,16 @@ async function carregarLogs() {
             div.appendChild(card);
         });
 
-        lucide.createIcons();
+        if (window.lucide) {
+            lucide.createIcons();
+        }
     } catch (e) {
         console.error(e);
         div.innerHTML = '<p class="text-red-500 text-xs text-center">Erro ao carregar logs.</p>';
     }
 }
 
-//Modais e Forms 
+// Modais e Forms 
 
 const modal = document.getElementById('modal-animal');
 document.getElementById('btn-show-add-animal').onclick = () => {
@@ -183,7 +222,13 @@ window.editarAnimal = (id) => {
 
 window.deletarAnimal = async (id) => {
     if (confirm("Tem certeza que deseja remover este pet?")) {
-        try { await apiFetch(`/animais/${id}`, { method: 'DELETE' }); carregarAnimais(); } catch (e) { alert(e.message); }
+        try {
+            await apiFetch(`/animais/${id}`, { method: 'DELETE' });
+            showToast('Pet removido com sucesso.', 'success');
+            carregarAnimais();
+        } catch (e) {
+            showToast(e.message || 'Erro ao remover pet.', 'error');
+        }
     }
 };
 
@@ -202,7 +247,14 @@ document.getElementById('form-animal').onsubmit = async (e) => {
         usaMedicacao: document.getElementById('animal-medicacao').checked,
         qualMedicacao: document.getElementById('animal-qual-medicacao').value
     };
-    try { await apiFetch(url, { method, body: JSON.stringify(data) }); modal.style.display = 'none'; carregarAnimais(); } catch (e) { alert(e.message); }
+    try {
+        await apiFetch(url, { method, body: JSON.stringify(data) });
+        modal.style.display = 'none';
+        showToast('Pet salvo com sucesso!', 'success');
+        carregarAnimais();
+    } catch (e) {
+        showToast(e.message || 'Erro ao salvar pet.', 'error');
+    }
 };
 
 document.getElementById('form-perfil-tutor').onsubmit = async (e) => {
@@ -212,12 +264,24 @@ document.getElementById('form-perfil-tutor').onsubmit = async (e) => {
         telefoneTutor: document.getElementById('perfil-telefone').value,
         dataNascimento: document.getElementById('perfil-nascimento').value
     };
-    try { await apiFetch('/tutor/me', { method: 'PUT', body: JSON.stringify(data) }); alert("Perfil atualizado com sucesso!"); carregarPerfilTutor(); } catch (e) { alert(e.message); }
+    try {
+        await apiFetch('/tutor/me', { method: 'PUT', body: JSON.stringify(data) });
+        showToast("Perfil atualizado com sucesso!", 'success');
+        carregarPerfilTutor();
+    } catch (e) {
+        showToast(e.message || 'Erro ao atualizar perfil.', 'error');
+    }
 };
 
 document.getElementById('btn-delete-perfil').onclick = async (e) => {
     e.preventDefault();
     if (confirm("ATENÇÃO: Isso apagará sua conta e todos os seus dados permanentemente. Continuar?")) {
-        try { await apiFetch('/tutor/me', { method: 'DELETE' }); logout(); } catch (e) { alert(e.message); }
+        try {
+            await apiFetch('/tutor/me', { method: 'DELETE' });
+            showToast('Conta excluída com sucesso.', 'success');
+            setTimeout(() => logout(), 1500);
+        } catch (e) {
+            showToast(e.message || 'Erro ao excluir conta.', 'error');
+        }
     }
 };

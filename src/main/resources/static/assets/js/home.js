@@ -16,8 +16,46 @@ tailwind.config = {
   }
 };
 
-//Função chamada pelo botão da página inicial
-window.iniciarEmergencia = function () {
-  alert('Para iniciar uma emergência e garantir que tenhamos os dados do seu pet, por favor, faça o login.');
-  window.location.href = '/pages/login/index.html';
+function abrirModalLoginRequired() {
+  const modal = document.getElementById('modal-login-required');
+  if (!modal) return;
+  modal.classList.add('flex');
 }
+
+function fecharModalLoginRequired() {
+  const modal = document.getElementById('modal-login-required');
+  if (!modal) return;
+  modal.classList.remove('flex');
+}
+
+
+window.iniciarEmergencia = function () {
+  const token = localStorage.getItem('petone_token');
+
+  if (!token) {
+    abrirModalLoginRequired();
+    return;
+  }
+
+  window.location.href = '/pages/Emergencia/emergencia.html';
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+  const btnClose = document.getElementById('btn-close-login-modal');
+  const btnCancel = document.getElementById('btn-cancel-login-modal');
+  const btnGoLogin = document.getElementById('btn-go-login');
+
+  if (btnClose) {
+    btnClose.onclick = fecharModalLoginRequired;
+  }
+
+  if (btnCancel) {
+    btnCancel.onclick = fecharModalLoginRequired;
+  }
+
+  if (btnGoLogin) {
+    btnGoLogin.onclick = () => {
+      window.location.href = '/pages/login/index.html';
+    };
+  }
+});
