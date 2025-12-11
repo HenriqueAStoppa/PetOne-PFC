@@ -23,38 +23,38 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth
-                // Endpoints de Autenticação (API)
-                .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
+                        // Endpoints de Autenticação (API)
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
 
-                .requestMatchers("/assets/**").permitAll() 
-                .requestMatchers("/pages/**").permitAll()
+                        .requestMatchers(
+                                "/favicon.ico",
+                                "/assets/**",
+                                "/pages/**")
+                        .permitAll()
+                        // URLs das Páginas Públicas (Mapeadas no WebConfig)
+                        .requestMatchers(
+                                "/",
+                                "/index.html",
+                                "/login",
+                                "/cadastro_tutor",
+                                "/cadastro_hospital",
+                                "/recuperar_senha",
+                                "/resetar_senha")
+                        .permitAll()
 
-                // URLs das Páginas Públicas (Mapeadas no WebConfig)
-                .requestMatchers(
-                    "/", 
-                    "/index.html", 
-                    "/login", 
-                    "/cadastro_tutor", 
-                    "/cadastro_hospital", 
-                    "/recuperar_senha", 
-                    "/resetar_senha"                    
-                ).permitAll()
+                        .requestMatchers(
+                                "/dashboard_tutor",
+                                "/dashboard_hospital",
+                                "/emergencia")
+                        .permitAll()
 
-                .requestMatchers(
-                    "/dashboard_tutor", 
-                    "/dashboard_hospital", 
-                    "/emergencia"
-                ).permitAll()
-
-                // Qualquer outra requisição de API exige autenticação
-                .anyRequest().authenticated()
-            )
-            .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            );
+                        // Qualquer outra requisição de API exige autenticação
+                        .anyRequest().authenticated())
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
