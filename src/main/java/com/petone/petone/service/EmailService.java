@@ -17,8 +17,6 @@ public class EmailService {
     @Value("${petone.mail.from}")
     private String remetente;
 
-    // ---------- EMAIL DA EMERGÊNCIA ----------
-
     public void enviarEmailTokenParaTutor(Tutor tutor, EmergenciaLog log) {
         System.out.println("Assunto: [PetOne] Token da sua Emergência");
         System.out.println("Seu token é: " + log.getTokenEmergencia());
@@ -32,7 +30,7 @@ public class EmailService {
         System.out.println("Tutor: " + log.getNomeCompletoTutor());
     }
 
-    // ---------- EMAIL DE RESET DE SENHA ----------
+    //email reset de senha
 
     public void enviarEmailResetSenha(String email, String token) {
         String assunto = "[PetOne] Redefinição de senha";

@@ -7,8 +7,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-//Serviço SIMULADO para a API do Google Maps.
-//service/MapsService.java
 @Service
 public class MapsService {
 

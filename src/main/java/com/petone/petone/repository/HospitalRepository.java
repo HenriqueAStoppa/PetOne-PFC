@@ -13,7 +13,6 @@ public interface HospitalRepository extends MongoRepository<Hospital, String> {
 
     boolean existsByEmailHospitalIgnoreCase(String emailHospital);
 
-    //Busca um Hospital pelo CNPJ.
     Optional<Hospital> findByCnpj(String cnpj);
 
     Optional<Hospital> findByResetToken(String resetToken);

@@ -35,74 +35,73 @@ public class HospitalService {
         this.geocodingService = geocodingService;
     }
 
-  public Hospital cadastrarHospital(HospitalCadastroDTO dto) {
+    public Hospital cadastrarHospital(HospitalCadastroDTO dto) {
 
-    String emailNormalizado = dto.getEmailHospital()
-            .trim()
-            .toLowerCase();
+        String emailNormalizado = dto.getEmailHospital()
+                .trim()
+                .toLowerCase();
 
-    if (hospitalRepository.existsByEmailHospitalIgnoreCase(emailNormalizado)) {
-        throw new ValidationException("Email já cadastrado.");
+        if (hospitalRepository.existsByEmailHospitalIgnoreCase(emailNormalizado)) {
+            throw new ValidationException("Email já cadastrado.");
+        }
+        if (hospitalRepository.findByCnpj(dto.getCnpj()).isPresent()) {
+            throw new ValidationException("CNPJ já cadastrado.");
+        }
+
+        Hospital hospital = new Hospital();
+        hospital.setNomeFantasia(dto.getNomeFantasia());
+        hospital.setEmailHospital(emailNormalizado);
+        hospital.setTelefoneHospital(dto.getTelefoneHospital());
+
+        String enderecoCompleto = String.format("%s, %s - %s, %s - %s",
+                dto.getLogradouro(), dto.getNumero(), dto.getBairro(), dto.getCidade(), dto.getUf());
+        hospital.setEndereco(enderecoCompleto);
+
+        double[] coords = geocodingService.getCoordinates(
+                dto.getLogradouro(), dto.getNumero(), dto.getCidade(), dto.getUf());
+        hospital.setLatitude(coords[0]);
+        hospital.setLongitude(coords[1]);
+
+        hospital.setCnpj(dto.getCnpj());
+        hospital.setClassificacaoServico(dto.getClassificacaoServico());
+        hospital.setVeterinarioResponsavel(dto.getVeterinarioResponsavel());
+        hospital.setCrmvVeterinario(dto.getCrmvVeterinario());
+        hospital.setSenhaHash(PasswordUtil.encode(dto.getSenha()));
+        hospital.setEmailVerificado(true);
+
+        return hospitalRepository.save(hospital);
     }
-    if (hospitalRepository.findByCnpj(dto.getCnpj()).isPresent()) {
-        throw new ValidationException("CNPJ já cadastrado.");
-    }
-
-    Hospital hospital = new Hospital();
-    hospital.setNomeFantasia(dto.getNomeFantasia());
-    hospital.setEmailHospital(emailNormalizado);
-    hospital.setTelefoneHospital(dto.getTelefoneHospital());
-
-    String enderecoCompleto = String.format("%s, %s - %s, %s - %s",
-            dto.getLogradouro(), dto.getNumero(), dto.getBairro(), dto.getCidade(), dto.getUf());
-    hospital.setEndereco(enderecoCompleto);
-
-    double[] coords = geocodingService.getCoordinates(
-            dto.getLogradouro(), dto.getNumero(), dto.getCidade(), dto.getUf());
-    hospital.setLatitude(coords[0]);
-    hospital.setLongitude(coords[1]);
-
-    hospital.setCnpj(dto.getCnpj());
-    hospital.setClassificacaoServico(dto.getClassificacaoServico());
-    hospital.setVeterinarioResponsavel(dto.getVeterinarioResponsavel());
-    hospital.setCrmvVeterinario(dto.getCrmvVeterinario());
-    hospital.setSenhaHash(PasswordUtil.encode(dto.getSenha()));
-    hospital.setEmailVerificado(true);
-
-    return hospitalRepository.save(hospital);
-}
 
     public AuthResponseDTO authenticateHospital(AuthRequestDTO dto) throws Exception {
-    String emailNormalizado = dto.getEmail()
-            .trim()
-            .toLowerCase(Locale.ROOT);
+        String emailNormalizado = dto.getEmail()
+                .trim()
+                .toLowerCase(Locale.ROOT);
 
-    try {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(emailNormalizado, dto.getSenha()));
-    } catch (BadCredentialsException e) {
-        throw new Exception("Credenciais inválidas", e);
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(emailNormalizado, dto.getSenha()));
+        } catch (BadCredentialsException e) {
+            throw new Exception("Credenciais inválidas", e);
+        }
+
+        Hospital hospital = hospitalRepository.findByEmailHospitalIgnoreCase(emailNormalizado)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
+
+        final String token = jwtUtil.generateToken(hospital.getEmailHospital());
+
+        return AuthResponseDTO.builder()
+                .token(token)
+                .idTutor(hospital.getIdHospital())
+                .email(hospital.getEmailHospital())
+                .nomeCompleto(hospital.getNomeFantasia())
+                .build();
     }
 
-    Hospital hospital = hospitalRepository.findByEmailHospitalIgnoreCase(emailNormalizado)
-            .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
-
-    final String token = jwtUtil.generateToken(hospital.getEmailHospital());
-
-    return AuthResponseDTO.builder()
-            .token(token)
-            .idTutor(hospital.getIdHospital())
-            .email(hospital.getEmailHospital())
-            .nomeCompleto(hospital.getNomeFantasia())
-            .build();
-}
-
-
     public Hospital getMeuPerfil(String hospitalEmail) {
-    String emailNormalizado = hospitalEmail.trim().toLowerCase(Locale.ROOT);
-    return hospitalRepository.findByEmailHospitalIgnoreCase(emailNormalizado)
-            .orElseThrow(() -> new UsernameNotFoundException("Hospital não encontrado"));
-}
+        String emailNormalizado = hospitalEmail.trim().toLowerCase(Locale.ROOT);
+        return hospitalRepository.findByEmailHospitalIgnoreCase(emailNormalizado)
+                .orElseThrow(() -> new UsernameNotFoundException("Hospital não encontrado"));
+    }
 
     public Hospital updateMeuPerfil(String hospitalEmail, HospitalPerfilDTO dto) {
         Hospital hospital = getMeuPerfil(hospitalEmail);
@@ -121,7 +120,11 @@ public class HospitalService {
     }
 
     public void deleteMeuPerfil(String hospitalEmail) {
-        Hospital hospital = hospitalRepository.findByEmailHospital(hospitalEmail)
+        String emailNormalizado = hospitalEmail
+                .trim()
+                .toLowerCase(Locale.ROOT);
+
+        Hospital hospital = hospitalRepository.findByEmailHospitalIgnoreCase(emailNormalizado)
                 .orElseThrow(() -> new UsernameNotFoundException("Hospital não encontrado para exclusão"));
 
         hospitalRepository.delete(hospital);

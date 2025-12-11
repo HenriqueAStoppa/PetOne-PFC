@@ -22,6 +22,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.List;
 import java.util.Locale;
 
@@ -51,20 +53,29 @@ public class TutorService {
     }
 
     public AuthResponseDTO cadastrarTutor(TutorCadastroDTO dto) {
+        // 1) Regra de idade mínima 18 anos
+        LocalDate hoje = LocalDate.now();
+        int idade = Period.between(dto.getDataNascimento(), hoje).getYears();
+        if (idade < 18) {
+            throw new ValidationException("O tutor deve ter pelo menos 18 anos.");
+        }
 
+        // 2) Normalizar e-mail (remove espaços e deixa tudo minúsculo)
         String emailNormalizado = dto.getEmailTutor()
                 .trim()
                 .toLowerCase();
 
-        if (tutorRepository.existsByEmailTutorIgnoreCase(emailNormalizado)) {
+        // 3) Verificar duplicado usando o email normalizado
+        if (tutorRepository.findByEmailTutor(emailNormalizado).isPresent()) {
             throw new ValidationException("Email já cadastrado.");
         }
 
         Tutor tutor = new Tutor();
         tutor.setNomeCompleto(dto.getNomeCompleto());
         tutor.setCpf(dto.getCpf());
-        tutor.setEmailTutor(emailNormalizado);
+        tutor.setEmailTutor(emailNormalizado); // sempre em minúsculo
         tutor.setTelefoneTutor(dto.getTelefoneTutor());
+        dto.setEmailTutor(emailNormalizado); // garante consistência no DTO também
         tutor.setDataNascimento(dto.getDataNascimento());
         tutor.setSenhaHash(PasswordUtil.encode(dto.getSenha()));
         tutor.setEmailVerificado(true);
