@@ -2,7 +2,6 @@ package com.petone.petone.service;
 
 import com.petone.petone.repository.HospitalRepository;
 import com.petone.petone.repository.TutorRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,7 +17,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private final TutorRepository tutorRepository;
     private final HospitalRepository hospitalRepository;
 
-    @Autowired
     public UserDetailsServiceImpl(TutorRepository tutorRepository, HospitalRepository hospitalRepository) {
         this.tutorRepository = tutorRepository;
         this.hospitalRepository = hospitalRepository;

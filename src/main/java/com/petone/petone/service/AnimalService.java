@@ -5,7 +5,6 @@ import com.petone.petone.model.Animal;
 import com.petone.petone.model.Tutor;
 import com.petone.petone.repository.AnimalRepository;
 import com.petone.petone.repository.TutorRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +19,6 @@ public class AnimalService {
     private final AnimalRepository animalRepository;
     private final TutorRepository tutorRepository;
 
-    @Autowired
     public AnimalService(AnimalRepository animalRepository, TutorRepository tutorRepository) {
         this.animalRepository = animalRepository;
         this.tutorRepository = tutorRepository;

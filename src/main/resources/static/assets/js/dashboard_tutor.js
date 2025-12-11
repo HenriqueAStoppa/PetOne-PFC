@@ -1,9 +1,11 @@
+// Ícones
 if (window.lucide) {
     lucide.createIcons();
 }
 
 let cacheAnimais = [];
 
+// ---------------- TOAST ----------------
 function showToast(message, variant = 'success') {
     const toast = document.getElementById('toast');
     const toastInner = document.getElementById('toast-inner');
@@ -33,19 +35,64 @@ function showToast(message, variant = 'success') {
     }, 3000);
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    checkAuth();
-    carregarHeader();
-    carregarPerfilTutor();
-    carregarAnimais();
-    carregarLogs();
+// -------------- MODAL CONFIRMAÇÃO --------------
+function confirmDialog(options) {
+    const {
+        title = "Atenção",
+        message = "Tem certeza que deseja continuar?",
+        confirmText = "Confirmar",
+        cancelText = "Cancelar",
+        confirmVariant = "danger",
+        onConfirm = () => { },
+    } = options || {};
 
-    document.getElementById('btn-logout').addEventListener('click', logout);
-});
+    const modal = document.getElementById("modal-confirm");
+    const titleEl = document.getElementById("confirm-title");
+    const msgEl = document.getElementById("confirm-message");
+    const btnOk = document.getElementById("confirm-ok");
+    const btnCancel = document.getElementById("confirm-cancel");
 
+    if (!modal || !titleEl || !msgEl || !btnOk || !btnCancel) {
+        console.warn("Modal de confirmação não encontrada no DOM.");
+        return;
+    }
+
+    titleEl.textContent = title;
+    msgEl.textContent = message;
+    btnOk.textContent = confirmText;
+    btnCancel.textContent = cancelText;
+
+    if (confirmVariant === "danger") {
+        btnOk.className =
+            "px-4 py-2 rounded-lg bg-red-600 text-white text-sm font-semibold hover:bg-red-700 shadow-sm";
+    } else {
+        btnOk.className =
+            "px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 shadow-sm";
+    }
+
+    const close = () => {
+        modal.classList.remove("flex");
+        btnOk.onclick = null;
+        btnCancel.onclick = null;
+    };
+
+    btnCancel.onclick = () => close();
+
+    btnOk.onclick = () => {
+        close();
+        onConfirm();
+    };
+
+    modal.classList.add("flex");
+}
+
+// -------------- HEADER / PERFIL --------------
 function carregarHeader() {
     const nomeUser = localStorage.getItem('petone_user_nome');
-    if (nomeUser) document.getElementById('user-nome-nav').textContent = `Olá, ${nomeUser.split(' ')[0]}`;
+    if (nomeUser) {
+        document.getElementById('user-nome-nav').textContent =
+            `Olá, ${nomeUser.split(' ')[0]}`;
+    }
 }
 
 function iniciarEmergencia() {
@@ -66,6 +113,7 @@ async function carregarPerfilTutor() {
     }
 }
 
+// -------------- ANIMAIS --------------
 async function carregarAnimais() {
     const div = document.getElementById('lista-animais');
     div.innerHTML = '<p class="text-gray-400 col-span-2 text-center py-10">Carregando...</p>';
@@ -106,7 +154,6 @@ async function carregarAnimais() {
     }
 }
 
-// Histórico de emergências do tutor
 async function carregarLogs() {
     const div = document.getElementById('lista-logs');
     try {
@@ -187,25 +234,27 @@ async function carregarLogs() {
     }
 }
 
-// Modais e Forms 
-
-const modal = document.getElementById('modal-animal');
-document.getElementById('btn-show-add-animal').onclick = () => {
+// -------------- MODAL PET (helpers) --------------
+function abrirModalAnimalNovo() {
+    const modal = document.getElementById('modal-animal');
     document.getElementById('form-animal').reset();
     document.getElementById('animal-id').value = '';
     document.getElementById('modal-animal-titulo').textContent = 'Adicionar Pet';
     document.getElementById('div-qual-medicacao').style.display = 'none';
     modal.style.display = 'flex';
-};
-document.getElementById('btn-close-modal-animal').onclick = () => modal.style.display = 'none';
+}
 
-document.getElementById('animal-medicacao').addEventListener('change', function () {
-    document.getElementById('div-qual-medicacao').style.display = this.checked ? 'block' : 'none';
-});
+function fecharModalAnimal() {
+    const modal = document.getElementById('modal-animal');
+    modal.style.display = 'none';
+}
 
+// Expor funções para os botões inline
 window.editarAnimal = (id) => {
     const pet = cacheAnimais.find(a => a.idAnimal === id);
     if (!pet) return;
+    const modal = document.getElementById('modal-animal');
+
     document.getElementById('animal-id').value = pet.idAnimal;
     document.getElementById('animal-nome').value = pet.nomeAnimal;
     document.getElementById('animal-idade').value = pet.idade;
@@ -220,68 +269,114 @@ window.editarAnimal = (id) => {
     modal.style.display = 'flex';
 };
 
-window.deletarAnimal = async (id) => {
-    if (confirm("Tem certeza que deseja remover este pet?")) {
+window.deletarAnimal = (id) => {
+    const pet = cacheAnimais.find(a => a.idAnimal === id);
+    confirmDialog({
+        title: "Remover pet",
+        message: `Tem certeza que deseja remover o pet "${pet?.nomeAnimal || ''}" da sua conta?`,
+        confirmText: "Sim, remover",
+        cancelText: "Cancelar",
+        confirmVariant: "danger",
+        onConfirm: async () => {
+            try {
+                await apiFetch(`/animais/${id}`, { method: 'DELETE' });
+                showToast('Pet removido com sucesso.', 'success');
+                carregarAnimais();
+            } catch (e) {
+                showToast(e.message || 'Erro ao remover pet.', 'error');
+            }
+        }
+    });
+};
+
+// -------------- DOMContentLoaded --------------
+document.addEventListener('DOMContentLoaded', () => {
+    checkAuth();
+    carregarHeader();
+    carregarPerfilTutor();
+    carregarAnimais();
+    carregarLogs();
+
+    const btnLogout = document.getElementById('btn-logout');
+    if (btnLogout) {
+        btnLogout.addEventListener('click', logout);
+    }
+
+    // Modal pet
+    const btnShowAdd = document.getElementById('btn-show-add-animal');
+    const btnCloseModal = document.getElementById('btn-close-modal-animal');
+
+    if (btnShowAdd) btnShowAdd.onclick = abrirModalAnimalNovo;
+    if (btnCloseModal) btnCloseModal.onclick = fecharModalAnimal;
+
+    document.getElementById('animal-medicacao').addEventListener('change', function () {
+        document.getElementById('div-qual-medicacao').style.display = this.checked ? 'block' : 'none';
+    });
+
+    // Submit pet
+    document.getElementById('form-animal').onsubmit = async (e) => {
+        e.preventDefault();
+        const id = document.getElementById('animal-id').value;
+        const method = id ? 'PUT' : 'POST';
+        const url = id ? `/animais/${id}` : '/animais';
+        const data = {
+            nomeAnimal: document.getElementById('animal-nome').value,
+            idade: document.getElementById('animal-idade').value,
+            especie: document.getElementById('animal-especie').value,
+            raca: document.getElementById('animal-raca').value,
+            sexo: document.querySelector('input[name="sexo"]:checked').value,
+            castrado: document.getElementById('animal-castrado').checked,
+            usaMedicacao: document.getElementById('animal-medicacao').checked,
+            qualMedicacao: document.getElementById('animal-qual-medicacao').value
+        };
         try {
-            await apiFetch(`/animais/${id}`, { method: 'DELETE' });
-            showToast('Pet removido com sucesso.', 'success');
+            await apiFetch(url, { method, body: JSON.stringify(data) });
+            fecharModalAnimal();
+            showToast('Pet salvo com sucesso!', 'success');
             carregarAnimais();
         } catch (e) {
-            showToast(e.message || 'Erro ao remover pet.', 'error');
+            showToast(e.message || 'Erro ao salvar pet.', 'error');
         }
-    }
-};
-
-document.getElementById('form-animal').onsubmit = async (e) => {
-    e.preventDefault();
-    const id = document.getElementById('animal-id').value;
-    const method = id ? 'PUT' : 'POST';
-    const url = id ? `/animais/${id}` : '/animais';
-    const data = {
-        nomeAnimal: document.getElementById('animal-nome').value,
-        idade: document.getElementById('animal-idade').value,
-        especie: document.getElementById('animal-especie').value,
-        raca: document.getElementById('animal-raca').value,
-        sexo: document.querySelector('input[name="sexo"]:checked').value,
-        castrado: document.getElementById('animal-castrado').checked,
-        usaMedicacao: document.getElementById('animal-medicacao').checked,
-        qualMedicacao: document.getElementById('animal-qual-medicacao').value
     };
-    try {
-        await apiFetch(url, { method, body: JSON.stringify(data) });
-        modal.style.display = 'none';
-        showToast('Pet salvo com sucesso!', 'success');
-        carregarAnimais();
-    } catch (e) {
-        showToast(e.message || 'Erro ao salvar pet.', 'error');
-    }
-};
 
-document.getElementById('form-perfil-tutor').onsubmit = async (e) => {
-    e.preventDefault();
-    const data = {
-        nomeCompleto: document.getElementById('perfil-nome').value,
-        telefoneTutor: document.getElementById('perfil-telefone').value,
-        dataNascimento: document.getElementById('perfil-nascimento').value
-    };
-    try {
-        await apiFetch('/tutor/me', { method: 'PUT', body: JSON.stringify(data) });
-        showToast("Perfil atualizado com sucesso!", 'success');
-        carregarPerfilTutor();
-    } catch (e) {
-        showToast(e.message || 'Erro ao atualizar perfil.', 'error');
-    }
-};
-
-document.getElementById('btn-delete-perfil').onclick = async (e) => {
-    e.preventDefault();
-    if (confirm("ATENÇÃO: Isso apagará sua conta e todos os seus dados permanentemente. Continuar?")) {
+    // Submit perfil tutor
+    document.getElementById('form-perfil-tutor').onsubmit = async (e) => {
+        e.preventDefault();
+        const data = {
+            nomeCompleto: document.getElementById('perfil-nome').value,
+            telefoneTutor: document.getElementById('perfil-telefone').value,
+            dataNascimento: document.getElementById('perfil-nascimento').value
+        };
         try {
-            await apiFetch('/tutor/me', { method: 'DELETE' });
-            showToast('Conta excluída com sucesso.', 'success');
-            setTimeout(() => logout(), 1500);
+            await apiFetch('/tutor/me', { method: 'PUT', body: JSON.stringify(data) });
+            showToast("Perfil atualizado com sucesso!", 'success');
+            carregarPerfilTutor();
         } catch (e) {
-            showToast(e.message || 'Erro ao excluir conta.', 'error');
+            showToast(e.message || 'Erro ao atualizar perfil.', 'error');
         }
+    };
+
+    // Excluir conta tutor com modal bonitona
+    const btnDeletePerfil = document.getElementById('btn-delete-perfil');
+    if (btnDeletePerfil) {
+        btnDeletePerfil.onclick = (e) => {
+            e.preventDefault();
+            confirmDialog({
+                title: "ATENÇÃO",
+                message: "Isso apagará permanentemente sua conta de tutor e todos os dados associados a ela. Deseja continuar?",
+                confirmText: "Sim, excluir conta",
+                cancelText: "Cancelar",
+                confirmVariant: "danger",
+                onConfirm: async () => {
+                    try {
+                        await apiFetch('/tutor/me', { method: 'DELETE' });
+                        showToast('Conta excluída com sucesso.', 'success');
+                        setTimeout(() => logout(), 1500);
+                    } catch (err) {
+                        showToast(err.message || 'Erro ao excluir conta.', 'error');
+                    }
+                }
+            });
+        };
     }
-};
+});

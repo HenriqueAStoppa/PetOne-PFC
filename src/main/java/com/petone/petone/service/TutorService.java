@@ -12,7 +12,6 @@ import com.petone.petone.repository.TutorRepository;
 import com.petone.petone.util.JwtUtil;
 import com.petone.petone.util.PasswordUtil;
 import jakarta.validation.ValidationException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -37,7 +36,7 @@ public class TutorService {
     private final AnimalRepository animalRepository;
     private final EmergenciaLogRepository emergenciaLogRepository;
 
-    @Autowired
+    
     public TutorService(TutorRepository tutorRepository,
             AuthenticationManager authenticationManager,
             UserDetailsService userDetailsService,

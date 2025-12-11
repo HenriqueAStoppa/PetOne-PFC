@@ -11,7 +11,6 @@ import com.petone.petone.repository.AnimalRepository;
 import com.petone.petone.repository.EmergenciaLogRepository;
 import com.petone.petone.repository.HospitalRepository;
 import com.petone.petone.repository.TutorRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -30,7 +29,6 @@ public class EmergenciaService {
         private final EmailService emailService;
         private final HospitalRepository hospitalRepository;
 
-        @Autowired
         public EmergenciaService(EmergenciaLogRepository emergenciaLogRepository,
                         TutorRepository tutorRepository,
                         AnimalRepository animalRepository,

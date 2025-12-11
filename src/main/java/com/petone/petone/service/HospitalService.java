@@ -5,7 +5,6 @@ import com.petone.petone.model.*;
 import com.petone.petone.repository.*;
 import com.petone.petone.util.*;
 import jakarta.validation.ValidationException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -22,7 +21,6 @@ public class HospitalService {
     private final EmergenciaLogRepository emergenciaLogRepository;
     private final GeocodingService geocodingService; // <--- Injeção Nova
 
-    @Autowired
     public HospitalService(HospitalRepository hospitalRepository,
             JwtUtil jwtUtil,
             AuthenticationManager authenticationManager,

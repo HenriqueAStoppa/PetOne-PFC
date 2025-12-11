@@ -6,7 +6,6 @@ import com.petone.petone.dto.FinalizacaoRequestDTO;
 import com.petone.petone.model.EmergenciaLog; 
 import com.petone.petone.service.EmergenciaService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException; 
@@ -21,7 +20,6 @@ public class EmergenciaController {
 
     private final EmergenciaService emergenciaService;
 
-    @Autowired
     public EmergenciaController(EmergenciaService emergenciaService) {
         this.emergenciaService = emergenciaService;
     }

@@ -11,7 +11,6 @@ import com.petone.petone.service.HospitalService;
 import com.petone.petone.service.PasswordResetService; 
 import com.petone.petone.service.TutorService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,7 +30,6 @@ public class AuthController {
     private final HospitalService hospitalService; 
     private final PasswordResetService passwordResetService; 
 
-    @Autowired
     public AuthController(TutorService tutorService, 
                           HospitalService hospitalService,
                           PasswordResetService passwordResetService) {
