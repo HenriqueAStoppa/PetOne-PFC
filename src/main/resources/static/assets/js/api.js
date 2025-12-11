@@ -1,5 +1,5 @@
-const API_URL = 'http://localhost:8080/api';
-const AUTH_URL = 'http://localhost:8080/api/auth';
+const API_URL = '/api';
+const AUTH_URL = '/api/auth';
 
 //Utilitário para pegar o token
 function getToken() {
