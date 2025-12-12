@@ -1,5 +1,6 @@
 package com.petone.petone.controller;
 
+import com.petone.petone.dto.AtualizacaoRequestDTO;
 import com.petone.petone.dto.EmergenciaRequestDTO;
 import com.petone.petone.dto.EmergenciaResponseDTO;
 import com.petone.petone.dto.FinalizacaoRequestDTO; 
@@ -36,6 +37,19 @@ public class EmergenciaController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>("Erro interno ao processar emergência: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    @PutMapping("/atualizar/{token}")
+    public ResponseEntity<?> atualizarEmergencia(@PathVariable String token,
+                                                 @Valid @RequestBody AtualizacaoRequestDTO dto,
+                                                 Principal principal) {
+        try {
+            EmergenciaLog log = emergenciaService.atualizarEmergencia(token, dto, principal.getName());
+            return ResponseEntity.ok(log);
+        } catch (NoSuchElementException | UsernameNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 

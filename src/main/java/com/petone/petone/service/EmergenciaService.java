@@ -1,5 +1,6 @@
 package com.petone.petone.service;
 
+import com.petone.petone.dto.AtualizacaoRequestDTO;
 import com.petone.petone.dto.EmergenciaRequestDTO;
 import com.petone.petone.dto.EmergenciaResponseDTO;
 import com.petone.petone.dto.FinalizacaoRequestDTO;
@@ -138,4 +139,27 @@ public class EmergenciaService {
 
                 return emergenciaLogRepository.save(log);
         }
+        public EmergenciaLog atualizarEmergencia(String tokenEmergencia,
+                                             AtualizacaoRequestDTO dto,
+                                             String hospitalEmail) {
+
+        Hospital hospital = hospitalRepository.findByEmailHospital(hospitalEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("Hospital não encontrado."));
+
+        EmergenciaLog log = emergenciaLogRepository.findByTokenEmergencia(tokenEmergencia)
+                .orElseThrow(() -> new NoSuchElementException("Log não encontrado."));
+
+        if (!log.getIdHospital().equals(hospital.getIdHospital())) {
+            throw new AccessDeniedException("Este log não pertence ao seu hospital.");
+        }
+
+        log.setStatus("Em Atendimento");
+        
+        log.setRelatorio(dto.getRelatorio());
+        
+        log.setVeterinarioResponsavelFinalizacao(dto.getVeterinarioResponsavel());
+        log.setCrmvVeterinarioFinalizacao(dto.getCrmvVeterinario());
+
+        return emergenciaLogRepository.save(log);
+    }
 }

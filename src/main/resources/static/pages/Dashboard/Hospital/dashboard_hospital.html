@@ -130,41 +130,33 @@
         </div>
     </main>
 
-    <div id="modal-finalizar"
-        class="modal fixed inset-0 bg-black bg-opacity-60 z-50 items-center justify-center p-4 backdrop-blur-sm">
+    <div id="modal-finalizar" class="modal fixed inset-0 bg-black bg-opacity-60 z-50 items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-2xl relative transform transition-all scale-100">
-            <button onclick="document.getElementById('modal-finalizar').style.display='none'"
-                class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+            <button onclick="document.getElementById('modal-finalizar').style.display='none'" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
                 <i data-lucide="x" class="w-6 h-6"></i>
             </button>
-
-            <h3 class="text-2xl font-bold text-green-900 mb-2 flex items-center gap-2">
-                <i data-lucide="check-circle" class="w-6 h-6"></i> Finalizar Atendimento
+            
+            <h3 class="text-2xl font-bold text-blue-900 mb-2 flex items-center gap-2">
+                <i data-lucide="stethoscope" class="w-6 h-6"></i> Atendimento
             </h3>
-
+            
             <div class="bg-gray-50 p-3 rounded-lg border border-gray-200 mb-6 text-sm">
-                <p><span class="font-bold text-gray-600">Token:</span> <span id="modal-token"
-                        class="font-mono text-black font-bold text-lg"></span></p>
+                <p><span class="font-bold text-gray-600">Token:</span> <span id="modal-token" class="font-mono text-black font-bold text-lg"></span></p>
             </div>
 
-            <form id="form-finalizar" class="space-y-4">
-                <input type="hidden" id="finalizar-token-input">
-
+            <form id="form-atendimento" class="space-y-4">
+                <input type="hidden" id="atendimento-token-input">
+                
                 <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1">Relatório Médico *</label>
-                    <textarea id="relatorio" rows="5"
-                        class="w-full p-3 border rounded-lg focus:ring-green-500 focus:border-green-500 bg-gray-50"
-                        placeholder="Descreva o procedimento realizado, diagnóstico e o estado atual do animal..."
-                        required></textarea>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Evolução / Relatório *</label>
+                    <textarea id="relatorio" rows="5" class="w-full p-3 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-gray-50" placeholder="Descreva o procedimento realizado, internação ou estado atual..." required></textarea>
                 </div>
-
+                
                 <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1">Prescrição / Medicamentos</label>
-                    <textarea id="prescricao" rows="3"
-                        class="w-full p-3 border rounded-lg focus:ring-green-500 focus:border-green-500 bg-gray-50"
-                        placeholder="Medicamentos receitados e orientações para o tutor..."></textarea>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Prescrição (Apenas se finalizar)</label>
+                    <textarea id="prescricao" rows="2" class="w-full p-3 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-gray-50" placeholder="Medicamentos para casa..."></textarea>
                 </div>
-
+                
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">Vet. Responsável *</label>
@@ -175,11 +167,16 @@
                         <input type="text" id="finalizar-crmv" class="w-full p-2 border rounded-lg bg-gray-50" required>
                     </div>
                 </div>
-
-                <button type="submit"
-                    class="w-full bg-green-600 text-white py-3 rounded-xl font-bold hover:bg-green-700 shadow-md mt-4 transition transform active:scale-95">
-                    Concluir Atendimento
-                </button>
+                
+                <div class="grid grid-cols-2 gap-4 mt-6">
+                    <button type="button" onclick="enviarAtendimento('atualizar')" class="w-full bg-yellow-500 text-white py-3 rounded-xl font-bold hover:bg-yellow-600 shadow-md transition flex items-center justify-center gap-2">
+                        <i data-lucide="activity" class="w-4 h-4"></i> Em Atendimento
+                    </button>
+                    
+                    <button type="button" onclick="enviarAtendimento('finalizar')" class="w-full bg-green-600 text-white py-3 rounded-xl font-bold hover:bg-green-700 shadow-md transition flex items-center justify-center gap-2">
+                        <i data-lucide="check-circle" class="w-4 h-4"></i> Finalizar/Alta
+                    </button>
+                </div>
             </form>
         </div>
     </div>
