@@ -3,10 +3,12 @@ package com.petone.petone.util;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,12 +17,14 @@ import java.util.function.Function;
 @Component
 public class JwtUtil {
 
-    // Define o tempo de expiração do token
     public static final long JWT_TOKEN_VALIDITY = 10 * 60 * 60;
 
-    // Chave secreta para assinar o token.
-    private final String secret = "aVeryStrongAndLongSecretKeyForPetOneProjectSecurity256";
-    private final SecretKey secretKey = Keys.hmacShaKeyFor(secret.getBytes());
+    private final SecretKey secretKey;
+
+    public JwtUtil(@Value("${app.jwt.secret}") String secretBase64) {
+        byte[] keyBytes = Base64.getDecoder().decode(secretBase64);
+        this.secretKey = Keys.hmacShaKeyFor(keyBytes);
+    }
 
     public String getUsernameFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
@@ -36,28 +40,20 @@ public class JwtUtil {
     }
 
     private Claims getAllClaimsFromToken(String token) {
-        return Jwts.parser()
-                .verifyWith(secretKey)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload();
     }
 
-    // Verifica se o token está expirado
     private Boolean isTokenExpired(String token) {
         final Date expiration = getExpirationDateFromToken(token);
         return expiration.before(new Date());
     }
 
-    // Gera um novo token para o usuário
     public String generateToken(UserDetails userDetails) {
-        Map<String, Object> claims = new HashMap<>();
-        return doGenerateToken(claims, userDetails.getUsername());
+        return doGenerateToken(new HashMap<>(), userDetails.getUsername());
     }
 
     public String generateToken(String username) {
-        Map<String, Object> claims = new HashMap<>();
-        return doGenerateToken(claims, username);
+        return doGenerateToken(new HashMap<>(), username);
     }
 
     private String doGenerateToken(Map<String, Object> claims, String subject) {

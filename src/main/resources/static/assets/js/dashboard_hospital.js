@@ -1,6 +1,8 @@
-if (window.lucide) {
-    lucide.createIcons();
-}
+let isUpdating = false;
+
+document.addEventListener("DOMContentLoaded", () => {
+    if (window.lucide) lucide.createIcons();
+});
 
 function showToast(message, variant = 'success') {
     const toast = document.getElementById('toast');
@@ -14,7 +16,6 @@ function showToast(message, variant = 'success') {
 
     toastMsg.textContent = message;
 
-    // Base
     toastInner.className = 'px-4 py-3 rounded-lg shadow-lg flex items-center gap-2 text-sm';
 
     if (variant === 'success') {
@@ -88,11 +89,8 @@ document.addEventListener('DOMContentLoaded', () => {
     carregarLogs();
 
     const btnLogout = document.getElementById('btn-logout');
-    if (btnLogout) {
-        btnLogout.onclick = logout;
-    }
+    if (btnLogout) btnLogout.onclick = logout;
 
-    // Botão "Excluir minha conta"
     const btnDelete = document.getElementById('btn-delete-hospital');
     if (btnDelete) {
         btnDelete.onclick = (e) => {
@@ -108,7 +106,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     try {
                         await apiFetch('/hospital/me', { method: 'DELETE' });
                         showToast('Conta excluída com sucesso.', 'success');
-                        // dá um tempinho pra pessoa ver o toast
                         setTimeout(() => logout(), 1500);
                     } catch (err) {
                         showToast('Erro ao excluir conta: ' + err.message, 'error');
@@ -117,215 +114,254 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         };
     }
+
+    const btnUnlock = document.getElementById('btn-unlock-profile');
+    if (btnUnlock) {
+        btnUnlock.onclick = function () {
+            const inputs = document.querySelectorAll('#form-perfil input:not([readonly])');
+            const btnSave = document.getElementById('btn-save-profile');
+            if (!inputs || inputs.length === 0 || !btnSave) return;
+
+            const isDisabled = inputs[0].disabled;
+
+            inputs.forEach(i => i.disabled = !isDisabled);
+            btnSave.classList.toggle('hidden');
+            this.textContent = isDisabled ? "Cancelar" : "Editar";
+
+            if (!isDisabled) carregarPerfil();
+        };
+    }
+
+    const formPerfil = document.getElementById('form-perfil');
+    if (formPerfil) {
+        formPerfil.onsubmit = async (e) => {
+            e.preventDefault();
+
+            const data = {
+                nomeFantasia: document.getElementById('nome').value,
+                telefoneHospital: document.getElementById('telefone').value,
+                endereco: document.getElementById('endereco').value,
+                veterinarioResponsavel: document.getElementById('vet').value,
+                crmvVeterinario: document.getElementById('crmv').value,
+                classificacaoServico: parseInt(document.getElementById('classificacao').value, 10)
+            };
+
+            try {
+                await apiFetch('/hospital/me', { method: 'PUT', body: JSON.stringify(data) });
+                showToast('Perfil atualizado com sucesso!', 'success');
+                document.getElementById('btn-unlock-profile')?.click();
+            } catch (err) {
+                showToast(`Erro ao salvar: ${err.message}`, 'error');
+            }
+        };
+    }
 });
 
-//PERFIL
-
+// PERFIL
 async function carregarPerfil() {
     try {
         const h = await apiFetch('/hospital/me');
-        if (h) {
-            document.getElementById('nome').value = h.nomeFantasia;
-            document.getElementById('cnpj').value = h.cnpj;
-            document.getElementById('email').value = h.emailHospital;
-            document.getElementById('telefone').value = h.telefoneHospital;
-            document.getElementById('endereco').value = h.endereco;
-            document.getElementById('vet').value = h.veterinarioResponsavel;
-            document.getElementById('crmv').value = h.crmvVeterinario;
-            document.getElementById('classificacao').value = h.classificacaoServico;
+        if (!h) return;
 
-            const nomeNav = localStorage.getItem('petone_user_nome');
-            if (nomeNav) {
-                document.getElementById('user-nome-nav').textContent = nomeNav;
-            }
+        document.getElementById('nome').value = h.nomeFantasia ?? '';
+        document.getElementById('cnpj').value = h.cnpj ?? '';
+        document.getElementById('email').value = h.emailHospital ?? '';
+        document.getElementById('telefone').value = h.telefoneHospital ?? '';
+        document.getElementById('endereco').value = h.endereco ?? '';
+        document.getElementById('vet').value = h.veterinarioResponsavel ?? '';
+        document.getElementById('crmv').value = h.crmvVeterinario ?? '';
+        document.getElementById('classificacao').value = h.classificacaoServico ?? '';
+
+        const nomeNav = localStorage.getItem('petone_user_nome');
+        if (nomeNav) {
+            const navEl = document.getElementById('user-nome-nav');
+            if (navEl) navEl.textContent = nomeNav;
         }
     } catch (e) {
         console.error("Erro ao carregar perfil:", e);
     }
 }
 
-document.getElementById('btn-unlock-profile').onclick = function () {
-    const inputs = document.querySelectorAll('#form-perfil input:not([readonly])');
-    const btnSave = document.getElementById('btn-save-profile');
-    const isDisabled = inputs[0].disabled;
+// LOGS
+async function carregarLogs() {
+    if (isUpdating) return;
+    isUpdating = true;
 
-    inputs.forEach(i => i.disabled = !isDisabled);
-    btnSave.classList.toggle('hidden');
-    this.textContent = isDisabled ? "Cancelar" : "Editar";
+    const icon = document.getElementById('icon-refresh');
+    if (icon) icon.classList.add('animate-spin');
 
-    if (!isDisabled) carregarPerfil();
-};
-
-document.getElementById('form-perfil').onsubmit = async (e) => {
-    e.preventDefault();
-    const data = {
-        nomeFantasia: document.getElementById('nome').value,
-        telefoneHospital: document.getElementById('telefone').value,
-        endereco: document.getElementById('endereco').value,
-        veterinarioResponsavel: document.getElementById('vet').value,
-        crmvVeterinario: document.getElementById('crmv').value,
-        classificacaoServico: parseInt(document.getElementById('classificacao').value)
-    };
+    const div = document.getElementById('lista-logs');
 
     try {
-        await apiFetch('/hospital/me', { method: 'PUT', body: JSON.stringify(data) });
-        showToast('Perfil atualizado com sucesso!', 'success');
-        document.getElementById('btn-unlock-profile').click();
-    } catch (e) {
-        showToast(`Erro ao salvar: ${e.message}`, 'error');
-    }
-};
+        const logs = await apiFetch('/hospital/logs');
 
-//LOGS DE EMERGÊNCIA
+        if (!div) return;
 
-async function carregarLogs() {
-            if (isUpdating) return;
-            isUpdating = true;
-            const icon = document.getElementById('icon-refresh');
-            if(icon) icon.classList.add('animate-spin');
-            
-            const div = document.getElementById('lista-logs');
-            try {
-                const logs = await apiFetch('/hospital/logs');
-                if(!logs || logs.length === 0) { div.innerHTML = '<p class="text-center py-10 text-gray-400">Nenhum chamado.</p>'; return; }
-                
-                div.innerHTML = '';
-                logs.sort((a, b) => {
-                    if (a.status === 'Finalizado' && b.status !== 'Finalizado') return 1;
-                    if (a.status !== 'Finalizado' && b.status === 'Finalizado') return -1;
-                    return new Date(b.dataHoraRegistro) - new Date(a.dataHoraRegistro);
-                });
-
-                logs.forEach(l => {
-                    const isFinalizado = l.status === 'Finalizado';
-                    const isEmAtendimento = l.status === 'Em Atendimento';
-                    const dateStr = new Date(l.dataHoraRegistro).toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
-                    
-                    let statusColor = 'bg-red-100 text-red-800 animate-pulse';
-                    let cardBorder = 'border-red-200 border-l-red-500';
-                    let bgCard = 'bg-red-50';
-
-                    if (isEmAtendimento) {
-                        statusColor = 'bg-yellow-100 text-yellow-800';
-                        cardBorder = 'border-yellow-200 border-l-yellow-500';
-                        bgCard = 'bg-yellow-50';
-                    } else if (isFinalizado) {
-                        statusColor = 'bg-green-100 text-green-800';
-                        cardBorder = 'border-gray-200';
-                        bgCard = 'bg-white opacity-75';
-                    }
-
-                    const card = document.createElement('div');
-                    card.className = `p-5 rounded-xl border transition relative overflow-hidden shadow-sm border-l-4 ${cardBorder} ${bgCard}`;
-                    
-                    card.innerHTML = `
-                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                            <div class="flex-1">
-                                <div class="flex items-center gap-3 mb-2">
-                                    <span class="font-mono font-bold text-gray-700 text-lg bg-white border px-3 py-1 rounded shadow-sm">${l.tokenEmergencia}</span>
-                                    <span class="text-xs px-2 py-1 rounded-full font-bold uppercase tracking-wide ${statusColor}">${l.status}</span>
-                                    <span class="text-xs text-gray-500 ml-auto md:ml-0">Chegada: ${dateStr}</span>
-                                </div>
-                                <h4 class="font-bold text-gray-800 text-lg flex items-center gap-2">${l.tipoEmergencia}</h4>
-                                <div class="mt-2 text-sm text-gray-600"><p><strong>Paciente:</strong> ${l.nomeAnimal} (${l.especieAnimal})</p><p><strong>Tutor:</strong> ${l.nomeCompletoTutor} - ${l.telefoneTutor}</p></div>
-                                ${l.relatorio ? `<p class="mt-2 text-xs text-gray-500 bg-white/50 p-2 rounded"><strong>Último registro:</strong> ${l.relatorio}</p>` : ''}
-                            </div>
-                            <div class="w-full md:w-auto mt-2 md:mt-0 text-right">
-                                ${!isFinalizado ? 
-                                    `<button onclick="abrirFinalizar('${l.tokenEmergencia}', '${l.relatorio || ''}')" class="w-full md:w-auto bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 shadow-sm text-sm font-bold uppercase tracking-wide flex items-center justify-center gap-2 transition transform hover:scale-105">
-                                        ${isEmAtendimento ? 'Continuar' : 'Atender'}
-                                    </button>` : 
-                                    `<div class="text-green-600 font-medium text-sm">Concluído</div>`
-                                }
-                            </div>
-                        </div>`;
-                    div.appendChild(card);
-                });
-                lucide.createIcons();
-            } finally { isUpdating = false; if(icon) icon.classList.remove('animate-spin'); }
+        if (!logs || logs.length === 0) {
+            div.innerHTML = '<p class="text-center py-10 text-gray-400">Nenhum chamado.</p>';
+            return;
         }
 
-        window.abrirFinalizar = (token, relatorioAtual) => {
-            document.getElementById('finalizar-token-input').value = token;
-            document.getElementById('modal-token').innerText = token;
-            document.getElementById('relatorio').value = relatorioAtual;
-            
-            const vetPerfil = document.getElementById('vet').value;
-            const crmvPerfil = document.getElementById('crmv').value;
-            if(vetPerfil) document.getElementById('finalizar-vet').value = vetPerfil;
-            if(crmvPerfil) document.getElementById('finalizar-crmv').value = crmvPerfil;
+        div.innerHTML = '';
 
-            document.getElementById('modal-finalizar').style.display = 'flex';
-        };
+        logs.sort((a, b) => {
+            if (a.status === 'Finalizado' && b.status !== 'Finalizado') return 1;
+            if (a.status !== 'Finalizado' && b.status === 'Finalizado') return -1;
+            return new Date(b.dataHoraRegistro) - new Date(a.dataHoraRegistro);
+        });
 
-        window.enviarAtendimento = async (acao) => {
-            const token = document.getElementById('finalizar-token-input').value;
-            const relatorio = document.getElementById('relatorio').value;
-            const prescricao = document.getElementById('prescricao').value;
-            const vet = document.getElementById('finalizar-vet').value;
-            const crmv = document.getElementById('finalizar-crmv').value;
+        logs.forEach(l => {
+            const isFinalizado = l.status === 'Finalizado';
+            const isEmAtendimento = l.status === 'Em Atendimento';
+            const dateStr = l.dataHoraRegistro
+                ? new Date(l.dataHoraRegistro).toLocaleString('pt-BR', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                })
+                : '--/--/---- --:--';
 
-            if(!relatorio || !vet || !crmv) {
-                alert("Preencha o Relatório, Veterinário e CRMV.");
-                return;
+            let statusColor = 'bg-red-100 text-red-800 animate-pulse';
+            let cardBorder = 'border-red-200 border-l-red-500';
+            let bgCard = 'bg-red-50';
+
+            if (isEmAtendimento) {
+                statusColor = 'bg-yellow-100 text-yellow-800';
+                cardBorder = 'border-yellow-200 border-l-yellow-500';
+                bgCard = 'bg-yellow-50';
+            } else if (isFinalizado) {
+                statusColor = 'bg-green-100 text-green-800';
+                cardBorder = 'border-gray-200';
+                bgCard = 'bg-white opacity-75';
             }
 
-            const endpoint = acao === 'finalizar' ? `/emergencia/finalizar/${token}` : `/emergencia/atualizar/${token}`;
-            
-            const data = { 
-                relatorio: relatorio, 
-                prescricao: prescricao, 
-                veterinarioResponsavel: vet,
-                veterinarioResponsavelFinalizacao: vet,
-                crmvVeterinario: crmv,
-                crmvVeterinarioFinalizacao: crmv
-            };
+            const card = document.createElement('div');
+            card.className = `p-5 rounded-xl border transition relative overflow-hidden shadow-sm border-l-4 ${cardBorder} ${bgCard}`;
 
-            try {
-                await apiFetch(endpoint, { method: 'PUT', body: JSON.stringify(data) });
-                document.getElementById('modal-finalizar').style.display = 'none';
-                alert(acao === 'finalizar' ? 'Atendimento Finalizado!' : 'Status atualizado: Em Atendimento');
-                carregarLogs();
-            } catch(e) {
-                alert("Erro ao salvar: " + e.message);
+            const token = l.tokenEmergencia ?? '';
+            const tipo = l.tipoEmergencia ?? '';
+            const nomeAnimal = l.nomeAnimal ?? '';
+            const especieAnimal = l.especieAnimal ?? '';
+            const tutor = l.nomeCompletoTutor ?? '';
+            const telefoneTutor = l.telefoneTutor ?? '';
+            const relatorioAtual = l.relatorio ?? '';
+
+            card.innerHTML = `
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div class="flex-1">
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="font-mono font-bold text-gray-700 text-lg bg-white border px-3 py-1 rounded shadow-sm">${token}</span>
+                            <span class="text-xs px-2 py-1 rounded-full font-bold uppercase tracking-wide ${statusColor}">${l.status ?? ''}</span>
+                            <span class="text-xs text-gray-500 ml-auto md:ml-0">Chegada: ${dateStr}</span>
+                        </div>
+
+                        <h4 class="font-bold text-gray-800 text-lg flex items-center gap-2">${tipo}</h4>
+
+                        <div class="mt-2 text-sm text-gray-600">
+                            <p><strong>Paciente:</strong> ${nomeAnimal} (${especieAnimal})</p>
+                            <p><strong>Tutor:</strong> ${tutor} - ${telefoneTutor}</p>
+                        </div>
+
+                        ${relatorioAtual ? `<p class="mt-2 text-xs text-gray-500 bg-white/50 p-2 rounded"><strong>Último registro:</strong> ${relatorioAtual}</p>` : ''}
+                    </div>
+
+                    <div class="w-full md:w-auto mt-2 md:mt-0 text-right" id="acoes"></div>
+                </div>
+            `;
+
+            const acoes = card.querySelector('#acoes');
+
+            if (acoes) {
+                if (!isFinalizado) {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = "w-full md:w-auto bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 shadow-sm text-sm font-bold uppercase tracking-wide flex items-center justify-center gap-2 transition transform hover:scale-105";
+                    btn.textContent = isEmAtendimento ? 'Continuar' : 'Atender';
+                    btn.addEventListener('click', () => abrirFinalizar(token, relatorioAtual));
+                    acoes.appendChild(btn);
+                } else {
+                    const done = document.createElement('div');
+                    done.className = "text-green-600 font-medium text-sm";
+                    done.textContent = "Concluído";
+                    acoes.appendChild(done);
+                }
             }
-        };
+
+            div.appendChild(card);
+        });
+
+        if (window.lucide) lucide.createIcons();
+    } finally {
+        isUpdating = false;
+        if (icon) icon.classList.remove('animate-spin');
+    }
+}
 
 window.carregarLogs = carregarLogs;
 
-//MODAL FINALIZAÇÃO 
+// MODAL
+window.abrirFinalizar = (token, relatorioAtual = '') => {
+    const tokenInput = document.getElementById('atendimento-token-input');
+    const modalToken = document.getElementById('modal-token');
+    const relatorio = document.getElementById('relatorio');
 
-window.abrirFinalizar = (token) => {
-    document.getElementById('finalizar-token-input').value = token;
-    document.getElementById('modal-token').innerText = token;
+    if (tokenInput) tokenInput.value = token;
+    if (modalToken) modalToken.innerText = token;
+    if (relatorio) relatorio.value = relatorioAtual;
 
-    const vetAtual = document.getElementById('vet').value;
-    const crmvAtual = document.getElementById('crmv').value;
-    if (vetAtual) document.getElementById('finalizar-vet').value = vetAtual;
-    if (crmvAtual) document.getElementById('finalizar-crmv').value = crmvAtual;
+    const vetPerfil = document.getElementById('vet')?.value;
+    const crmvPerfil = document.getElementById('crmv')?.value;
+
+    if (vetPerfil) document.getElementById('finalizar-vet').value = vetPerfil;
+    if (crmvPerfil) document.getElementById('finalizar-crmv').value = crmvPerfil;
 
     document.getElementById('modal-finalizar').style.display = 'flex';
 };
 
-document.getElementById('form-finalizar').onsubmit = async (e) => {
-    e.preventDefault();
-    const token = document.getElementById('finalizar-token-input').value;
+window.enviarAtendimento = async (acao) => {
+    const token = document.getElementById('atendimento-token-input')?.value;
+    const relatorio = document.getElementById('relatorio')?.value;
+    const prescricao = document.getElementById('prescricao')?.value;
+    const vet = document.getElementById('finalizar-vet')?.value;
+    const crmv = document.getElementById('finalizar-crmv')?.value;
+
+    if (!token) {
+        showToast("Token não encontrado.", "error");
+        return;
+    }
+
+    if (!relatorio || !vet || !crmv) {
+        showToast("Preencha o Relatório, Vet. Responsável e CRMV.", "error");
+        return;
+    }
+
+    const endpoint = acao === 'finalizar'
+        ? `/emergencia/finalizar/${token}`
+        : `/emergencia/atualizar/${token}`;
+
     const data = {
-        relatorio: document.getElementById('relatorio').value,
-        prescricao: document.getElementById('prescricao').value,
-        veterinarioResponsavelFinalizacao: document.getElementById('finalizar-vet').value,
-        crmvVeterinarioFinalizacao: document.getElementById('finalizar-crmv').value
+        relatorio,
+        prescricao,
+        veterinarioResponsavel: vet,
+        veterinarioResponsavelFinalizacao: vet,
+        crmvVeterinario: crmv,
+        crmvVeterinarioFinalizacao: crmv
     };
 
     try {
-        await apiFetch(`/emergencia/finalizar/${token}`, { method: 'PUT', body: JSON.stringify(data) });
+        await apiFetch(endpoint, { method: 'PUT', body: JSON.stringify(data) });
 
         document.getElementById('modal-finalizar').style.display = 'none';
-        document.getElementById('form-finalizar').reset();
 
-        showToast('Atendimento finalizado com sucesso!', 'success');
+        showToast(
+            acao === 'finalizar' ? 'Atendimento finalizado!' : 'Status atualizado: Em Atendimento',
+            'success'
+        );
+
         carregarLogs();
     } catch (e) {
-        showToast(`Erro ao finalizar: ${e.message}`, 'error');
+        showToast("Erro ao salvar: " + e.message, "error");
     }
 };

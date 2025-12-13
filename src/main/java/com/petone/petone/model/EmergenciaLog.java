@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import java.time.LocalDateTime;
 
-//Modelo para o Log de Emergência. Criado quando uma emergência é iniciada.
 @Data
 @Builder
 @Document(collection = "logs_emergencia")
